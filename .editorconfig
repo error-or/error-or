@@ -70,3 +70,6 @@ dotnet_diagnostic.SA1642.severity = none
 
 # SA1516: Elements should be separated by blank line
 dotnet_diagnostic.SA1516.severity = none
+
+[*.csproj]
+indent_size = 2
