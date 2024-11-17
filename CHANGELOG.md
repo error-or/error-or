@@ -15,7 +15,7 @@ All notable changes to this project are documented in this file.
 
 - `ToErrorOr`
 
-## [2.0.0] - 2024-03-26
+## [2.0.1] - 2024-03-26
 
 ### Added
 
