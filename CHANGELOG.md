@@ -110,3 +110,9 @@ Value can now be used to build the error:
 ErrorOr<int> result = errorOrInt
     .FailIf(num => num > 3, (num) => Error.Failure(description: $"{num} is greater than 3"));
 ```
+
+### Fixed
+
+- (#85, #97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
+
+New dependency was introduced to [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) and development dependency was introduced to [Nullable](https://www.nuget.org/packages/Nullable)
