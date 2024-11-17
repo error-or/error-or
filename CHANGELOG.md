@@ -18,7 +18,7 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- [#94](https://github.com/amantinband/error-or/issues/94), [#95](https://github.com/amantinband/error-or/pull/95) Added missing async versions of `FailIf` methods (thanks [@MGREMY](https://github.com/MGREMY)!)
+- [#94](https://github.com/amantinband/error-or/issues/94), [#95](https://github.com/amantinband/error-or/pull/95) Added missing async versions of `FailIf` methods
 
     ```cs
     public async Task<ErrorOr<TValue>> FailIfAsync(Func<TValue, Task<bool>> onValue, Error error)
@@ -40,7 +40,7 @@ All notable changes to this project are documented in this file.
 
 - [#104](https://github.com/amantinband/error-or/pull/104) Support for .NET 8 was added
 
-- [#109](https://github.com/amantinband/error-or/issues/109), [#111](https://github.com/amantinband/error-or/pull/111) Added `FailIf` method overloads that allow to use value in error definition using `Func<TValue, Error>` error builder (thanks [@ahmtsen](https://github.com/ahmtsen)!)
+- [#109](https://github.com/amantinband/error-or/issues/109), [#111](https://github.com/amantinband/error-or/pull/111) Added `FailIf` method overloads that allow to use value in error definition using `Func<TValue, Error>` error builder
 
     ```cs
     public ErrorOr<TValue> FailIf(Func<TValue, bool> onValue, Func<TValue, Error> errorBuilder)
