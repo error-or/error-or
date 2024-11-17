@@ -58,6 +58,10 @@ errorOr.FailIf(x => x > 0, Error.Failure());
 
 ## [3.0.0-alpha.0] - to be released
 
+### Breaking Changes
+
+- (#104) Support for .NET 6 was removed
+
 ### Added
 
 - (#94, #95) Added missing async versions of `FailIf` methods (thanks [@MGREMY](https://github.com/MGREMY)!)
@@ -79,6 +83,8 @@ public static async Task<ErrorOr<TValue>> FailIfAsync<TValue>(
     Func<TValue, Task<bool>> onValue,
     Error error)
 ```
+
+- (#104) Support for .NET 8 was added
 
 - (#109, #111) Added `FailIf` method overloads that allow to use value in error definition using `Func<TValue, Error>` error builder (thanks [@ahmtsen](https://github.com/ahmtsen)!)
 
