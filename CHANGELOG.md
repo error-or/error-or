@@ -74,62 +74,62 @@ errorOr.FailIf(x => x > 0, Error.Failure());
 
 - (#94, #95) Added missing async versions of `FailIf` methods (thanks [@MGREMY](https://github.com/MGREMY)!)
 
-```cs
-public async Task<ErrorOr<TValue>> FailIfAsync(Func<TValue, Task<bool>> onValue, Error error)
-```
+    ```cs
+    public async Task<ErrorOr<TValue>> FailIfAsync(Func<TValue, Task<bool>> onValue, Error error)
+    ```
 
-```cs
-public static async Task<ErrorOr<TValue>> FailIf<TValue>(
-    this Task<ErrorOr<TValue>> errorOr,
-    Func<TValue, bool> onValue,
-    Error error)
-```
+    ```cs
+    public static async Task<ErrorOr<TValue>> FailIf<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+        Func<TValue, bool> onValue,
+        Error error)
+    ```
 
-```cs
-public static async Task<ErrorOr<TValue>> FailIfAsync<TValue>(
-    this Task<ErrorOr<TValue>> errorOr,
-    Func<TValue, Task<bool>> onValue,
-    Error error)
-```
+    ```cs
+    public static async Task<ErrorOr<TValue>> FailIfAsync<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+        Func<TValue, Task<bool>> onValue,
+        Error error)
+    ```
 
 - (#104) Support for .NET 8 was added
 
 - (#109, #111) Added `FailIf` method overloads that allow to use value in error definition using `Func<TValue, Error>` error builder (thanks [@ahmtsen](https://github.com/ahmtsen)!)
 
-```cs
-public ErrorOr<TValue> FailIf(Func<TValue, bool> onValue, Func<TValue, Error> errorBuilder)
-```
+    ```cs
+    public ErrorOr<TValue> FailIf(Func<TValue, bool> onValue, Func<TValue, Error> errorBuilder)
+    ```
 
-```cs
-public async Task<ErrorOr<TValue>> FailIfAsync(Func<TValue, Task<bool>> onValue, Func<TValue, Task<Error>> errorBuilder)
-```
+    ```cs
+    public async Task<ErrorOr<TValue>> FailIfAsync(Func<TValue, Task<bool>> onValue, Func<TValue, Task<Error>> errorBuilder)
+    ```
 
-```cs
-public static async Task<ErrorOr<TValue>> FailIf<TValue>(
-    this Task<ErrorOr<TValue>> errorOr,
-    Func<TValue, bool> onValue,
-    Func<TValue, Error> errorBuilder)
-```
+    ```cs
+    public static async Task<ErrorOr<TValue>> FailIf<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+        Func<TValue, bool> onValue,
+        Func<TValue, Error> errorBuilder)
+    ```
 
-```cs
-public static async Task<ErrorOr<TValue>> FailIfAsync<TValue>(
-    this Task<ErrorOr<TValue>> errorOr,
-    Func<TValue, Task<bool>> onValue,
-    Func<TValue, Task<Error>> errorBuilder)
-```
+    ```cs
+    public static async Task<ErrorOr<TValue>> FailIfAsync<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+        Func<TValue, Task<bool>> onValue,
+        Func<TValue, Task<Error>> errorBuilder)
+    ```
 
-Value can now be used to build the error:
+    Value can now be used to build the error:
 
-```cs
-ErrorOr<int> result = errorOrInt
-    .FailIf(num => num > 3, (num) => Error.Failure(description: $"{num} is greater than 3"));
-```
+    ```cs
+    ErrorOr<int> result = errorOrInt
+        .FailIf(num => num > 3, (num) => Error.Failure(description: $"{num} is greater than 3"));
+    ```
 
 ### Fixed
 
 - (#85, #97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
 
-New dependency was introduced to [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) and development dependency was introduced to [Nullable](https://www.nuget.org/packages/Nullable)
+    New dependency was introduced to [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) and development dependency was introduced to [Nullable](https://www.nuget.org/packages/Nullable)
 
 ### Optimized
 
