@@ -62,6 +62,14 @@ errorOr.FailIf(x => x > 0, Error.Failure());
 
 - (#104) Support for .NET 6 was removed
 
+- (#105) Invalid use of library now throws exception instead of return errors
+
+    Following actions now throws `InvalidOperationException`:
+
+    1. Default `ErrorOr` constructor invocation.
+    2. Accessing `ErrorOr.Errors` and `ErrorOr.FirstError` on success result.
+    3. Accessing `ErrorOr.Value` on result with errors.
+
 ### Added
 
 - (#94, #95) Added missing async versions of `FailIf` methods (thanks [@MGREMY](https://github.com/MGREMY)!)
