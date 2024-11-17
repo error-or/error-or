@@ -122,3 +122,7 @@ ErrorOr<int> result = errorOrInt
 - (#85, #97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
 
 New dependency was introduced to [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) and development dependency was introduced to [Nullable](https://www.nuget.org/packages/Nullable)
+
+### Optimized
+
+- (#98, #99) Memory consumption optimized by moving static empty errors lists from generic struct into non-generic class
