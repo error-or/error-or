@@ -6,6 +6,8 @@ public readonly record struct Success;
 public readonly record struct Created;
 public readonly record struct Deleted;
 public readonly record struct Updated;
+public readonly record struct Accepted;
+public readonly record struct NoContent;
 
 public static class Result
 {
@@ -16,4 +18,8 @@ public static class Result
     public static Deleted Deleted => default;
 
     public static Updated Updated => default;
+
+    public static Accepted Accepted => default;
+
+    public static NoContent NoContent => default;
 }

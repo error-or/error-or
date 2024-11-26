@@ -12,4 +12,6 @@ public enum ErrorType
     NotFound,
     Unauthorized,
     Forbidden,
+    BadRequest,
+    InternalServerError
 }

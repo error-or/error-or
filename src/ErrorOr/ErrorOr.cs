@@ -111,4 +111,69 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     {
         return errors;
     }
+
+    /// <summary>
+    /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
+    /// </summary>
+    /// <param name="errors">The list of errors to create the <see cref="ErrorOr{TValue}"/> from.</param>
+    /// <returns>An <see cref="ErrorOr{TValue}"/> instance containing the provided errors.</returns>
+    public static ErrorOr<TValue> FromError(List<Error> errors)
+    {
+        return new ErrorOr<TValue>(errors);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="ErrorOr{TValue}"/> from a value.
+    /// </summary>
+    /// <param name="value">The value to create the <see cref="ErrorOr{TValue}"/> from.</param>
+    /// <returns>An <see cref="ErrorOr{TValue}"/> instance containing the provided value.</returns>
+    public static ErrorOr<TValue> FromValue(TValue value)
+    {
+        return new ErrorOr<TValue>(value);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="ErrorOr{TValue}"/> from a tuple.
+    /// </summary>
+    /// <param name="tuple">The tuple to create the <see cref="ErrorOr{TValue}"/> from.</param>
+    /// <returns>An <see cref="ErrorOr{TValue}"/> instance containing the provided value or errors.</returns>
+    public static ErrorOr<TValue> FromTuple((TValue? Value, List<Error>? Errors) tuple)
+    {
+        if (tuple.Errors is not null)
+        {
+            return new ErrorOr<TValue>(tuple.Errors);
+        }
+
+        if (tuple.Value is not null)
+        {
+            return new ErrorOr<TValue>(tuple.Value);
+        }
+
+        throw new ArgumentException("The tuple must contain either a value or errors.", nameof(tuple));
+    }
+
+    /// <summary>
+    /// Creates an <see cref="ErrorOr{TValue}"/> from a custom object.
+    /// </summary>
+    /// <typeparam name="TCustom">The type of the custom object.</typeparam>
+    /// <param name="customObject">The custom object to create the <see cref="ErrorOr{TValue}"/> from.</param>
+    /// <param name="valueSelector">The function to select the value from the custom object.</param>
+    /// <param name="errorsSelector">The function to select the errors from the custom object.</param>
+    /// <returns>An <see cref="ErrorOr{TValue}"/> instance containing the provided value or errors.</returns>
+    public static ErrorOr<TValue> FromCustom<TCustom>(TCustom customObject, Func<TCustom, TValue?> valueSelector, Func<TCustom, List<Error>?> errorsSelector)
+    {
+        var errors = errorsSelector(customObject);
+        if (errors is not null)
+        {
+            return new ErrorOr<TValue>(errors);
+        }
+
+        var value = valueSelector(customObject);
+        if (value is not null)
+        {
+            return new ErrorOr<TValue>(value);
+        }
+
+        throw new ArgumentException("The custom object must contain either a value or errors.", nameof(customObject));
+    }
 }

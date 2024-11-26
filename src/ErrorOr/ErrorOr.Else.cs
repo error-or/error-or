@@ -151,4 +151,89 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 
         return await onError.ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// If the state is error, the provided function <paramref name="onError"/> is executed and its result is returned.
+    /// </summary>
+    /// <param name="onError">The function to execute if the state is error.</param>
+    /// <param name="metadata">Additional metadata to include with the errors.</param>
+    /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
+    public ErrorOr<TValue> ElseWithMetadata(Func<List<Error>, Error> onError, Dictionary<string, object> metadata)
+    {
+        if (!IsError)
+        {
+            return Value;
+        }
+
+        var enhancedErrors = Errors.Select(e => e with { Metadata = metadata }).ToList();
+        return onError(enhancedErrors);
+    }
+
+    /// <summary>
+    /// If the state is error, the provided function <paramref name="onError"/> is executed and its result is returned.
+    /// </summary>
+    /// <param name="onError">The function to execute if the state is error.</param>
+    /// <param name="metadata">Additional metadata to include with the errors.</param>
+    /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
+    public ErrorOr<TValue> ElseWithMetadata(Func<List<Error>, List<Error>> onError, Dictionary<string, object> metadata)
+    {
+        if (!IsError)
+        {
+            return Value;
+        }
+
+        var enhancedErrors = Errors.Select(e => e with { Metadata = metadata }).ToList();
+        return onError(enhancedErrors);
+    }
+
+    /// <summary>
+    /// If the state is error, the provided function <paramref name="onError"/> is executed asynchronously and its result is returned.
+    /// </summary>
+    /// <param name="onError">The function to execute if the state is error.</param>
+    /// <param name="metadata">Additional metadata to include with the errors.</param>
+    /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
+    public async Task<ErrorOr<TValue>> ElseWithMetadataAsync(Func<List<Error>, Task<TValue>> onError, Dictionary<string, object> metadata)
+    {
+        if (!IsError)
+        {
+            return Value;
+        }
+
+        var enhancedErrors = Errors.Select(e => e with { Metadata = metadata }).ToList();
+        return await onError(enhancedErrors).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// If the state is error, the provided function <paramref name="onError"/> is executed asynchronously and its result is returned.
+    /// </summary>
+    /// <param name="onError">The function to execute if the state is error.</param>
+    /// <param name="metadata">Additional metadata to include with the errors.</param>
+    /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
+    public async Task<ErrorOr<TValue>> ElseWithMetadataAsync(Func<List<Error>, Task<Error>> onError, Dictionary<string, object> metadata)
+    {
+        if (!IsError)
+        {
+            return Value;
+        }
+
+        var enhancedErrors = Errors.Select(e => e with { Metadata = metadata }).ToList();
+        return await onError(enhancedErrors).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// If the state is error, the provided function <paramref name="onError"/> is executed asynchronously and its result is returned.
+    /// </summary>
+    /// <param name="onError">The function to execute if the state is error.</param>
+    /// <param name="metadata">Additional metadata to include with the errors.</param>
+    /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
+    public async Task<ErrorOr<TValue>> ElseWithMetadataAsync(Func<List<Error>, Task<List<Error>>> onError, Dictionary<string, object> metadata)
+    {
+        if (!IsError)
+        {
+            return Value;
+        }
+
+        var enhancedErrors = Errors.Select(e => e with { Metadata = metadata }).ToList();
+        return await onError(enhancedErrors).ConfigureAwait(false);
+    }
 }

@@ -1,7 +1,7 @@
-namespace Tests;
-
 using ErrorOr;
 using FluentAssertions;
+
+namespace Tests;
 
 public class ErrorOrInstantiationTests
 {

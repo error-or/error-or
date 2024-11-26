@@ -1,0 +1,18 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=925b9865_002D8ec9_002D489c_002Da728_002D0918ac5c4418/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AggregationExtensionsTests #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::0E84EC69-4E4C-4195-907D-06C96D0140A6::net8.0::Tests.ErrorOr.AggregationExtensionsTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eac8010a_002Dec6e_002D4cc4_002D847a_002D7ec6651faf49/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AppendErrors_ShouldCombineErrorsWithSuccess_WhenSuccessAndFailureAreCombined_WithUserType" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::0E84EC69-4E4C-4195-907D-06C96D0140A6::net8.0::Tests.ErrorOr.AggregationExtensionsTests.AppendErrors_WithMixedSuccessAndErrorInstances_AppendsOnlyErrors&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0E84EC69-4E4C-4195-907D-06C96D0140A6::net8.0::Tests.ErrorOr.AggregationExtensionsTests.AppendErrors_ShouldHandleNullErrorInEachItemGracefully_WithUserType&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0E84EC69-4E4C-4195-907D-06C96D0140A6::net8.0::Tests.ErrorOr.AggregationExtensionsTests.AppendErrors_WithAdditionalErrors_AppendsErrorsCorrectly&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=fc72423c_002Da058_002D407c_002D9b56_002Dca48a86792c3/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AggregationExtensionsTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::0E84EC69-4E4C-4195-907D-06C96D0140A6::net8.0::Tests.ErrorOr.AggregationExtensionsTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
