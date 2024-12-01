@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
+using InnerErrors = System.Collections.Generic.List<ErrorOr.Error>;
+
 namespace ErrorOr;
 
 /// <summary>
@@ -9,7 +11,8 @@ namespace ErrorOr;
 public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 {
     private readonly TValue? _value = default;
-    private readonly List<Error>? _errors = null;
+    private readonly InnerErrors? _innerErrors = null;
+    private readonly ReadOnlyCollection<Error>? _errors = null;
 
     /// <summary>
     /// Prevents a default <see cref="ErrorOr"/> struct from being created.
@@ -22,21 +25,24 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 
     private ErrorOr(Error error)
     {
-        _errors = [error];
+        _innerErrors = [error];
+        _errors = new ReadOnlyCollection<Error>(_innerErrors);
     }
 
-    private ErrorOr(List<Error> errors)
+    private ErrorOr(InnerErrors innerErrors, string paramName)
     {
-        if (errors is null)
+        if (innerErrors.Count == 0)
         {
-            throw new ArgumentNullException(nameof(errors));
+            throw new ArgumentException("Cannot create an ErrorOr<TValue> from an empty collection of errors. Provide at least one error.", paramName);
         }
 
-        if (errors is null || errors.Count == 0)
-        {
-            throw new ArgumentException("Cannot create an ErrorOr<TValue> from an empty collection of errors. Provide at least one error.", nameof(errors));
-        }
+        _innerErrors = innerErrors;
+        _errors = new ReadOnlyCollection<Error>(_innerErrors);
+    }
 
+    private ErrorOr(InnerErrors innerErrors, ReadOnlyCollection<Error> errors)
+    {
+        _innerErrors = innerErrors;
         _errors = errors;
     }
 
@@ -53,22 +59,23 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <summary>
     /// Gets a value indicating whether the state is error.
     /// </summary>
-    [MemberNotNullWhen(true, nameof(_errors))]
-    [MemberNotNullWhen(true, nameof(Errors))]
     [MemberNotNullWhen(false, nameof(Value))]
     [MemberNotNullWhen(false, nameof(_value))]
+    [MemberNotNullWhen(true, nameof(Errors))]
+    [MemberNotNullWhen(true, nameof(_errors))]
+    [MemberNotNullWhen(true, nameof(_innerErrors))]
     public bool IsError => _errors is not null;
 
     /// <summary>
     /// Gets the list of errors. If the state is not error, the list will contain a single error representing the state.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when no errors are present.</exception>
-    public List<Error> Errors => IsError ? _errors : throw new InvalidOperationException("The Errors property cannot be accessed when no errors have been recorded. Check IsError before accessing Errors.");
+    public ReadOnlyCollection<Error> Errors => IsError ? _errors : throw new InvalidOperationException("The Errors property cannot be accessed when no errors have been recorded. Check IsError before accessing Errors.");
 
     /// <summary>
     /// Gets the list of errors. If the state is not error, the list will be empty.
     /// </summary>
-    public List<Error> ErrorsOrEmptyList => IsError ? _errors : EmptyErrors.Instance;
+    public ReadOnlyCollection<Error> ErrorsOrEmptyList => IsError ? _errors : EmptyErrors.Instance;
 
     /// <summary>
     /// Gets the value.
@@ -100,15 +107,17 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
                 throw new InvalidOperationException("The FirstError property cannot be accessed when no errors have been recorded. Check IsError before accessing FirstError.");
             }
 
-            return _errors[0];
+            return _innerErrors[0];
         }
     }
 
     /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
     /// </summary>
-    public static ErrorOr<TValue> From(List<Error> errors)
-    {
-        return errors;
-    }
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="errors"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="errors" /> is empty.</exception>
+    public static ErrorOr<TValue> From(IEnumerable<Error> errors) =>
+        errors is null
+            ? throw new ArgumentNullException(nameof(errors))
+            : new ErrorOr<TValue>([.. errors], nameof(errors));
 }

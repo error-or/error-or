@@ -12,7 +12,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     {
         if (IsError)
         {
-            return Errors;
+            return new ErrorOr<TNextValue>(_innerErrors, _errors);
         }
 
         return onValue(Value);
@@ -25,12 +25,10 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <returns>The original <see cref="ErrorOr"/> instance.</returns>
     public ErrorOr<TValue> ThenDo(Action<TValue> action)
     {
-        if (IsError)
+        if (!IsError)
         {
-            return Errors;
+            action(Value);
         }
-
-        action(Value);
 
         return this;
     }
@@ -45,7 +43,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     {
         if (IsError)
         {
-            return Errors;
+            return new ErrorOr<TNextValue>(_innerErrors, _errors);
         }
 
         return onValue(Value);
@@ -61,7 +59,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     {
         if (IsError)
         {
-            return Errors;
+            return new ErrorOr<TNextValue>(_innerErrors, _errors);
         }
 
         return await onValue(Value).ConfigureAwait(false);
@@ -74,12 +72,10 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <returns>The original <see cref="ErrorOr"/> instance.</returns>
     public async Task<ErrorOr<TValue>> ThenDoAsync(Func<TValue, Task> action)
     {
-        if (IsError)
+        if (!IsError)
         {
-            return Errors;
+            await action(Value).ConfigureAwait(false);
         }
-
-        await action(Value).ConfigureAwait(false);
 
         return this;
     }
@@ -94,7 +90,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     {
         if (IsError)
         {
-            return Errors;
+            return new ErrorOr<TNextValue>(_innerErrors, _errors);
         }
 
         return await onValue(Value).ConfigureAwait(false);

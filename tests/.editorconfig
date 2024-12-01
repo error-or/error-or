@@ -5,3 +5,6 @@ dotnet_diagnostic.SA1201.severity = none
 
 # SA1649: File name should match first type name
 dotnet_diagnostic.SA1649.severity = none
+
+# SA1135: Using directives should be qualified
+dotnet_diagnostic.SA1135.severity = none

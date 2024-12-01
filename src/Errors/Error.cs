@@ -1,17 +1,24 @@
-namespace ErrorOr;
+using InnerMetadata = System.Collections.Generic.Dictionary<string, object>;
 
+namespace ErrorOr;
 /// <summary>
 /// Represents an error.
 /// </summary>
 public readonly record struct Error
 {
-    private Error(string code, string description, ErrorType type, Dictionary<string, object>? metadata)
+    private readonly InnerMetadata? _innerMetadata;
+
+    private Error(string code, string description, ErrorType type, IDictionary<string, object>? metadata)
     {
         Code = code;
         Description = description;
         Type = type;
         NumericType = (int)type;
-        Metadata = metadata;
+        if (metadata is not null)
+        {
+            _innerMetadata = new InnerMetadata(metadata);
+            Metadata = new ReadOnlyDictionary<string, object>(_innerMetadata);
+        }
     }
 
     /// <summary>
@@ -37,7 +44,7 @@ public readonly record struct Error
     /// <summary>
     /// Gets the metadata.
     /// </summary>
-    public Dictionary<string, object>? Metadata { get; }
+    public ReadOnlyDictionary<string, object>? Metadata { get; }
 
     /// <summary>
     /// Creates an <see cref="Error"/> of type <see cref="ErrorType.Failure"/> from a code and description.
@@ -48,7 +55,7 @@ public readonly record struct Error
     public static Error Failure(
         string code = "General.Failure",
         string description = "A failure has occurred.",
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
             new(code, description, ErrorType.Failure, metadata);
 
     /// <summary>
@@ -60,7 +67,7 @@ public readonly record struct Error
     public static Error Unexpected(
         string code = "General.Unexpected",
         string description = "An unexpected error has occurred.",
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
             new(code, description, ErrorType.Unexpected, metadata);
 
     /// <summary>
@@ -72,7 +79,7 @@ public readonly record struct Error
     public static Error Validation(
         string code = "General.Validation",
         string description = "A validation error has occurred.",
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
             new(code, description, ErrorType.Validation, metadata);
 
     /// <summary>
@@ -84,7 +91,7 @@ public readonly record struct Error
     public static Error Conflict(
         string code = "General.Conflict",
         string description = "A conflict error has occurred.",
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
             new(code, description, ErrorType.Conflict, metadata);
 
     /// <summary>
@@ -96,7 +103,7 @@ public readonly record struct Error
     public static Error NotFound(
         string code = "General.NotFound",
         string description = "A 'Not Found' error has occurred.",
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
             new(code, description, ErrorType.NotFound, metadata);
 
     /// <summary>
@@ -108,7 +115,7 @@ public readonly record struct Error
     public static Error Unauthorized(
         string code = "General.Unauthorized",
         string description = "An 'Unauthorized' error has occurred.",
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
             new(code, description, ErrorType.Unauthorized, metadata);
 
     /// <summary>
@@ -120,7 +127,7 @@ public readonly record struct Error
     public static Error Forbidden(
         string code = "General.Forbidden",
         string description = "A 'Forbidden' error has occurred.",
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
         new(code, description, ErrorType.Forbidden, metadata);
 
     /// <summary>
@@ -135,7 +142,7 @@ public readonly record struct Error
         int type,
         string code,
         string description,
-        Dictionary<string, object>? metadata = null) =>
+        IDictionary<string, object>? metadata = null) =>
             new(code, description, (ErrorType)type, metadata);
 
     public bool Equals(Error other)
@@ -153,11 +160,11 @@ public readonly record struct Error
             return other.Metadata is null;
         }
 
-        return other.Metadata is not null && CompareMetadata(Metadata, other.Metadata);
+        return other.Metadata is not null && CompareMetadata(_innerMetadata!, other._innerMetadata!);
     }
 
     public override int GetHashCode() =>
-        Metadata is null ? HashCode.Combine(Code, Description, Type, NumericType) : ComposeHashCode();
+        _innerMetadata is null ? HashCode.Combine(Code, Description, Type, NumericType) : ComposeHashCode();
 
     private int ComposeHashCode()
     {
@@ -170,7 +177,7 @@ public readonly record struct Error
         hashCode.Add(Type);
         hashCode.Add(NumericType);
 
-        foreach (var keyValuePair in Metadata!)
+        foreach (var keyValuePair in _innerMetadata!)
         {
             hashCode.Add(keyValuePair.Key);
             hashCode.Add(keyValuePair.Value);
@@ -179,7 +186,7 @@ public readonly record struct Error
         return hashCode.ToHashCode();
     }
 
-    private static bool CompareMetadata(Dictionary<string, object> metadata, Dictionary<string, object> otherMetadata)
+    private static bool CompareMetadata(InnerMetadata metadata, InnerMetadata otherMetadata)
     {
         if (ReferenceEquals(metadata, otherMetadata))
         {

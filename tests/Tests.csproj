@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="System.Collections.ObjectModel" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="fluentassertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="xunit" Version="2.8.0" />

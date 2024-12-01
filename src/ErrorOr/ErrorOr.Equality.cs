@@ -9,7 +9,7 @@ public readonly partial record struct ErrorOr<TValue>
             return !other.IsError && EqualityComparer<TValue>.Default.Equals(_value, other._value);
         }
 
-        return other.IsError && CheckIfErrorsAreEqual(_errors, other._errors);
+        return other.IsError && CheckIfErrorsAreEqual(_innerErrors, other._innerErrors);
     }
 
     public override int GetHashCode()
@@ -22,9 +22,9 @@ public readonly partial record struct ErrorOr<TValue>
 #pragma warning disable SA1129 // HashCode needs to be instantiated this way
         var hashCode = new HashCode();
 #pragma warning restore SA1129
-        for (var i = 0; i < _errors.Count; i++)
+        for (var i = 0; i < _innerErrors.Count; i++)
         {
-            hashCode.Add(_errors[i]);
+            hashCode.Add(_innerErrors[i]);
         }
 
         return hashCode.ToHashCode();

@@ -7,11 +7,12 @@ public class ErrorTests
 {
     private const string ErrorCode = "ErrorCode";
     private const string ErrorDescription = "ErrorDescription";
-    private static readonly Dictionary<string, object> Dictionary = new()
+    private static readonly ReadOnlyDictionary<string, object> Dictionary = new(
+    new Dictionary<string, object>
     {
         { "key1", "value1" },
         { "key2", 21 },
-    };
+    });
 
     [Fact]
     public void CreateError_WhenFailureError_ShouldHaveErrorTypeFailure()

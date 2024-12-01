@@ -19,7 +19,7 @@ public interface IErrorOr
     /// <summary>
     /// Gets the list of errors.
     /// </summary>
-    List<Error>? Errors { get; }
+    ReadOnlyCollection<Error>? Errors { get; }
 
     /// <summary>
     /// Gets a value indicating whether the state is error.

@@ -57,4 +57,15 @@ public class ToErrorOrTests
         result.IsError.Should().BeTrue();
         result.Errors.Should().Equal(errors);
     }
+
+    [Fact]
+    public void ReadOnlyCollectionOfErrorsToErrorOr_WhenAccessingErrors_ShouldReturnSimilarErrors()
+    {
+        ReadOnlyCollection<Error> errors = new([Error.Unauthorized(), Error.Validation()]);
+
+        ErrorOr<int> result = errors.ToErrorOr<int>();
+
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Equal(errors);
+    }
 }

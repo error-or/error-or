@@ -11,7 +11,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <param name="onValue">The function to execute if the state is a value.</param>
     /// <param name="onError">The function to execute if the state is an error.</param>
     /// <returns>The result of the executed function.</returns>
-    public TNextValue Match<TNextValue>(Func<TValue, TNextValue> onValue, Func<List<Error>, TNextValue> onError)
+    public TNextValue Match<TNextValue>(Func<TValue, TNextValue> onValue, Func<ReadOnlyCollection<Error>, TNextValue> onError)
     {
         if (IsError)
         {
@@ -30,7 +30,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <param name="onValue">The asynchronous function to execute if the state is a value.</param>
     /// <param name="onError">The asynchronous function to execute if the state is an error.</param>
     /// <returns>A task representing the asynchronous operation that yields the result of the executed function.</returns>
-    public async Task<TNextValue> MatchAsync<TNextValue>(Func<TValue, Task<TNextValue>> onValue, Func<List<Error>, Task<TNextValue>> onError)
+    public async Task<TNextValue> MatchAsync<TNextValue>(Func<TValue, Task<TNextValue>> onValue, Func<ReadOnlyCollection<Error>, Task<TNextValue>> onError)
     {
         if (IsError)
         {

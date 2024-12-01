@@ -29,7 +29,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        Func<List<Error>> errors = () => errorOrPerson.Errors;
+        Func<ReadOnlyCollection<Error>> errors = () => errorOrPerson.Errors;
 
         // Assert
         errors.Should().ThrowExactly<InvalidOperationException>();
@@ -43,7 +43,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        List<Error> errors = errorOrPerson.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrPerson.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().BeEmpty();
@@ -85,7 +85,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        Func<List<Error>> action = () => errorOrPerson.Errors;
+        Func<ReadOnlyCollection<Error>> action = () => errorOrPerson.Errors;
 
         // Assert
         action.Should().ThrowExactly<InvalidOperationException>();
@@ -99,7 +99,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        List<Error> errors = errorOrPerson.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrPerson.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().BeEmpty();
@@ -178,7 +178,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<Person> errorOrPerson = new Person("Amichai");
 
         // Act
-        Func<List<Error>> action = () => errorOrPerson.Errors;
+        Func<ReadOnlyCollection<Error>> action = () => errorOrPerson.Errors;
 
         // Assert
         action.Should().ThrowExactly<InvalidOperationException>();

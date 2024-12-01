@@ -7,7 +7,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>ErrorOr</PackageId>
-    <Version>2.0.1</Version>
+    <VersionPrefix>3.0.0</VersionPrefix>
+    <VersionSuffix>alpha.1</VersionSuffix>
     <Authors>Amichai Mantinband</Authors>
     <PackageIcon>icon-square.png</PackageIcon>
     <PackageTags>Result,Results,ErrorOr,Error,Handling</PackageTags>
@@ -19,6 +20,9 @@
     <PackageOutputPath>../artifacts/</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Include="System.Collections.ObjectModel" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="../assets/icon-square.png" Pack="true" Visible="false" PackagePath="" />
     <None Include="../README.md" Pack="true" PackagePath="" />

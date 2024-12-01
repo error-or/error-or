@@ -1,30 +1,33 @@
-﻿using ErrorOr;
+using ErrorOr;
 using FluentAssertions;
 
 namespace Tests;
 
+using Dict = Dictionary<string, object>;
+using ReadDict = ReadOnlyDictionary<string, object>;
+
 public sealed class ErrorEqualityTests
 {
-    public static readonly TheoryData<string, string, int, Dictionary<string, object>?> ValidData =
-        new ()
+    public static readonly TheoryData<string, string, int, ReadDict?> ValidData =
+        new()
         {
             { "CodeA", "DescriptionA", 1, null },
-            { "CodeB", "DescriptionB", 3215, new Dictionary<string, object> { { "foo", "bar" }, { "baz", "qux" } } },
+            { "CodeB", "DescriptionB", 3215, new (new Dict { { "foo", "bar" }, { "baz", "qux" } }) },
         };
 
     public static readonly TheoryData<Error, Error> DifferentInstances =
-        new ()
+        new()
         {
             { Error.Failure(), Error.Forbidden() },
-            { Error.NotFound(), Error.NotFound(metadata: new Dictionary<string, object> { ["Foo"] = "Bar" }) },
-            { Error.Unexpected(metadata: new Dictionary<string, object> { ["baz"] = "qux" }), Error.Unexpected() },
+            { Error.NotFound(), Error.NotFound(metadata: new ReadDict(new Dict { ["Foo"] = "Bar" })) },
+            { Error.Unexpected(metadata: new ReadDict(new Dict { ["baz"] = "qux" })), Error.Unexpected() },
             {
-                Error.Failure(metadata: new Dictionary<string, object> { ["baz"] = "qux" }),
-                Error.Failure(metadata: new Dictionary<string, object> { ["Foo"] = "Bar", ["baz"] = "qux" })
+                Error.Failure(metadata: new ReadDict(new Dict { ["baz"] = "qux" })),
+                Error.Failure(metadata: new ReadDict(new Dict { ["Foo"] = "Bar", ["baz"] = "qux" }))
             },
             {
-                Error.Failure(metadata: new Dictionary<string, object> { ["baz"] = "qux" }),
-                Error.Failure(metadata: new Dictionary<string, object> { ["baz"] = "gorge" })
+                Error.Failure(metadata: new ReadDict(new Dict { ["baz"] = "qux" })),
+                Error.Failure(metadata: new ReadDict(new Dict { ["baz"] = "gorge" }))
             },
         };
 
@@ -34,10 +37,10 @@ public sealed class ErrorEqualityTests
         string code,
         string description,
         int numericType,
-        Dictionary<string, object>? metadata)
+        ReadDict? metadata)
     {
         var error1 = Error.Custom(numericType, code, description, metadata);
-        var clonedDictionary = metadata is null ? null : new Dictionary<string, object>(metadata);
+        var clonedDictionary = metadata is null ? null : new ReadDict(new Dict(metadata));
         var error2 = Error.Custom(numericType, code, description, clonedDictionary);
 
         var result = error1.Equals(error2);
@@ -48,7 +51,7 @@ public sealed class ErrorEqualityTests
     [Fact]
     public void Equals_WhenTwoInstancesHaveTheSameMetadataInstanceAndPropertyValues_ShouldReturnTrue()
     {
-        var metadata = new Dictionary<string, object> { { "foo", "bar" } };
+        var metadata = new ReadDict(new Dict { { "foo", "bar" } });
         var error1 = Error.Custom(1, "Code", "Description", metadata);
         var error2 = Error.Custom(1, "Code", "Description", metadata);
 
@@ -72,10 +75,10 @@ public sealed class ErrorEqualityTests
         string code,
         string description,
         int numericType,
-        Dictionary<string, object>? metadata)
+        ReadDict? metadata)
     {
         var error1 = Error.Custom(numericType, code, description, metadata);
-        var clonedDictionary = metadata is null ? null : new Dictionary<string, object>(metadata);
+        var clonedDictionary = metadata is null ? null : new ReadDict(new Dict(metadata));
         var error2 = Error.Custom(numericType, code, description, clonedDictionary);
 
         var hashCode1 = error1.GetHashCode();
