@@ -258,6 +258,22 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncArrayOfErrors_UsingFactory_ShouldBeError()
+    {
+        // Arrange
+        Error[] errors = [
+            Error.Validation("User.Name", "Name is too short"),
+            Error.Forbidden("User.Forbidden", "You are not allowed to create user")
+        ];
+
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>(errors);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void ImplicitCastResult_WhenAccessingResult_ShouldReturnValue()
     {
         // Arrange
