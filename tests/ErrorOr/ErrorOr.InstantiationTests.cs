@@ -112,6 +112,20 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncValue_WhenAccessingValue_ShouldReturnValue()
+    {
+        // Arrange
+        IEnumerable<string> value = ["value"];
+
+        // Act
+        ErrorOr<IEnumerable<string>> errorOrPerson = await ErrorOrFactory.FromAsync(value);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeFalse();
+        errorOrPerson.Value.Should().BeSameAs(value);
+    }
+
+    [Fact]
     public void CreateFromErrorList_UsingFactory_WhenAccessingErrors_ShouldReturnErrorList()
     {
         // Arrange
