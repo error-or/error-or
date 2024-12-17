@@ -39,6 +39,17 @@ public static class ErrorOrFactory
     }
 
     /// <summary>
+    /// Creates a new awaitable instance of <see cref="ErrorOr{TValue}"/> from single error.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="error">Single error instance to wrap.</param>
+    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing the provided error.</returns>
+    public static Task<ErrorOr<TValue>> FromAsync<TValue>(Error error)
+    {
+        return Task.FromResult(From<TValue>(error));
+    }
+
+    /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>

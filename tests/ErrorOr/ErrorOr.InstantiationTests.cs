@@ -218,6 +218,16 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncSingleError_UsingFactory_ShouldBeError()
+    {
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>(Error.Validation("User.Name", "Name is too short"));
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void CreateFromArrayOfErrors_UsingFactory_ShouldBeError()
     {
         // Arrange
