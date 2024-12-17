@@ -61,6 +61,17 @@ public static class ErrorOrFactory
     }
 
     /// <summary>
+    /// Creates an awaitable <see cref="ErrorOr{TValue}"/> from a list of errors.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="errors">List of errors.</param>
+    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided list of errors.</returns>
+    public static Task<ErrorOr<TValue>> FromAsync<TValue>(List<Error> errors)
+    {
+        return Task.FromResult(From<TValue>(errors));
+    }
+
+    /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from an enumeration of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>

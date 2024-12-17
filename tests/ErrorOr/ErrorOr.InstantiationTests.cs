@@ -140,6 +140,20 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncErrorList_UsingFactory_WhenAccessingErrors_ShouldReturnErrorList()
+    {
+        // Arrange
+        var error = Error.Validation("User.Name", "Name is too short");
+
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>([error]);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.Errors.Should().ContainSingle().Which.Should().Be(error);
+    }
+
+    [Fact]
     [Obsolete]
     public void CreateFromErrorList_WhenAccessingErrors_ShouldReturnErrorList()
     {
