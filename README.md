@@ -274,6 +274,12 @@ ErrorOr<int> result = ErrorOrFactory.From<int>([Error.Validation(), Error.Valida
 ```
 
 ```cs
+ErrorOr<int> result = await ErrorOrFactory.FromAsync(5);
+ErrorOr<int> result = await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+ErrorOr<int> result = await ErrorOrFactory.FromAsync<int>([Error.Validation(), Error.Validation()]);
+```
+
+```cs
 public ErrorOr<int> GetValue()
 {
     return ErrorOrFactory.From(5);
@@ -291,6 +297,30 @@ public ErrorOr<int> SingleErrorToErrorOr()
 public ErrorOr<int> MultipleErrorsToErrorOr()
 {
     return ErrorOrFactory.From([
+        Error.Validation(description: "Invalid Name"),
+        Error.Validation(description: "Invalid Last Name")
+    ]);
+}
+```
+
+```cs
+public async Tak<ErrorOr<int>> GetValueAsync()
+{
+    return await ErrorOrFactory.FromAsync(5);
+}
+```
+
+```cs
+public async Tak<ErrorOr<int>> SingleErrorToErrorOrAsync()
+{
+    return await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+}
+```
+
+```cs
+public async Tak<ErrorOr<int>> MultipleErrorsToErrorOrAsync()
+{
+    return await ErrorOrFactory.FromAsync([
         Error.Validation(description: "Invalid Name"),
         Error.Validation(description: "Invalid Last Name")
     ]);
