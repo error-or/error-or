@@ -55,6 +55,8 @@ public static class ErrorOrFactory
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="errors">List of errors.</param>
     /// <returns>An instance of <see cref="ErrorOr{TValue}"/> containing provided list of errors.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="errors"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="errors" /> is an empty list.</exception>
     public static ErrorOr<TValue> From<TValue>(List<Error> errors)
     {
         return errors;
@@ -66,6 +68,8 @@ public static class ErrorOrFactory
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="errors">List of errors.</param>
     /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided list of errors.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="errors"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="errors" /> is an empty list.</exception>
     public static Task<ErrorOr<TValue>> FromAsync<TValue>(List<Error> errors)
     {
         return Task.FromResult(From<TValue>(errors));
@@ -77,6 +81,8 @@ public static class ErrorOrFactory
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="errors">Enumeration of errors.</param>
     /// <returns>An instance of <see cref="ErrorOr{TValue}"/> containing provided enumeration of errors.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="errors"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="errors" /> is an empty enumerable.</exception>
     public static ErrorOr<TValue> From<TValue>(IEnumerable<Error> errors)
     {
         return errors.ToList();
@@ -88,6 +94,8 @@ public static class ErrorOrFactory
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="errors">Enumeration of errors.</param>
     /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided enumeration of errors.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="errors"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="errors" /> is an empty enumerable.</exception>
     public static Task<ErrorOr<TValue>> FromAsync<TValue>(IEnumerable<Error> errors)
     {
         return Task.FromResult(From<TValue>(errors));
