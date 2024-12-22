@@ -2,24 +2,33 @@ using System.Runtime.CompilerServices;
 
 namespace ErrorOr;
 
+/// <summary>
+/// Strongly-typed interface for <see cref="ErrorOr{TValue}"/> object.
+/// </summary>
+/// <typeparam name="TValue">The type of the underlying <see cref="ErrorOr{TValue}.Value"/>.</typeparam>
 [CollectionBuilder(typeof(CollectionExpression), nameof(CollectionExpression.CreateIErrorOrValue))]
 public interface IErrorOr<out TValue> : IErrorOr
 {
     /// <summary>
-    /// Gets the value.
+    /// Gets strongly-typed the value.
     /// </summary>
-    TValue Value { get; }
+    new TValue Value { get; }
 }
 
 /// <summary>
-/// Type-less interface for the <see cref="ErrorOr"/> object.
+/// Weakly-typed interface for the <see cref="ErrorOr{TValue}"/> object.
 /// </summary>
 /// <remarks>
-/// This interface is intended for use when the underlying type of the <see cref="ErrorOr"/> object is unknown.
+/// This interface is intended for use when the underlying type of the <see cref="ErrorOr{TValue}"/> object is unknown.
 /// </remarks>
 [CollectionBuilder(typeof(CollectionExpression), nameof(CollectionExpression.CreateIErrorOr))]
 public interface IErrorOr : IRecordable
 {
+    /// <summary>
+    /// Gets weakly-typed value.
+    /// </summary>
+    object? Value { get; }
+
     /// <summary>
     /// Gets the list of errors.
     /// </summary>

@@ -100,6 +100,22 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void CreateFromValue_WhenAccessingValue_ViaWeaklyTypedInterface_ShouldReturnValue()
+    {
+        // Arrange
+        IEnumerable<string> value = ["value"];
+
+        // Act
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+        IErrorOr errorOrPerson = ErrorOrFactory.From(value);
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
+        // Assert
+        errorOrPerson.IsError.Should().BeFalse();
+        errorOrPerson.Value.Should().BeSameAs(value);
+    }
+
+    [Fact]
     public void CreateFromValue_WhenAccessingErrors_ShouldThrow()
     public void CreateFromValue_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
     {
