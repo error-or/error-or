@@ -10,7 +10,7 @@ namespace ErrorOr;
 public interface IErrorOr<out TValue> : IErrorOr
 {
     /// <summary>
-    /// Gets strongly-typed the value.
+    /// Gets strongly-typed value.
     /// </summary>
     new TValue Value { get; }
 }
