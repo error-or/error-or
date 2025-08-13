@@ -14,6 +14,7 @@ public static partial class ErrorOrExtensions
     /// <param name="onError">The function to execute if the state is an error.</param>
     /// <returns>The result of the executed function.</returns>
     public static async Task<TNextValue> Match<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, TNextValue> onValue, Func<List<Error>, TNextValue> onError)
+        where TValue : notnull
     {
         var result = await errorOr.ConfigureAwait(false);
 
@@ -32,6 +33,7 @@ public static partial class ErrorOrExtensions
     /// <param name="onError">The function to execute if the state is an error.</param>
     /// <returns>The result of the executed function.</returns>
     public static async Task<TNextValue> MatchAsync<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, Task<TNextValue>> onValue, Func<List<Error>, Task<TNextValue>> onError)
+        where TValue : notnull
     {
         var result = await errorOr.ConfigureAwait(false);
 
@@ -50,6 +52,7 @@ public static partial class ErrorOrExtensions
     /// <param name="onError">The function to execute if the state is an error.</param>
     /// <returns>The result of the executed function.</returns>
     public static async Task<TNextValue> MatchFirst<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, TNextValue> onValue, Func<Error, TNextValue> onError)
+        where TValue : notnull
     {
         var result = await errorOr.ConfigureAwait(false);
 
@@ -68,6 +71,7 @@ public static partial class ErrorOrExtensions
     /// <param name="onError">The function to execute if the state is an error.</param>
     /// <returns>The result of the executed function.</returns>
     public static async Task<TNextValue> MatchFirstAsync<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, Task<TNextValue>> onValue, Func<Error, Task<TNextValue>> onError)
+        where TValue : notnull
     {
         var result = await errorOr.ConfigureAwait(false);
 
