@@ -52,10 +52,13 @@
     - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
     - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
   - [`FailIf`](#failif)
+  - [`Recover`](#recover)
+    - [`Recover`](#recover-1)
+    - [`RecoverAsync`](#recoverasync)
   - [`Else`](#else)
     - [`Else`](#else-1)
     - [`ElseAsync`](#elseasync)
-- [Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)](#mixing-features-then-failif-else-switch-match)
+- [Mixing Features (`Then`, `FailIf`, `Recover`, `Else`, `Switch`, `Match`)](#mixing-features-then-failif-recover-else-switch-match)
 - [Error Types](#error-types)
   - [Built in error types](#built-in-error-types)
   - [Custom error types](#custom-error-types)
@@ -567,14 +570,33 @@ ErrorOr<string> foo = await result
     .ElseAsync(errors => Task.FromResult($"{errors.Count} errors occurred."));
 ```
 
-# Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)
+## `Recover`
 
-You can mix `Then`, `FailIf`, `Else`, `Switch` and `Match` methods together.
+`Recover` receives a function. If the result is an error, `Recover` invokes the function and returns its result. Otherwise, it returns the original value.
+
+### `Recover`
+
+```cs
+ErrorOr<string> foo = result
+    .Recover(errors => $"Recovered from {errors.Count} errors.");
+```
+
+### `RecoverAsync`
+
+```cs
+ErrorOr<string> foo = await result
+    .RecoverAsync(errors => Task.FromResult<ErrorOr<string>>($"Recovered from {errors.Count} errors."));
+```
+
+# Mixing Features (`Then`, `FailIf`, `Recover`, `Else`, `Switch`, `Match`)
+
+You can mix `Then`, `FailIf`, `Recover`, `Else`, `Switch` and `Match` methods together.
 
 ```cs
 ErrorOr<string> foo = await result
     .ThenDoAsync(val => Task.Delay(val))
     .FailIf(val => val > 2, Error.Validation(description: $"{val} is too big"))
+    .Recover(errors => Error.Unexpected(description: $"Recovered from {errors.Count} errors"))
     .ThenDo(val => Console.WriteLine($"Finished waiting {val} seconds."))
     .ThenAsync(val => Task.FromResult(val * 2))
     .Then(val => $"The result is {val}")
