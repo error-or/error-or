@@ -50,7 +50,8 @@
     - [`Then`](#then-1)
     - [`ThenAsync`](#thenasync)
     - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
-    - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
+    - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
+    - [Mixing `Then`, `ThenDo`, `ThenEnsure`, `ThenAsync`, `ThenDoAsync`, `ThenEnsureAsync`](#mixing-then-thendo-thenensure-thenasync-thendoasync-thenensureasync)
   - [`FailIf`](#failif)
   - [`Else`](#else)
     - [`Else`](#else-1)
@@ -506,16 +507,40 @@ ErrorOr<string> foo = await result
     .ThenDo(val => $"The result is {val}");
 ```
 
-### Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`
+### `ThenEnsure` and `ThenEnsureAsync`
 
-You can mix and match `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync` methods.
+`ThenEnsure` and `ThenEnsureAsync` are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
+If no errors are returned, the original value is preserved.
+
+```cs
+ErrorOr<string> foo = result
+    .ThenEnsure(val => val.Length > 3
+        ? Error.Validation(description: "Value is too long")
+        : val.ToUpperInvariant())
+    .Then(val => $"The result is {val}");
+```
+
+```cs
+ErrorOr<string> foo = await result
+    .ThenEnsureAsync(val => Task.FromResult<ErrorOr<string>>(
+        val.Length > 3
+            ? Error.Validation(description: "Value is too long")
+            : val.ToUpperInvariant()))
+    .Then(val => $"The result is {val}");
+```
+
+### Mixing `Then`, `ThenDo`, `ThenEnsure`, `ThenAsync`, `ThenDoAsync`, `ThenEnsureAsync`
+
+You can mix and match `Then`, `ThenDo`, `ThenEnsure`, `ThenAsync`, `ThenDoAsync`, `ThenEnsureAsync` methods.
 
 ```cs
 ErrorOr<string> foo = await result
     .ThenDoAsync(val => Task.Delay(val))
+    .ThenEnsure(val => val > 10 ? Error.Validation(description: "Value is too big") : val)
     .Then(val => val * 2)
     .ThenAsync(val => DoSomethingAsync(val))
     .ThenDo(val => Console.WriteLine($"Finsihed waiting {val} seconds."))
+    .ThenEnsureAsync(val => Task.FromResult<ErrorOr<int>>(val < 0 ? Error.Validation(description: "Value must be positive") : val))
     .ThenAsync(val => Task.FromResult(val * 2))
     .Then(val => $"The result is {val}");
 ```
