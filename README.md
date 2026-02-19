@@ -596,7 +596,7 @@ You can mix `Then`, `FailIf`, `Recover`, `Else`, `Switch` and `Match` methods to
 ErrorOr<string> foo = await result
     .ThenDoAsync(val => Task.Delay(val))
     .FailIf(val => val > 2, Error.Validation(description: $"{val} is too big"))
-    .Recover(errors => Error.Unexpected(description: $"Recovered from {errors.Count} errors"))
+    .Recover(errors => 1)
     .ThenDo(val => Console.WriteLine($"Finished waiting {val} seconds."))
     .ThenAsync(val => Task.FromResult(val * 2))
     .Then(val => $"The result is {val}")
