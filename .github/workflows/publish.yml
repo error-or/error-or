@@ -53,4 +53,4 @@ jobs:
       - name: Pack
         run: dotnet pack src/ErrorOr.csproj -c Release -p:Version=${{ steps.version.outputs.version }} -o artifacts
       - name: Publish to NuGet
-        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.ERROR_OR_NUGET_SECRET }}" --source https://api.nuget.org/v3/index.json
