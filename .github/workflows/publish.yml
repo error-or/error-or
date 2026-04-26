@@ -1,24 +1,56 @@
-name: publish ErrorOr to nuget
-on:
-    workflow_dispatch:
-    push:
-        branches:
-            - main # Default release branch
-        paths:
-            - "src/**"
-jobs:
-    publish:
-        name: build, pack & publish
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v2
-            - name: Setup dotnet
-              uses: actions/setup-dotnet@v1
-              with:
-                  dotnet-version: 8.0.100
+name: Publish to NuGet
 
-            # Publish
-            - name: Package
-              run: dotnet pack -c Release src/ErrorOr.csproj
-            - name: Publish
-              run: dotnet nuget push .\artifacts\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (without leading v, e.g. 3.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet restore
+      - run: dotnet build -c Release --no-restore
+      - run: dotnet test -c Release --no-restore --verbosity normal
+
+  publish:
+    name: Pack and publish
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not resolve a version" && exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: $VERSION"
+      - name: Pack
+        run: dotnet pack src/ErrorOr.csproj -c Release -p:Version=${{ steps.version.outputs.version }} -o artifacts
+      - name: Publish to NuGet
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.ERROR_OR_NUGET_SECRET }}" --source https://api.nuget.org/v3/index.json

@@ -7,15 +7,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>ErrorOr</PackageId>
-    <Version>2.0.1</Version>
+    <Version>0.0.0-dev</Version>
     <Authors>Amichai Mantinband</Authors>
     <PackageIcon>icon-square.png</PackageIcon>
     <PackageTags>Result,Results,ErrorOr,Error,Handling</PackageTags>
     <Description>A simple, fluent discriminated union of an error or a result.</Description>
-    <PackageProjectUrl>https://github.com/amantinband/error-or</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/error-or/error-or</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <licenses>https://opensource.org/licenses/MIT</licenses>
-    <RepositoryUrl>https://github.com/amantinband/error-or</RepositoryUrl>
+    <RepositoryUrl>https://github.com/error-or/error-or</RepositoryUrl>
     <PackageOutputPath>../artifacts/</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
