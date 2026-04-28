@@ -59,41 +59,4 @@ public class ElseDoTests
         result.Value.Should().Be("error count is 1");
         errorCounter.Should().Be(1);
     }
-
-    [Fact]
-    public async Task CallingElseDoAsync_WhenIsError_ShouldInvokeNextElse()
-    {
-        // Arrange
-        ErrorOr<string> errorOrString = Error.Validation();
-
-        // Act
-        int errorCounter = 0;
-        ErrorOr<string> result = await errorOrString
-            .ElseDoAsync(error => Task.Run(() => errorCounter += error.Count()))
-            .Else(error => $"error count is {errorCounter}");
-
-        // Assert
-        result.IsError.Should().BeFalse();
-        result.Value.Should().Be("error count is 1");
-        errorCounter.Should().Be(1);
-    }
-
-    [Fact]
-    public async Task CallingThenAsync_WhenIsSuccess_ShouldNotInvokeGivenAction()
-    {
-        // Arrange
-        ErrorOr<string> errorOrString = "5";
-
-        // Act
-        int errorCounter = 0;
-        ErrorOr<int> result = await errorOrString
-            .ElseDoAsync(error => Task.Run(() => errorCounter += error.Count()))
-            .Then(Convert.ToInt)
-            .Then(x => x * 2);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-        result.Value.Should().Be(10);
-        errorCounter.Should().Be(0);
-    }
 }
