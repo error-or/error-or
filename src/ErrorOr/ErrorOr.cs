@@ -32,7 +32,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
             throw new ArgumentNullException(nameof(errors));
         }
 
-        if (errors is null || errors.Count == 0)
+        if (errors.Count == 0)
         {
             throw new ArgumentException("Cannot create an ErrorOr<TValue> from an empty collection of errors. Provide at least one error.", nameof(errors));
         }
@@ -107,6 +107,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
     /// </summary>
+    [Obsolete("ErrorOrFactory.From<TValue>(errors) should be used instead.")]
     public static ErrorOr<TValue> From(List<Error> errors)
     {
         return errors;

@@ -40,6 +40,88 @@ public class ElseAsyncTests
     }
 
     [Fact]
+    public async Task CallingElseAsyncWithValueFunc_WhenIsError_ShouldInvokeElseFunc_ButWithErrorOrReturn()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> GetNewValue() => "OK";
+
+        ErrorOr<string> result = await errorOrString
+            .ThenAsync(Convert.ToIntAsync)
+            .ThenAsync(Convert.ToStringAsync)
+            .ElseAsync(errors => Task.FromResult(GetNewValue()));
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().BeEquivalentTo("OK");
+    }
+
+    [Fact]
+    public async Task CallingElseAsyncWithErrorOrValueFunc_WhenIsSuccess_ShouldNotInvokeElseFunc()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = "5";
+        bool elseFuncCalled = false;
+
+        // Act
+        ErrorOr<string> GetNewValue()
+        {
+            elseFuncCalled = true;
+            return "OK";
+        }
+
+        ErrorOr<string> result = await errorOrString
+            .ThenAsync(Convert.ToIntAsync)
+            .ThenAsync(Convert.ToStringAsync)
+            .ElseAsync(errors => Task.FromResult(GetNewValue()));
+
+        // Assert
+        elseFuncCalled.Should().BeFalse();
+        result.IsError.Should().BeFalse();
+        result.Value.Should().BeEquivalentTo(errorOrString.Value);
+    }
+
+    [Fact]
+    public async Task CallingElseAsyncWithErrorOrValueFunc_WhenIsError_ShouldInvokeElseFunc_AndReturnError()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> GetErrorValue() => Error.Unexpected();
+
+        ErrorOr<string> result = await errorOrString
+            .ThenAsync(Convert.ToIntAsync)
+            .ThenAsync(Convert.ToStringAsync)
+            .ElseAsync(errors => Task.FromResult(GetErrorValue()));
+
+        // Assert
+        result.IsError.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CallingElseAsyncWithValueFunc_WhenIsError_ShouldInvokeElseFunc_ButWithErrorOrReturn_ContinueChaining()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> GetNewValue() => "OK";
+
+        ErrorOr<string> result = await errorOrString
+            .ThenAsync(Convert.ToIntAsync)
+            .ThenAsync(Convert.ToStringAsync)
+            .ElseAsync(errors => Task.FromResult(GetNewValue()))
+            .ThenAsync(value => Task.FromResult(value + "!"));
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().BeEquivalentTo("OK!");
+    }
+
+    [Fact]
     public async Task CallingElseAsyncWithValue_WhenIsSuccess_ShouldNotReturnElseValue()
     {
         // Arrange

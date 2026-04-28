@@ -1,67 +1,12 @@
 namespace Tests;
 
 using ErrorOr;
+
 using FluentAssertions;
 
 public class ErrorOrInstantiationTests
 {
     private record Person(string Name);
-
-    [Fact]
-    public void CreateFromFactory_WhenAccessingValue_ShouldReturnValue()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-
-        // Act
-        ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
-
-        // Assert
-        errorOrPerson.IsError.Should().BeFalse();
-        errorOrPerson.Value.Should().BeSameAs(value);
-    }
-
-    [Fact]
-    public void CreateFromFactory_WhenAccessingErrors_ShouldThrow()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-        ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
-
-        // Act
-        Func<List<Error>> errors = () => errorOrPerson.Errors;
-
-        // Assert
-        errors.Should().ThrowExactly<InvalidOperationException>();
-    }
-
-    [Fact]
-    public void CreateFromFactory_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-        ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
-
-        // Act
-        List<Error> errors = errorOrPerson.ErrorsOrEmptyList;
-
-        // Assert
-        errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void CreateFromFactory_WhenAccessingFirstError_ShouldThrow()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-        ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
-
-        // Act
-        Func<Error> action = () => errorOrPerson.FirstError;
-
-        // Assert
-        action.Should().ThrowExactly<InvalidOperationException>();
-    }
 
     [Fact]
     public void CreateFromValue_WhenAccessingValue_ShouldReturnValue()
@@ -120,6 +65,21 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void CreateFromErrorList_UsingFactory_WhenAccessingErrors_ShouldReturnErrorList()
+    {
+        // Arrange
+        var error = Error.Validation("User.Name", "Name is too short");
+
+        // Act
+        ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>([error]);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.Errors.Should().ContainSingle().Which.Should().Be(error);
+    }
+
+    [Fact]
+    [Obsolete]
     public void CreateFromErrorList_WhenAccessingErrors_ShouldReturnErrorList()
     {
         // Arrange
@@ -132,6 +92,21 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void CreateFromErrorList_UsingFactory_WhenAccessingErrorsOrEmptyList_ShouldReturnErrorList()
+    {
+        // Arrange
+        var error = Error.Validation("User.Name", "Name is too short");
+
+        // Act
+        ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>([error]);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.ErrorsOrEmptyList.Should().ContainSingle().Which.Should().Be(error);
+    }
+
+    [Fact]
+    [Obsolete]
     public void CreateFromErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnErrorList()
     {
         // Arrange
@@ -144,6 +119,21 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void CreateFromErrorList_UsingFactory_WhenAccessingValue_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>([Error.Validation("User.Name", "Name is too short")]);
+
+        // Act
+        var act = () => errorOrPerson.Value;
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+           .And.Message.Should().Be("The Value property cannot be accessed when errors have been recorded. Check IsError before accessing Value.");
+    }
+
+    [Fact]
+    [Obsolete]
     public void CreateFromErrorList_WhenAccessingValue_ShouldThrowInvalidOperationException()
     {
         // Arrange
@@ -156,6 +146,32 @@ public class ErrorOrInstantiationTests
         // Assert
         act.Should().Throw<InvalidOperationException>()
            .And.Message.Should().Be("The Value property cannot be accessed when errors have been recorded. Check IsError before accessing Value.");
+    }
+
+    [Fact]
+    public void CreateFromSingleError_UsingFactory_ShouldBeError()
+    {
+        // Act
+        ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>(Error.Validation("User.Name", "Name is too short"));
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CreateFromArrayOfErrors_UsingFactory_ShouldBeError()
+    {
+        // Arrange
+        Error[] errors = [
+            Error.Validation("User.Name", "Name is too short"),
+            Error.Forbidden("User.Forbidden", "You are not allowed to create user")
+        ];
+
+        // Act
+        ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>(errors);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
     }
 
     [Fact]

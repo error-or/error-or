@@ -210,6 +210,45 @@ public class ElseTests
     }
 
     [Fact]
+    public async Task CallingElseWithValueFuncAfterThenAsync_WhenIsError_ShouldInvokeElseFunc_ButWithErrorOrReturn()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> GetNewValue() => "OK";
+
+        ErrorOr<string> result = await errorOrString
+            .Then(Convert.ToInt)
+            .ThenAsync(Convert.ToStringAsync)
+            .Else(errors => GetNewValue());
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().BeEquivalentTo("OK");
+    }
+
+    [Fact]
+    public async Task CallingElseWithValueFuncAfterThenAsync_WhenIsError_ShouldInvokeElseFunc_ButWithErrorOrReturn_ContinueChaining()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> GetNewValue() => "OK";
+
+        ErrorOr<string> result = await errorOrString
+            .Then(Convert.ToInt)
+            .ThenAsync(Convert.ToStringAsync)
+            .Else(errors => GetNewValue())
+            .Then(value => value + "!");
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().BeEquivalentTo("OK!");
+    }
+
+    [Fact]
     public async Task CallingElseWithErrorAfterThenAsync_WhenIsError_ShouldReturnElseError()
     {
         // Arrange
