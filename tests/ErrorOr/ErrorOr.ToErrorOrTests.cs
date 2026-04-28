@@ -20,6 +20,21 @@ public class ToErrorOrTests
     }
 
     [Fact]
+    public async Task TaskToErrorOrAsync_WhenAccessingValue_ShouldReturnValue()
+    {
+        // Arrange
+        int value = 5;
+        Task<int> task = Task.FromResult(value);
+
+        // Act
+        ErrorOr<int> result = await task.ToErrorOrAsync();
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().Be(value);
+    }
+
+    [Fact]
     public void ErrorToErrorOr_WhenAccessingFirstError_ShouldReturnSameError()
     {
         // Arrange

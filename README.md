@@ -296,8 +296,16 @@ public ErrorOr<int> MultipleErrorsToErrorOr()
 
 ## Using The `ToErrorOr` Extension Method
 
+### Values
+
 ```cs
 ErrorOr<int> result = 5.ToErrorOr();
+ErrorOr<int> result = await Task.FromResult(5).ToErrorOrAsync();
+```
+
+### Errors
+
+```cs
 ErrorOr<int> result = Error.Unexpected().ToErrorOr<int>();
 ErrorOr<int> result = new[] { Error.Validation(), Error.Validation() }.ToErrorOr<int>();
 ```
