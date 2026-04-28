@@ -10,7 +10,7 @@
 [![codecov](https://codecov.io/gh/amantinband/error-or/branch/main/graph/badge.svg?token=DR2EBIWK7B)](https://codecov.io/gh/amantinband/error-or)
 ---
 
-### A simple, fluent discriminated union of an error or a result.
+### A simple, fluent discriminated union of an error or a result
 
 `dotnet add package ErrorOr`
 
@@ -55,6 +55,7 @@
   - [`Else`](#else)
     - [`Else`](#else-1)
     - [`ElseAsync`](#elseasync)
+    - [`ElseDo` and `ElseDoAsync`](#elsedo-and-elsedoasync)
 - [Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)](#mixing-features-then-failif-else-switch-match)
 - [Error Types](#error-types)
   - [Built in error types](#built-in-error-types)
@@ -66,7 +67,7 @@
 - [Credits 🙏](#credits-)
 - [License 🪪](#license-)
 
-# Give it a star ⭐!
+# Give it a star ⭐
 
 Loving it? Show your support by giving this project a star!
 
@@ -224,7 +225,6 @@ ErrorOr<string> foo = await "5".ToErrorOr()
         value => value,
         firstError => $"An error occurred: {firstError.Description}"); // An error occurred: Yikes
 ```
-
 
 # Creating an `ErrorOr` instance
 
@@ -392,7 +392,6 @@ The `MatchFirst` method receives two functions, `onValue` and `onError`, `onValu
 
 Unlike `Match`, if the state is error, `MatchFirst`'s `onError` function receives only the first error that occurred, not the entire list of errors.
 
-
 ```cs
 string foo = result.MatchFirst(
     value => value,
@@ -439,7 +438,7 @@ result.SwitchFirst(
     firstError => Console.WriteLine(firstError.Description));
 ```
 
-###  `SwitchFirstAsync`
+### `SwitchFirstAsync`
 
 ```cs
 await result.SwitchFirstAsync(
@@ -567,6 +566,21 @@ ErrorOr<string> foo = await result
     .ElseAsync(errors => Task.FromResult($"{errors.Count} errors occurred."));
 ```
 
+### `ElseDo` and `ElseDoAsync`
+
+`ElseDo` and `ElseDoAsync` are similar to `Else` and `ElseAsync`, but instead of invoking a function that returns an error, they invoke an action.
+
+```cs
+ErrorOr<string> foo = result
+    .Else(errors => Error.Unexpected())
+    .ElseDo(error => Console.WriteLine(error.FirstError.Description));
+```
+
+```cs
+ErrorOr<string> foo = await result
+    .ElseDoAsync(HandleErrorAsync);
+```
+
 # Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)
 
 You can mix `Then`, `FailIf`, `Else`, `Switch` and `Match` methods together.
@@ -622,6 +636,7 @@ var error = Error.Unexpected(
         { "user", user },
     });
 ```
+
 The `ErrorType` enum is a good way to categorize errors.
 
 ## Custom error types

@@ -141,4 +141,32 @@ public static partial class ErrorOrExtensions
 
         return await result.ElseAsync(onError).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// If the state of <paramref name="errorOr"/> is error, the provided <paramref name="action"/> is invoked.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the underlying value in the <paramref name="errorOr"/>.</typeparam>
+    /// <param name="errorOr">The <see cref="ErrorOr"/> instance.</param>
+    /// <param name="action">The action to execute if the state is error.</param>
+    /// <returns>The original <paramref name="errorOr"/>.</returns>
+    public static async Task<ErrorOr<TValue>> ElseDo<TValue>(this Task<ErrorOr<TValue>> errorOr, Action<List<Error>> action)
+    {
+        var result = await errorOr.ConfigureAwait(false);
+
+        return result.ElseDo(action);
+    }
+
+    /// <summary>
+    /// If the state of <paramref name="errorOr"/> is error, the provided <paramref name="action"/> is executed asynchronously.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the underlying value in the <paramref name="errorOr"/>.</typeparam>
+    /// <param name="errorOr">The <see cref="ErrorOr"/> instance.</param>
+    /// <param name="action">The action to execute if the state is error.</param>
+    /// <returns>The original <paramref name="errorOr"/>.</returns>
+    public static async Task<ErrorOr<TValue>> ElseDoAsync<TValue>(this Task<ErrorOr<TValue>> errorOr, Func<List<Error>, Task> action)
+    {
+        var result = await errorOr.ConfigureAwait(false);
+
+        return await result.ElseDoAsync(action).ConfigureAwait(false);
+    }
 }
