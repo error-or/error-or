@@ -298,4 +298,36 @@ public class ElseTests
         result.IsError.Should().BeTrue();
         result.FirstError.Type.Should().Be(ErrorType.Unexpected);
     }
+
+    [Fact]
+    public void CallingElseWithErrorOrValueFunc_WhenIsSuccess_ShouldNotInvokeElseFunc()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = "5";
+
+        // Act
+        ErrorOr<string> GetNewValue() => "OK";
+        ErrorOr<string> result = errorOrString
+            .Else(errors => GetNewValue());
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().BeEquivalentTo(errorOrString.Value);
+    }
+
+    [Fact]
+    public void CallingElseWithErrorOrValueFunc_WhenIsError_ShouldInvokeElseFunc_AndReturnError()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> GetErrorValue() => Error.Unexpected();
+        ErrorOr<string> result = errorOrString
+            .Else(errors => GetErrorValue());
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
+    }
 }

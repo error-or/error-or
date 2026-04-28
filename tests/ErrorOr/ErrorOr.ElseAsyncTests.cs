@@ -99,6 +99,7 @@ public class ElseAsyncTests
 
         // Assert
         result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
@@ -255,5 +256,41 @@ public class ElseAsyncTests
         // Assert
         result.IsError.Should().BeFalse();
         result.Value.Should().Be(errorOrString.Value);
+    }
+
+    [Fact]
+    public async Task CallingElseWithErrorOrValueFunc_WhenIsSuccess_ShouldNotInvokeElseFunc()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = "5";
+
+        // Act
+        ErrorOr<string> GetNewValue() => "OK";
+        ErrorOr<string> result = await errorOrString
+            .Then(Convert.ToInt)
+            .ThenAsync(Convert.ToStringAsync)
+            .Else(errors => GetNewValue());
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().BeEquivalentTo(errorOrString.Value);
+    }
+
+    [Fact]
+    public async Task CallingElseWithErrorOrValueFunc_WhenIsError_ShouldInvokeElseFunc_AndReturnError()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> GetErrorValue() => Error.Unexpected();
+        ErrorOr<string> result = await errorOrString
+            .Then(Convert.ToInt)
+            .ThenAsync(Convert.ToStringAsync)
+            .Else(errors => GetErrorValue());
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
     }
 }
