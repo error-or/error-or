@@ -108,6 +108,14 @@ All notable changes to this project are documented in this file.
     ErrorOr<int> errorOrPerson = ErrorOr<int>.From([Error.Validation(), Error.Validation()]);
     ```
 
+- [#133](https://github.com/amantinband/error-or/pull/133) Added missing collection expression support
+
+    Now following call from `README.md` is available
+
+    ```cs
+    ErrorOr<int> result = [Error.Validation(), Error.Validation()];
+    ```
+
 - [#149](https://github.com/amantinband/error-or/pull/149) Added `Else`/`ElseAsync` overloads returning `ErrorOr`
 
 ### Fixed
