@@ -108,6 +108,8 @@ All notable changes to this project are documented in this file.
     ErrorOr<int> errorOrPerson = ErrorOr<int>.From([Error.Validation(), Error.Validation()]);
     ```
 
+- [#149](https://github.com/amantinband/error-or/pull/149) Added `Else`/`ElseAsync` overloads returning `ErrorOr`
+
 ### Fixed
 
 - [#85](https://github.com/amantinband/error-or/issues/85), [#97](https://github.com/amantinband/error-or/pull/97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
