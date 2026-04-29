@@ -114,6 +114,10 @@ All notable changes to this project are documented in this file.
 
     New dependency was introduced to [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) and development dependency was introduced to [Nullable](https://www.nuget.org/packages/Nullable)
 
+- [#150](https://github.com/amantinband/error-or/pull/150) `EmptyErrors.Instance` returns new `List<Error>` instance on each call
+
+    This allows to avoid mutating empty list
+
 ### Optimized
 
 - [#98](https://github.com/amantinband/error-or/issues/98), [#99](https://github.com/amantinband/error-or/pull/99) Memory consumption optimized by moving static empty errors lists from generic struct into non-generic class
