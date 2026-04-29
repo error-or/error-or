@@ -93,6 +93,21 @@ All notable changes to this project are documented in this file.
     ErrorOr<int> result = await Task.FromResult(5).ToErrorOrAsync();
     ```
 
+- [#129](https://github.com/amantinband/error-or/pull/129) Added missing `ErrorOrFactory.From` methods
+
+    Now following calls from `README.md` are available
+
+    ```cs
+    ErrorOr<int> result = ErrorOrFactory.From<int>(Error.Unexpected());
+    ErrorOr<int> result = ErrorOrFactory.From<int>([Error.Validation(), Error.Validation()]);
+    ```
+
+    Following call is now obsolete
+
+    ```cs
+    ErrorOr<int> errorOrPerson = ErrorOr<int>.From([Error.Validation(), Error.Validation()]);
+    ```
+
 ### Fixed
 
 - [#85](https://github.com/amantinband/error-or/issues/85), [#97](https://github.com/amantinband/error-or/pull/97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
