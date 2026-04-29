@@ -199,7 +199,7 @@ return await _userRepository.GetByIdAsync(id)
 ```cs
 ErrorOr<string> foo = await "2".ToErrorOr()
     .Then(int.Parse) // 2
-    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big") // 2
+    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big")) // 2
     .ThenDoAsync(Task.Delay) // Sleep for 2 milliseconds
     .ThenDo(val => Console.WriteLine($"Finished waiting {val} milliseconds.")) // Finished waiting 2 milliseconds.
     .ThenAsync(val => Task.FromResult(val * 2)) // 4
@@ -215,7 +215,7 @@ ErrorOr<string> foo = await "2".ToErrorOr()
 ```cs
 ErrorOr<string> foo = await "5".ToErrorOr()
     .Then(int.Parse) // 5
-    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big") // Error.Validation()
+    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big")) // Error.Validation()
     .ThenDoAsync(Task.Delay) // Error.Validation()
     .ThenDo(val => Console.WriteLine($"Finished waiting {val} milliseconds.")) // Error.Validation()
     .ThenAsync(val => Task.FromResult(val * 2)) // Error.Validation()
@@ -532,18 +532,19 @@ ErrorOr<string> foo = await result
 `FailIf` receives a predicate and an error. If the predicate is true, `FailIf` will return the error. Otherwise, it will return the value of the result.
 
 ```cs
-ErrorOr<int> foo = result
-    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big"));
+ErrorOr<int> errorOrInt = 3;
+ErrorOr<int> foo = errorOrInt
+     .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big"));
 ```
 
 Once an error is returned, the chain will break and the error will be returned.
 
 ```cs
-var result = "2".ToErrorOr()
-    .Then(int.Parse) // 2
-    .FailIf(val => val > 1, val => Error.Validation(description: $"{val} is too big") // validation error
-    .Then(num => num * 2) // this function will not be invoked
-    .Then(num => num * 2) // this function will not be invoked
+        var result = "2".ToErrorOr()
+            .Then(int.Parse) // 2
+            .FailIf(val => val > 1, val => Error.Validation(description: $"{val} is too big")) // validation error
+            .Then(num => num * 2) // this function will not be invoked
+            .Then(num => num * 2); // this function will not be invoked
 ```
 
 ## `Else`
@@ -594,16 +595,17 @@ ErrorOr<string> foo = await result
 You can mix `Then`, `FailIf`, `Else`, `Switch` and `Match` methods together.
 
 ```cs
-ErrorOr<string> foo = await result
-    .ThenDoAsync(val => Task.Delay(val))
-    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big"))
-    .ThenDo(val => Console.WriteLine($"Finished waiting {val} seconds."))
-    .ThenAsync(val => Task.FromResult(val * 2))
-    .Then(val => $"The result is {val}")
-    .Else(errors => Error.Unexpected())
-    .MatchFirst(
-        value => value,
-        firstError => $"An error occurred: {firstError.Description}");
+ErrorOr<int> errorOrInt = 500;
+ErrorOr<string> foo = await errorOrInt
+      .ThenDoAsync(val => Task.Delay(val))
+      .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big"))
+      .ThenDo(val => Console.WriteLine($"Finished waiting {val} seconds."))
+      .ThenAsync(val => Task.FromResult(val * 2))
+      .Then(val => $"The result is {val}")
+      .Else(errors => Error.Unexpected())
+      .MatchFirst(
+          value => value,
+          firstError => $"An error occurred: {firstError.Description}");
 ```
 
 # Error Types
