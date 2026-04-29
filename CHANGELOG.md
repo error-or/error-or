@@ -70,6 +70,21 @@ All notable changes to this project are documented in this file.
         .FailIf(num => num > 3, (num) => Error.Failure(description: $"{num} is greater than 3"));
     ```
 
+- [#117](https://github.com/amantinband/error-or/pull/117) Added `ElseDo` and `ElseDoAsync` methods
+
+    Actions returning no result can now be called when `IsError` is true.
+
+    ```cs
+    ErrorOr<string> foo = result
+        .Else(errors => Error.Unexpected())
+        .ElseDo(error => Console.WriteLine(error.FirstError.Description));
+    ```
+
+    ```cs
+    ErrorOr<string> foo = await result
+        .ElseDoAsync(HandleErrorAsync);
+    ```
+
 ### Fixed
 
 - [#85](https://github.com/amantinband/error-or/issues/85), [#97](https://github.com/amantinband/error-or/pull/97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
