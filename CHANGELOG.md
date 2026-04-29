@@ -80,6 +80,10 @@ All notable changes to this project are documented in this file.
 
 - [#98](https://github.com/amantinband/error-or/issues/98), [#99](https://github.com/amantinband/error-or/pull/99) Memory consumption optimized by moving static empty errors lists from generic struct into non-generic class
 
+### Refactored
+
+- [#154](https://github.com/amantinband/error-or/pull/154) Modernized NuGet publish workflow
+
 ## [2.0.1] - 2024-03-26
 
 ### Breaking Changes
