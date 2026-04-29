@@ -85,6 +85,14 @@ All notable changes to this project are documented in this file.
         .ElseDoAsync(HandleErrorAsync);
     ```
 
+- [#122](https://github.com/amantinband/error-or/pull/122) Added `ToErrorOrAsync` method
+
+    Values in `Task` can now be easily converted to `ErrorOr`.
+
+    ```cs
+    ErrorOr<int> result = await Task.FromResult(5).ToErrorOrAsync();
+    ```
+
 ### Fixed
 
 - [#85](https://github.com/amantinband/error-or/issues/85), [#97](https://github.com/amantinband/error-or/pull/97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
