@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## [3.0.0-alpha.0] - to be released
+## [3.0.0] - to be released
 
 ### Breaking Changes
 
@@ -11,7 +11,6 @@ All notable changes to this project are documented in this file.
 - [#105](https://github.com/amantinband/error-or/pull/105) Invalid use of library now throws exception instead of return errors
 
     Following actions now throws `InvalidOperationException`:
-
     1. Default `ErrorOr` constructor invocation.
     2. Accessing `ErrorOr.Errors` and `ErrorOr.FirstError` on success result.
     3. Accessing `ErrorOr.Value` on result with errors.
