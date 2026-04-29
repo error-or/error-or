@@ -10,7 +10,7 @@
 [![codecov](https://codecov.io/gh/amantinband/error-or/branch/main/graph/badge.svg?token=DR2EBIWK7B)](https://codecov.io/gh/amantinband/error-or)
 ---
 
-### A simple, fluent discriminated union of an error or a result
+### A simple, fluent discriminated union of an error or a result!
 
 `dotnet add package ErrorOr`
 
