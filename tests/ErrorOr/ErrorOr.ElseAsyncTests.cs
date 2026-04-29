@@ -99,6 +99,7 @@ public class ElseAsyncTests
 
         // Assert
         result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
