@@ -33,7 +33,7 @@ public class ElseDoTests
             .ElseDo(error => errorCounter += error.Count);
 
         // Assert
-        errorCounter.Should().Be(1);
+        errorCounter.Should().Be(0);
         result.IsError.Should().BeFalse();
         result.Value.Should().Be("5");
     }
