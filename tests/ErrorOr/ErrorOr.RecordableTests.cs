@@ -102,6 +102,42 @@ public class ErrorOrRecordableTests
         recording.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
     }
 
+    [Fact]
+    public void ToString_WhenTValueIsValue_ShouldReturnJson()
+    {
+        // Arrange
+        var person = new PersonRecord(
+            "Alice",
+            null,
+            30,
+            PersonStatus.Active,
+            new AddressRecord("123 Main St", "Springfield", null),
+            ["Developer", "Admin"]);
+
+        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
+
+        // Act
+        var result = errorOr.ToString();
+
+        // Assert
+        result.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
+    }
+
+    [Fact]
+    public void ToString_WhenIsError_ShouldReturnJsonErrors()
+    {
+        // Arrange
+        var error = Error.Unexpected();
+
+        ErrorOr<PersonRecord> errorOr = error;
+
+        // Act
+        var result = errorOr.ToString();
+
+        // Assert
+        result.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
+    }
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
