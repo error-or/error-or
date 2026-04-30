@@ -20,6 +20,7 @@ public class ThenAsyncTests
 
         // Assert
         result.IsError.Should().BeFalse();
+        result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEquivalentTo("10");
     }
 
@@ -38,6 +39,7 @@ public class ThenAsyncTests
 
         // Assert
         result.IsError.Should().BeTrue();
+        result.IsSuccess.Should().BeFalse();
         result.FirstError.Should().BeEquivalentTo(errorOrString.FirstError);
     }
 }

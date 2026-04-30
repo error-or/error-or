@@ -31,6 +31,7 @@
   - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
 - [Properties](#properties)
   - [`IsError`](#iserror)
+  - [`IsSuccess`](#issuccess)
   - [`Value`](#value)
   - [`Errors`](#errors)
   - [`FirstError`](#firsterror)
@@ -320,6 +321,17 @@ ErrorOr<int> result = User.Create();
 if (result.IsError)
 {
     // the result contains one or more errors
+}
+```
+
+## `IsSuccess`
+
+```cs
+ErrorOr<int> result = User.Create();
+
+if (result.IsSuccess)
+{
+    // the result contains no errors
 }
 ```
 

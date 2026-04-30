@@ -31,6 +31,11 @@ public interface IErrorOr
     bool IsError { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the state is a success.
+    /// </summary>
+    bool IsSuccess { get; }
+
+    /// <summary>
     /// Gets enumerator with <see cref="Error"/> objects.
     /// </summary>
     /// <returns>Enunerator of <see cref="Error"/> objects.</returns>

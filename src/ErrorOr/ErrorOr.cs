@@ -62,6 +62,15 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     public bool IsError => _errors is not null;
 
     /// <summary>
+    /// Gets a value indicating whether the state is a success.
+    /// </summary>
+    [MemberNotNullWhen(false, nameof(_errors))]
+    [MemberNotNullWhen(false, nameof(Errors))]
+    [MemberNotNullWhen(true, nameof(Value))]
+    [MemberNotNullWhen(true, nameof(_value))]
+    public bool IsSuccess => !IsError;
+
+    /// <summary>
     /// Gets the list of errors. If the state is not error, the list will contain a single error representing the state.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when no errors are present.</exception>
@@ -97,7 +106,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     {
         get
         {
-            if (!IsError)
+            if (IsSuccess)
             {
                 throw new InvalidOperationException("The FirstError property cannot be accessed when no errors have been recorded. Check IsError before accessing FirstError.");
             }
