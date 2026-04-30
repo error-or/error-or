@@ -18,7 +18,7 @@ public interface IErrorOr<out TValue> : IErrorOr
 /// This interface is intended for use when the underlying type of the <see cref="ErrorOr"/> object is unknown.
 /// </remarks>
 [CollectionBuilder(typeof(CollectionExpression), nameof(CollectionExpression.CreateIErrorOr))]
-public interface IErrorOr
+public interface IErrorOr : IRecordable
 {
     /// <summary>
     /// Gets the list of errors.
