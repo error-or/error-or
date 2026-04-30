@@ -642,6 +642,37 @@ void Log(IErrorOr result)
 // ]
 ```
 
+When you have a concrete `ErrorOr<TValue>` reference, `ToString()` produces the same JSON output as `GetRecording()`, so it works naturally in string interpolation or anywhere a string is expected:
+
+```cs
+ErrorOr<User> result = GetUser(id);
+
+// Explicit call
+Console.WriteLine(result.ToString());
+
+// Implicit — string interpolation calls ToString() automatically
+logger.LogInformation("Result: {Result}", result);
+Console.WriteLine($"Outcome: {result}");
+
+// Value state:
+// {
+//   "Name": "Alice",
+//   "MiddleName": null,
+//   "Age": 30
+// }
+
+// Error state:
+// [
+//   {
+//     "Code": "User.NotFound",
+//     "Description": "User was not found.",
+//     "Type": "NotFound",
+//     "NumericType": 3,
+//     "Metadata": null
+//   }
+// ]
+```
+
 # Error Types
 
 Each `Error` instance has a `Type` property, which is an enum value that represents the type of the error.
