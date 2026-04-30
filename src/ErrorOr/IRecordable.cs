@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ErrorOr;
 
@@ -21,17 +20,14 @@ public interface IRecordable
     /// When <see cref="IErrorOr.IsError"/> is <c>true</c>, returns a JSON array of the recorded errors.
     /// </returns>
     string GetRecording();
-}
 
-internal static class RecordableDefaults
-{
-    internal static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-        Converters =
-        {
-            new JsonStringEnumConverter(),
-        },
-    };
+    /// <summary>
+    /// Returns a JSON representation of the current state using the specified <see cref="JsonSerializerOptions"/>.
+    /// </summary>
+    /// <param name="options">The <see cref="JsonSerializerOptions"/> to use for serialization.</param>
+    /// <returns>
+    /// When <see cref="IErrorOr.IsError"/> is <c>false</c>, returns a JSON representation of the value.
+    /// When <see cref="IErrorOr.IsError"/> is <c>true</c>, returns a JSON array of the recorded errors.
+    /// </returns>
+    string GetRecording(JsonSerializerOptions options);
 }
