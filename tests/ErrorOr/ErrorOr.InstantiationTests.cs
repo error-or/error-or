@@ -23,17 +23,17 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void CreateFromValue_WhenAccessingErrors_ShouldThrow()
+    public void CreateFromValue_WhenAccessingErrors_ShouldReturnUnexpectedError()
     {
         // Arrange
         IEnumerable<string> value = ["value"];
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        Func<List<Error>> action = () => errorOrPerson.Errors;
+        List<Error> errors = errorOrPerson.Errors;
 
         // Assert
-        action.Should().ThrowExactly<InvalidOperationException>();
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
@@ -51,17 +51,17 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void CreateFromValue_WhenAccessingFirstError_ShouldThrow()
+    public void CreateFromValue_WhenAccessingFirstError_ShouldReturnUnexpectedError()
     {
         // Arrange
         IEnumerable<string> value = ["value"];
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        Func<Error> action = () => errorOrPerson.FirstError;
+        Error firstError = errorOrPerson.FirstError;
 
         // Assert
-        action.Should().ThrowExactly<InvalidOperationException>();
+        firstError.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
@@ -119,33 +119,31 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void CreateFromErrorList_UsingFactory_WhenAccessingValue_ShouldThrowInvalidOperationException()
+    public void CreateFromErrorList_UsingFactory_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>([Error.Validation("User.Name", "Name is too short")]);
 
         // Act
-        var act = () => errorOrPerson.Value;
+        Person value = errorOrPerson.Value;
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-           .And.Message.Should().Be("The Value property cannot be accessed when errors have been recorded. Check IsError before accessing Value.");
+        value.Should().Be(default);
     }
 
     [Fact]
     [Obsolete]
-    public void CreateFromErrorList_WhenAccessingValue_ShouldThrowInvalidOperationException()
+    public void CreateFromErrorList_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         List<Error> errors = new() { Error.Validation("User.Name", "Name is too short") };
         ErrorOr<Person> errorOrPerson = ErrorOr<Person>.From(errors);
 
         // Act
-        var act = () => errorOrPerson.Value;
+        Person value = errorOrPerson.Value;
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-           .And.Message.Should().Be("The Value property cannot be accessed when errors have been recorded. Check IsError before accessing Value.");
+        value.Should().Be(default);
     }
 
     [Fact]
@@ -189,27 +187,27 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void ImplicitCastResult_WhenAccessingErrors_ShouldThrow()
+    public void ImplicitCastResult_WhenAccessingErrors_ShouldReturnUnexpectedError()
     {
         ErrorOr<Person> errorOrPerson = new Person("Amichai");
 
         // Act
-        Func<List<Error>> action = () => errorOrPerson.Errors;
+        List<Error> errors = errorOrPerson.Errors;
 
         // Assert
-        action.Should().ThrowExactly<InvalidOperationException>();
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
-    public void ImplicitCastResult_WhenAccessingFirstError_ShouldThrow()
+    public void ImplicitCastResult_WhenAccessingFirstError_ShouldReturnUnexpectedError()
     {
         ErrorOr<Person> errorOrPerson = new Person("Amichai");
 
         // Act
-        Func<Error> action = () => errorOrPerson.FirstError;
+        Error firstError = errorOrPerson.FirstError;
 
         // Assert
-        action.Should().ThrowExactly<InvalidOperationException>();
+        firstError.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
@@ -264,17 +262,16 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void ImplicitCastError_WhenAccessingValue_ShouldThrowInvalidOperationException()
+    public void ImplicitCastError_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<Person> errorOrPerson = Error.Validation("User.Name", "Name is too short");
 
         // Act
-        var act = () => errorOrPerson.Value;
+        Person value = errorOrPerson.Value;
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-           .And.Message.Should().Be("The Value property cannot be accessed when errors have been recorded. Check IsError before accessing Value.");
+        value.Should().Be(default);
     }
 
     [Fact]
