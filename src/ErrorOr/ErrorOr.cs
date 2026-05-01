@@ -11,35 +11,11 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     private readonly TValue? _value = default;
     private readonly List<Error>? _errors = null;
 
-    private ErrorOr(Error error)
-    {
-        _errors = [error];
-    }
+    private ErrorOr(TValue value) => _value = value;
 
-    private ErrorOr(List<Error> errors)
-    {
-        if (errors is null)
-        {
-            throw new ArgumentNullException(nameof(errors));
-        }
+    private ErrorOr(Error error) => _errors = [error];
 
-        if (errors.Count == 0)
-        {
-            throw new ArgumentException("Cannot create an ErrorOr<TValue> from an empty collection of errors. Provide at least one error.", nameof(errors));
-        }
-
-        _errors = errors;
-    }
-
-    private ErrorOr(TValue value)
-    {
-        if (value is null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
-
-        _value = value;
-    }
+    private ErrorOr(List<Error> errors) => _errors = errors?.Count == 0 ? null : errors;
 
     /// <summary>
     /// Gets a value indicating whether the state is error.
