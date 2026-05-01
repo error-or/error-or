@@ -59,7 +59,16 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     [MemberNotNullWhen(true, nameof(Errors))]
     [MemberNotNullWhen(false, nameof(Value))]
     [MemberNotNullWhen(false, nameof(_value))]
-    public bool IsError => _errors is not null;
+    public bool IsError => !IsSuccess;
+
+    /// <summary>
+    /// Gets a value indicating whether the state is a success.
+    /// </summary>
+    [MemberNotNullWhen(false, nameof(_errors))]
+    [MemberNotNullWhen(false, nameof(Errors))]
+    [MemberNotNullWhen(true, nameof(Value))]
+    [MemberNotNullWhen(true, nameof(_value))]
+    public bool IsSuccess => _errors is null;
 
     /// <summary>
     /// Gets the list of errors. If the state is not error, the list will contain a single error representing the state.
@@ -97,7 +106,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     {
         get
         {
-            if (!IsError)
+            if (IsSuccess)
             {
                 throw new InvalidOperationException("The FirstError property cannot be accessed when no errors have been recorded. Check IsError before accessing FirstError.");
             }
@@ -113,8 +122,11 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
     /// </summary>
     [Obsolete("ErrorOrFactory.From<TValue>(errors) should be used instead.")]
-    public static ErrorOr<TValue> From(List<Error> errors)
-    {
-        return errors;
-    }
+    public static ErrorOr<TValue> From(List<Error> errors) => errors;
+
+    /// <summary>
+    /// Returns a JSON representation of the current <see cref="ErrorOr{TValue}"/> instance.
+    /// </summary>
+    /// <returns>A JSON string representation of the current <see cref="ErrorOr{TValue}"/> instance.</returns>
+    public override string ToString() => GetRecording();
 }

@@ -7,6 +7,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorOr", "src\ErrorOr.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\Tests.csproj", "{0E84EC69-4E4C-4195-907D-06C96D0140A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{67511417-FB8B-4DA5-8B75-8B2ED027EDC3}"
+	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.md = CHANGELOG.md
+		Directory.Build.props = Directory.Build.props
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{D589E253-C459-4B02-B179-18BC1C6AAA88}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\publish.yml = .github\workflows\publish.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +39,8 @@ Global
 		{0E84EC69-4E4C-4195-907D-06C96D0140A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E84EC69-4E4C-4195-907D-06C96D0140A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E84EC69-4E4C-4195-907D-06C96D0140A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D589E253-C459-4B02-B179-18BC1C6AAA88} = {67511417-FB8B-4DA5-8B75-8B2ED027EDC3}
 	EndGlobalSection
 EndGlobal

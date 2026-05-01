@@ -19,6 +19,7 @@ public class ThenTests
 
         // Assert
         result.IsError.Should().BeFalse();
+        result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEquivalentTo("10");
     }
 
@@ -36,6 +37,7 @@ public class ThenTests
 
         // Assert
         result.IsError.Should().BeFalse();
+        result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(5);
     }
 
@@ -54,6 +56,7 @@ public class ThenTests
 
         // Assert
         result.IsError.Should().BeTrue();
+        result.IsSuccess.Should().BeFalse();
         result.FirstError.Should().BeEquivalentTo(errorOrString.FirstError);
     }
 
@@ -74,6 +77,7 @@ public class ThenTests
 
         // Assert
         result.IsError.Should().BeFalse();
+        result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be("10");
     }
 
@@ -90,6 +94,7 @@ public class ThenTests
 
         // Assert
         result.IsError.Should().BeTrue();
+        result.IsSuccess.Should().BeFalse();
         result.FirstError.Should().BeEquivalentTo(errorOrString.FirstError);
     }
 }
