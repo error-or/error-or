@@ -83,7 +83,7 @@ public class ErrorOrInstantiationTests
     public void CreateFromErrorList_WhenAccessingErrors_ShouldReturnErrorList()
     {
         // Arrange
-        List<Error> errors = new() { Error.Validation("User.Name", "Name is too short") };
+        List<Error> errors = [Error.Validation("User.Name", "Name is too short")];
         ErrorOr<Person> errorOrPerson = ErrorOr<Person>.From(errors);
 
         // Act & Assert
@@ -110,7 +110,7 @@ public class ErrorOrInstantiationTests
     public void CreateFromErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnErrorList()
     {
         // Arrange
-        List<Error> errors = new() { Error.Validation("User.Name", "Name is too short") };
+        List<Error> errors = [Error.Validation("User.Name", "Name is too short")];
         ErrorOr<Person> errorOrPerson = ErrorOr<Person>.From(errors);
 
         // Act & Assert
@@ -136,7 +136,7 @@ public class ErrorOrInstantiationTests
     public void CreateFromErrorList_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
-        List<Error> errors = new() { Error.Validation("User.Name", "Name is too short") };
+        List<Error> errors = [Error.Validation("User.Name", "Name is too short")];
         ErrorOr<Person> errorOrPerson = ErrorOr<Person>.From(errors);
 
         // Act
@@ -292,11 +292,11 @@ public class ErrorOrInstantiationTests
     public void ImplicitCastErrorList_WhenAccessingErrors_ShouldReturnErrorList()
     {
         // Arrange
-        List<Error> errors = new()
-        {
+        List<Error> errors =
+        [
             Error.Validation("User.Name", "Name is too short"),
             Error.Validation("User.Age", "User is too young"),
-        };
+        ];
 
         // Act
         ErrorOr<Person> errorOrPerson = errors;
@@ -328,11 +328,11 @@ public class ErrorOrInstantiationTests
     public void ImplicitCastErrorList_WhenAccessingFirstError_ShouldReturnFirstError()
     {
         // Arrange
-        List<Error> errors = new()
-        {
+        List<Error> errors =
+        [
             Error.Validation("User.Name", "Name is too short"),
             Error.Validation("User.Age", "User is too young"),
-        };
+        ];
 
         // Act
         ErrorOr<Person> errorOrPerson = errors;
