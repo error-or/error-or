@@ -461,27 +461,103 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void CreateErrorOr_WhenEmptyErrorsList_ShouldThrow()
+    public void ImplicitCastEmptyErrorList_WhenAccessingValue_ShouldReturnDefault()
     {
-        // Act
-        Func<ErrorOr<int>> errorOrInt = () => new List<Error>();
+        // Arrange
+        ErrorOr<int> errorOrInt = new List<Error>();
 
-        // Assert
-        var exception = errorOrInt.Should().ThrowExactly<ArgumentException>().Which;
-        exception.Message.Should().Be("Cannot create an ErrorOr<TValue> from an empty collection of errors. Provide at least one error. (Parameter 'errors')");
-        exception.ParamName.Should().Be("errors");
+        // Act & Assert
+        errorOrInt.IsError.Should().BeFalse();
+        errorOrInt.Value.Should().Be(default);
     }
 
     [Fact]
-    public void CreateErrorOr_WhenEmptyErrorsArray_ShouldThrow()
+    public void ImplicitCastEmptyErrorList_WhenAccessingErrors_ShouldReturnUnexpected()
     {
+        // Arrange
+        ErrorOr<int> errorOrInt = new List<Error>();
+
         // Act
-        Func<ErrorOr<int>> errorOrInt = () => Array.Empty<Error>();
+        List<Error> errors = errorOrInt.Errors;
 
         // Assert
-        var exception = errorOrInt.Should().ThrowExactly<ArgumentException>().Which;
-        exception.Message.Should().Be("Cannot create an ErrorOr<TValue> from an empty collection of errors. Provide at least one error. (Parameter 'errors')");
-        exception.ParamName.Should().Be("errors");
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    [Fact]
+    public void ImplicitCastEmptyErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = new List<Error>();
+
+        // Act
+        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ImplicitCastEmptyErrorList_WhenAccessingFirstError_ShouldReturnUnexpected()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = new List<Error>();
+
+        // Act
+        Error firstError = errorOrInt.FirstError;
+
+        // Assert
+        firstError.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    [Fact]
+    public void ImplicitCastEmptyErrorArray_WhenAccessingValue_ShouldReturnDefault()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = Array.Empty<Error>();
+
+        // Act & Assert
+        errorOrInt.IsError.Should().BeFalse();
+        errorOrInt.Value.Should().Be(default);
+    }
+
+    [Fact]
+    public void ImplicitCastEmptyErrorArray_WhenAccessingErrors_ShouldReturnUnexpected()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = Array.Empty<Error>();
+
+        // Act
+        List<Error> errors = errorOrInt.Errors;
+
+        // Assert
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    [Fact]
+    public void ImplicitCastEmptyErrorArray_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = Array.Empty<Error>();
+
+        // Act
+        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ImplicitCastEmptyErrorArray_WhenAccessingFirstError_ShouldReturnUnexpected()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = Array.Empty<Error>();
+
+        // Act
+        Error firstError = errorOrInt.FirstError;
+
+        // Assert
+        firstError.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
