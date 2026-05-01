@@ -262,7 +262,7 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void ImplicitCastError_WhenAccessingValue_ShouldReturnDefault()
+    public void ImplicitCastSingleError_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<Person> errorOrPerson = Error.Validation("User.Name", "Name is too short");
