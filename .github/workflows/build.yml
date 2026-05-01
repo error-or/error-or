@@ -26,6 +26,6 @@ jobs:
             - name: Test Release
               run: dotnet test -c Release --no-restore --verbosity normal --collect:"XPlat Code Coverage"
             - name: Upload coverage to Codecov
-              uses: codecov/codecov-action@v1
+              uses: codecov/codecov-action@v6
               with:
                   token: ${{ secrets.CODE_COV_TOKEN }}
