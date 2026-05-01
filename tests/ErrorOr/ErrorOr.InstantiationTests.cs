@@ -360,6 +360,7 @@ public class ErrorOrInstantiationTests
         errorOrPerson.FirstError.Should().Be(errors[0]);
     }
 
+#pragma warning disable SA1129 // Do not use default value type constructor
     [Fact]
     public void CreateWithEmptyConstructor_WhenAccessingValue_ShouldReturnDefault()
     {
@@ -409,6 +410,7 @@ public class ErrorOrInstantiationTests
         // Assert
         firstError.Type.Should().Be(ErrorType.Unexpected);
     }
+#pragma warning restore SA1129 // Do not use default value type constructor
 
     [Fact]
     public void CreateWithDefault_WhenAccessingValue_ShouldReturnDefault()
