@@ -1,0 +1,16 @@
+name: Unlist NuGet Package
+# Hint: Delete only unlists the package from the NuGet feed. Downloaded packages with this version will still be available for restore.
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Version to unlist from NuGet feed (z.B. 1.2.3)'
+                required: true
+                type: string
+
+jobs:
+    unlist:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Unlist from NuGet
+              run: dotnet nuget delete ErrorOr ${{ github.event.inputs.version }} --api-key ${{ secrets.ERROR_OR_NUGET_SECRET }} --source https://api.nuget.org/v3/index.json --non-interactive

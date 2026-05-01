@@ -31,6 +31,7 @@
   - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
 - [Properties](#properties)
   - [`IsError`](#iserror)
+  - [`IsSuccess`](#issuccess)
   - [`Value`](#value)
   - [`Errors`](#errors)
   - [`FirstError`](#firsterror)
@@ -50,6 +51,7 @@
     - [`Then`](#then-1)
     - [`ThenAsync`](#thenasync)
     - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
+    - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
     - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
   - [`FailIf`](#failif)
   - [`Else`](#else)
@@ -57,6 +59,7 @@
     - [`ElseAsync`](#elseasync)
     - [`ElseDo` and `ElseDoAsync`](#elsedo-and-elsedoasync)
 - [Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)](#mixing-features-then-failif-else-switch-match)
+- [Recording Outcomes](#recording-outcomes)
 - [Error Types](#error-types)
   - [Built in error types](#built-in-error-types)
   - [Custom error types](#custom-error-types)
@@ -323,6 +326,17 @@ if (result.IsError)
 }
 ```
 
+## `IsSuccess`
+
+```cs
+ErrorOr<int> result = User.Create();
+
+if (result.IsSuccess)
+{
+    // the result contains no errors
+}
+```
+
 ## `Value`
 
 ```cs
@@ -513,6 +527,41 @@ ErrorOr<string> foo = await result
     .ThenDo(val => $"The result is {val}");
 ```
 
+### `ThenEnsure` and `ThenEnsureAsync`
+
+`ThenEnsure` and `ThenEnsureAsync` are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
+If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
+
+```cs
+ErrorOr<User> CacheUser(User user)
+{
+    ErrorOr<Success> result = _cache.Set(user);
+    return result.IsError ? result.Errors : user;
+}
+
+ErrorOr<User> userOrError = _userRepository
+    .GetById(userId)
+    .ThenEnsure(CacheUser);
+
+// Success: userOrError is the original user from GetById.
+// Failure: userOrError contains cache errors from CacheUser.
+```
+
+```cs
+async Task<ErrorOr<User>> CacheUserAsync(User user)
+{
+    ErrorOr<Success> result = await _cache.SetAsync(user);
+    return result.IsError ? result.Errors : user;
+}
+
+ErrorOr<User> userOrError = await _userRepository
+    .GetByIdAsync(userId)
+    .ThenEnsureAsync(CacheUserAsync);
+
+// Success: userOrError is the original user from GetByIdAsync.
+// Failure: userOrError contains cache errors from CacheUserAsync.
+```
+
 ### Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`
 
 You can mix and match `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync` methods.
@@ -606,6 +655,70 @@ ErrorOr<string> foo = await errorOrInt
       .MatchFirst(
           value => value,
           firstError => $"An error occurred: {firstError.Description}");
+```
+
+# Recording Outcomes
+
+When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a way to obtain a JSON representation of the current state in these scenarios.
+
+Because `IErrorOr` inherits from `IRecordable`, `GetRecording()` is available directly on any `IErrorOr` reference — no cast required.
+
+`GetRecording()` always returns safely — when the state is a value it returns a JSON object; when the state is errors it returns a JSON array of those errors. The output is indented, enums are serialized as strings, and null properties are always included:
+
+```cs
+void Log(IErrorOr result)
+{
+    Console.WriteLine(result.GetRecording());
+}
+
+// Value state:
+// {
+//   "Name": "Alice",
+//   "MiddleName": null,
+//   "Age": 30
+// }
+
+// Error state:
+// [
+//   {
+//     "Code": "User.NotFound",
+//     "Description": "User was not found.",
+//     "Type": "NotFound",
+//     "NumericType": 3,
+//     "Metadata": null
+//   }
+// ]
+```
+
+When you have a concrete `ErrorOr<TValue>` reference, `ToString()` produces the same JSON output as `GetRecording()`, so it works naturally in string interpolation or anywhere a string is expected:
+
+```cs
+ErrorOr<User> result = GetUser(id);
+
+// Explicit call
+Console.WriteLine(result.ToString());
+
+// Implicit — string interpolation calls ToString() automatically
+logger.LogInformation("Result: {Result}", result);
+Console.WriteLine($"Outcome: {result}");
+
+// Value state:
+// {
+//   "Name": "Alice",
+//   "MiddleName": null,
+//   "Age": 30
+// }
+
+// Error state:
+// [
+//   {
+//     "Code": "User.NotFound",
+//     "Description": "User was not found.",
+//     "Type": "NotFound",
+//     "NumericType": 3,
+//     "Metadata": null
+//   }
+// ]
 ```
 
 # Error Types

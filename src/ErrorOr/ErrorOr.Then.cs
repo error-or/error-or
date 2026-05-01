@@ -99,4 +99,40 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 
         return await onValue(Value).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// If the state is a value, the provided function <paramref name="onValue"/> is executed and its errors are returned.
+    /// If no errors are returned, the original value is returned.
+    /// </summary>
+    /// <param name="onValue">The function to execute if the state is a value.</param>
+    /// <returns>The errors from calling <paramref name="onValue"/> if state is value and errors are returned; otherwise the original <see cref="ErrorOr"/> instance.</returns>
+    public ErrorOr<TValue> ThenEnsure(Func<TValue, ErrorOr<TValue>> onValue)
+    {
+        if (IsError)
+        {
+            return Errors;
+        }
+
+        ErrorOr<TValue> result = onValue(Value);
+
+        return result.IsError ? result.Errors : this;
+    }
+
+    /// <summary>
+    /// If the state is a value, the provided function <paramref name="onValue"/> is executed asynchronously and its errors are returned.
+    /// If no errors are returned, the original value is returned.
+    /// </summary>
+    /// <param name="onValue">The function to execute if the state is a value.</param>
+    /// <returns>The errors from calling <paramref name="onValue"/> if state is value and errors are returned; otherwise the original <see cref="ErrorOr"/> instance.</returns>
+    public async Task<ErrorOr<TValue>> ThenEnsureAsync(Func<TValue, Task<ErrorOr<TValue>>> onValue)
+    {
+        if (IsError)
+        {
+            return Errors;
+        }
+
+        ErrorOr<TValue> result = await onValue(Value).ConfigureAwait(false);
+
+        return result.IsError ? result.Errors : this;
+    }
 }
