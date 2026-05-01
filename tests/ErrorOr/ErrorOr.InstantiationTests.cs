@@ -361,13 +361,53 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void CreateErrorOr_WhenUsingEmptyConstructor_ShouldThrow()
+    public void CreateWithEmptyConstructor_WhenAccessingValue_ShouldReturnDefault()
     {
+        // Arrange
+        ErrorOr<int> errorOrInt = new ErrorOr<int>();
+
+        // Act &Assert
+        errorOrInt.IsError.Should().BeFalse();
+        errorOrInt.Value.Should().Be(default);
+    }
+
+    [Fact]
+    public void CreateWithEmptyConstructor_WhenAccessingErrors_ShouldReturnUnexpected()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = new ErrorOr<int>();
+
         // Act
-        Func<ErrorOr<int>> action = () => new ErrorOr<int>();
+        List<Error> errors = errorOrInt.Errors;
 
         // Assert
-        action.Should().ThrowExactly<InvalidOperationException>();
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    [Fact]
+    public void CreateWithEmptyConstructor_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = new ErrorOr<int>();
+
+        // Act
+        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CreateWithEmptyConstructor_WhenAccessingFirstError_ShouldReturnUnexpected()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = new ErrorOr<int>();
+
+        // Act
+        Error firstError = errorOrInt.FirstError;
+
+        // Assert
+        firstError.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
