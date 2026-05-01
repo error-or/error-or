@@ -513,9 +513,10 @@ ErrorOr<string> foo = await result
 If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
 
 ```cs
-ErrorOr<Success> CacheUser(User user)
+ErrorOr<User> CacheUser(User user)
 {
-    return _cache.Set(user);
+    ErrorOr<Success> result = _cache.Set(user);
+    return result.IsError ? result.Errors : user;
 }
 
 ErrorOr<User> userOrError = _userRepository
@@ -527,9 +528,10 @@ ErrorOr<User> userOrError = _userRepository
 ```
 
 ```cs
-Task<ErrorOr<Success>> CacheUserAsync(User user)
+async Task<ErrorOr<User>> CacheUserAsync(User user)
 {
-    return _cache.SetAsync(user);
+    ErrorOr<Success> result = await _cache.SetAsync(user);
+    return result.IsError ? result.Errors : user;
 }
 
 ErrorOr<User> userOrError = await _userRepository
@@ -537,7 +539,7 @@ ErrorOr<User> userOrError = await _userRepository
     .ThenEnsureAsync(CacheUserAsync);
 
 // Success: userOrError is the original user from GetByIdAsync.
-// Failure: userOrError contains cache errors from EnsureUserIsCachedAsync.
+// Failure: userOrError contains cache errors from CacheUserAsync.
 ```
 
 ### Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`
