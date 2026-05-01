@@ -411,6 +411,56 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void CreateWithDefault_WhenAccessingValue_ShouldReturnDefault()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = default;
+
+        // Act & Assert
+        errorOrInt.IsError.Should().BeFalse();
+        errorOrInt.Value.Should().Be(default);
+    }
+
+    [Fact]
+    public void CreateWithDefault_WhenAccessingErrors_ShouldReturnUnexpected()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = default;
+
+        // Act
+        List<Error> errors = errorOrInt.Errors;
+
+        // Assert
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    [Fact]
+    public void CreateWithDefault_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = default;
+
+        // Act
+        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CreateWithDefault_WhenAccessingFirstError_ShouldReturnUnexpected()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = default;
+
+        // Act
+        Error firstError = errorOrInt.FirstError;
+
+        // Assert
+        firstError.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    [Fact]
     public void CreateErrorOr_WhenEmptyErrorsList_ShouldThrow()
     {
         // Act
