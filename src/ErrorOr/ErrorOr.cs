@@ -59,7 +59,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     [MemberNotNullWhen(true, nameof(Errors))]
     [MemberNotNullWhen(false, nameof(Value))]
     [MemberNotNullWhen(false, nameof(_value))]
-    public bool IsError => _errors is not null;
+    public bool IsError => !IsSuccess;
 
     /// <summary>
     /// Gets a value indicating whether the state is a success.
@@ -68,7 +68,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     [MemberNotNullWhen(false, nameof(Errors))]
     [MemberNotNullWhen(true, nameof(Value))]
     [MemberNotNullWhen(true, nameof(_value))]
-    public bool IsSuccess => !IsError;
+    public bool IsSuccess => _errors is null;
 
     /// <summary>
     /// Gets the list of errors. If the state is not error, the list will contain a single error representing the state.
