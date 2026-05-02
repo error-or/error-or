@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
+
 namespace ErrorOr;
 
+[CollectionBuilder(typeof(CollectionExpression), nameof(CollectionExpression.CreateIErrorOrValue))]
 public interface IErrorOr<out TValue> : IErrorOr
 {
     /// <summary>
@@ -14,7 +17,8 @@ public interface IErrorOr<out TValue> : IErrorOr
 /// <remarks>
 /// This interface is intended for use when the underlying type of the <see cref="ErrorOr"/> object is unknown.
 /// </remarks>
-public interface IErrorOr
+[CollectionBuilder(typeof(CollectionExpression), nameof(CollectionExpression.CreateIErrorOr))]
+public interface IErrorOr : IRecordable
 {
     /// <summary>
     /// Gets the list of errors.
@@ -25,4 +29,16 @@ public interface IErrorOr
     /// Gets a value indicating whether the state is error.
     /// </summary>
     bool IsError { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the state is a success.
+    /// </summary>
+    bool IsSuccess { get; }
+
+    /// <summary>
+    /// Gets enumerator with <see cref="Error"/> objects.
+    /// </summary>
+    /// <returns>Enunerator of <see cref="Error"/> objects.</returns>
+    /// <remarks>This method is only for the purpose of collection expression support.</remarks>
+    IEnumerator<Error> GetEnumerator();
 }

@@ -4,7 +4,7 @@ public readonly partial record struct ErrorOr<TValue>
 {
     public bool Equals(ErrorOr<TValue> other)
     {
-        if (!IsError)
+        if (IsSuccess)
         {
             return !other.IsError && EqualityComparer<TValue>.Default.Equals(_value, other._value);
         }
@@ -14,7 +14,7 @@ public readonly partial record struct ErrorOr<TValue>
 
     public override int GetHashCode()
     {
-        if (!IsError)
+        if (IsSuccess)
         {
             return _value.GetHashCode();
         }

@@ -31,6 +31,7 @@
   - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
 - [Properties](#properties)
   - [`IsError`](#iserror)
+  - [`IsSuccess`](#issuccess)
   - [`Value`](#value)
   - [`Errors`](#errors)
   - [`FirstError`](#firsterror)
@@ -50,6 +51,7 @@
     - [`Then`](#then-1)
     - [`ThenAsync`](#thenasync)
     - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
+    - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
     - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
   - [`FailIf`](#failif)
   - [`Else`](#else)
@@ -57,6 +59,7 @@
     - [`ElseAsync`](#elseasync)
     - [`ElseDo` and `ElseDoAsync`](#elsedo-and-elsedoasync)
 - [Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)](#mixing-features-then-failif-else-switch-match)
+- [Recording Outcomes](#recording-outcomes)
 - [Error Types](#error-types)
   - [Built in error types](#built-in-error-types)
   - [Custom error types](#custom-error-types)
@@ -199,7 +202,7 @@ return await _userRepository.GetByIdAsync(id)
 ```cs
 ErrorOr<string> foo = await "2".ToErrorOr()
     .Then(int.Parse) // 2
-    .FailIf(val => val > 2, Error.Validation(description: $"{val} is too big") // 2
+    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big")) // 2
     .ThenDoAsync(Task.Delay) // Sleep for 2 milliseconds
     .ThenDo(val => Console.WriteLine($"Finished waiting {val} milliseconds.")) // Finished waiting 2 milliseconds.
     .ThenAsync(val => Task.FromResult(val * 2)) // 4
@@ -215,7 +218,7 @@ ErrorOr<string> foo = await "2".ToErrorOr()
 ```cs
 ErrorOr<string> foo = await "5".ToErrorOr()
     .Then(int.Parse) // 5
-    .FailIf(val => val > 2, Error.Validation(description: $"{val} is too big") // Error.Validation()
+    .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big")) // Error.Validation()
     .ThenDoAsync(Task.Delay) // Error.Validation()
     .ThenDo(val => Console.WriteLine($"Finished waiting {val} milliseconds.")) // Error.Validation()
     .ThenAsync(val => Task.FromResult(val * 2)) // Error.Validation()
@@ -320,6 +323,17 @@ ErrorOr<int> result = User.Create();
 if (result.IsError)
 {
     // the result contains one or more errors
+}
+```
+
+## `IsSuccess`
+
+```cs
+ErrorOr<int> result = User.Create();
+
+if (result.IsSuccess)
+{
+    // the result contains no errors
 }
 ```
 
@@ -513,6 +527,41 @@ ErrorOr<string> foo = await result
     .ThenDo(val => $"The result is {val}");
 ```
 
+### `ThenEnsure` and `ThenEnsureAsync`
+
+`ThenEnsure` and `ThenEnsureAsync` are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
+If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
+
+```cs
+ErrorOr<User> CacheUser(User user)
+{
+    ErrorOr<Success> result = _cache.Set(user);
+    return result.IsError ? result.Errors : user;
+}
+
+ErrorOr<User> userOrError = _userRepository
+    .GetById(userId)
+    .ThenEnsure(CacheUser);
+
+// Success: userOrError is the original user from GetById.
+// Failure: userOrError contains cache errors from CacheUser.
+```
+
+```cs
+async Task<ErrorOr<User>> CacheUserAsync(User user)
+{
+    ErrorOr<Success> result = await _cache.SetAsync(user);
+    return result.IsError ? result.Errors : user;
+}
+
+ErrorOr<User> userOrError = await _userRepository
+    .GetByIdAsync(userId)
+    .ThenEnsureAsync(CacheUserAsync);
+
+// Success: userOrError is the original user from GetByIdAsync.
+// Failure: userOrError contains cache errors from CacheUserAsync.
+```
+
 ### Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`
 
 You can mix and match `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync` methods.
@@ -532,18 +581,19 @@ ErrorOr<string> foo = await result
 `FailIf` receives a predicate and an error. If the predicate is true, `FailIf` will return the error. Otherwise, it will return the value of the result.
 
 ```cs
-ErrorOr<int> foo = result
-    .FailIf(val => val > 2, Error.Validation(description: $"{val} is too big"));
+ErrorOr<int> errorOrInt = 3;
+ErrorOr<int> foo = errorOrInt
+     .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big"));
 ```
 
 Once an error is returned, the chain will break and the error will be returned.
 
 ```cs
-var result = "2".ToErrorOr()
-    .Then(int.Parse) // 2
-    .FailIf(val => val > 1, Error.Validation(description: $"{val} is too big") // validation error
-    .Then(num => num * 2) // this function will not be invoked
-    .Then(num => num * 2) // this function will not be invoked
+        var result = "2".ToErrorOr()
+            .Then(int.Parse) // 2
+            .FailIf(val => val > 1, val => Error.Validation(description: $"{val} is too big")) // validation error
+            .Then(num => num * 2) // this function will not be invoked
+            .Then(num => num * 2); // this function will not be invoked
 ```
 
 ## `Else`
@@ -594,16 +644,81 @@ ErrorOr<string> foo = await result
 You can mix `Then`, `FailIf`, `Else`, `Switch` and `Match` methods together.
 
 ```cs
-ErrorOr<string> foo = await result
-    .ThenDoAsync(val => Task.Delay(val))
-    .FailIf(val => val > 2, Error.Validation(description: $"{val} is too big"))
-    .ThenDo(val => Console.WriteLine($"Finished waiting {val} seconds."))
-    .ThenAsync(val => Task.FromResult(val * 2))
-    .Then(val => $"The result is {val}")
-    .Else(errors => Error.Unexpected())
-    .MatchFirst(
-        value => value,
-        firstError => $"An error occurred: {firstError.Description}");
+ErrorOr<int> errorOrInt = 500;
+ErrorOr<string> foo = await errorOrInt
+      .ThenDoAsync(val => Task.Delay(val))
+      .FailIf(val => val > 2, val => Error.Validation(description: $"{val} is too big"))
+      .ThenDo(val => Console.WriteLine($"Finished waiting {val} seconds."))
+      .ThenAsync(val => Task.FromResult(val * 2))
+      .Then(val => $"The result is {val}")
+      .Else(errors => Error.Unexpected())
+      .MatchFirst(
+          value => value,
+          firstError => $"An error occurred: {firstError.Description}");
+```
+
+# Recording Outcomes
+
+When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a way to obtain a JSON representation of the current state in these scenarios.
+
+Because `IErrorOr` inherits from `IRecordable`, `GetRecording()` is available directly on any `IErrorOr` reference — no cast required.
+
+`GetRecording()` always returns safely — when the state is a value it returns a JSON object; when the state is errors it returns a JSON array of those errors. The output is indented, enums are serialized as strings, and null properties are always included:
+
+```cs
+void Log(IErrorOr result)
+{
+    Console.WriteLine(result.GetRecording());
+}
+
+// Value state:
+// {
+//   "Name": "Alice",
+//   "MiddleName": null,
+//   "Age": 30
+// }
+
+// Error state:
+// [
+//   {
+//     "Code": "User.NotFound",
+//     "Description": "User was not found.",
+//     "Type": "NotFound",
+//     "NumericType": 3,
+//     "Metadata": null
+//   }
+// ]
+```
+
+When you have a concrete `ErrorOr<TValue>` reference, `ToString()` produces the same JSON output as `GetRecording()`, so it works naturally in string interpolation or anywhere a string is expected:
+
+```cs
+ErrorOr<User> result = GetUser(id);
+
+// Explicit call
+Console.WriteLine(result.ToString());
+
+// Implicit — string interpolation calls ToString() automatically
+logger.LogInformation("Result: {Result}", result);
+Console.WriteLine($"Outcome: {result}");
+
+// Value state:
+// {
+//   "Name": "Alice",
+//   "MiddleName": null,
+//   "Age": 30
+// }
+
+// Error state:
+// [
+//   {
+//     "Code": "User.NotFound",
+//     "Description": "User was not found.",
+//     "Type": "NotFound",
+//     "NumericType": 3,
+//     "Metadata": null
+//   }
+// ]
 ```
 
 # Error Types

@@ -23,6 +23,53 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void CreateFromValue_WhenAccessingValue_ViaStronglyTypedInterface_ShouldReturnValue()
+    {
+        // Arrange
+        IEnumerable<string> value = ["value"];
+
+        // Act
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+        IErrorOr<IEnumerable<string>> errorOrValue = ErrorOrFactory.From(value);
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
+        // Assert
+        errorOrValue.IsError.Should().BeFalse();
+        errorOrValue.Value.Should().BeSameAs(value);
+    }
+
+    [Fact]
+    public void CreateFromValue_WhenAccessingValue_ViaIRecordable_ShouldReturnJson()
+    {
+        // Arrange
+        IEnumerable<string> value = ["value"];
+
+        // Act
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+        IRecordable errorOrValue = ErrorOrFactory.From(value);
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
+        // Assert
+        errorOrValue.GetRecording().Should().Be(System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true }));
+    }
+
+    [Fact]
+    public void CreateFromError_WhenAccessingValue_ViaIRecordable_ShouldReturnJsonErrors()
+    {
+        // Arrange
+        var error = Error.Unexpected();
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+        IRecordable errorOrValue = (ErrorOr<string>)error;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
+        // Act
+        var recording = errorOrValue.GetRecording();
+
+        // Assert
+        recording.Should().Be(System.Text.Json.JsonSerializer.Serialize(new[] { error }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true, Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } }));
+    }
+
+    [Fact]
     public void CreateFromValue_WhenAccessingErrors_ShouldReturnUnexpectedError()
     {
         // Arrange
@@ -447,6 +494,51 @@ public class ErrorOrInstantiationTests
 
         // Assert
         errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ErrorOr_FromErrorCollectionExpression_WhenAccessingErrors_ShouldReturnErrorList()
+    {
+        // Arrange
+        var nameTooShort = Error.Validation("User.Name", "Name is too short");
+        var userTooYoung = Error.Validation("User.Age", "User is too young");
+
+        // Act
+        ErrorOr<Person> errorOrPerson = [nameTooShort, userTooYoung];
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.Errors.Should().HaveCount(2).And.BeEquivalentTo([nameTooShort, userTooYoung]);
+    }
+
+    [Fact]
+    public void GenericErrorOrInterface_FromErrorCollectionExpression_WhenAccessingErrors_ShouldReturnErrorList()
+    {
+        // Arrange
+        var nameTooShort = Error.Validation("User.Name", "Name is too short");
+        var userTooYoung = Error.Validation("User.Age", "User is too young");
+
+        // Act
+        IErrorOr<Person> errorOrPerson = [nameTooShort, userTooYoung];
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.Errors.Should().HaveCount(2).And.BeEquivalentTo([nameTooShort, userTooYoung]);
+    }
+
+    [Fact]
+    public void ErrorOrInterface_FromErrorCollectionExpression_WhenAccessingErrors_ShouldReturnErrorList()
+    {
+        // Arrange
+        var nameTooShort = Error.Validation("User.Name", "Name is too short");
+        var userTooYoung = Error.Validation("User.Age", "User is too young");
+
+        // Act
+        IErrorOr errorOrPerson = [nameTooShort, userTooYoung];
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.Errors.Should().HaveCount(2).And.BeEquivalentTo([nameTooShort, userTooYoung]);
     }
 
     [Fact]
