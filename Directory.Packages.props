@@ -1,0 +1,20 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup Label="NuGet">
+        <PackageVersion Include="Microsoft.Bcl.HashCode" Version="6.0.0"/>
+        <PackageVersion Include="System.Text.Json" Version="8.0.5" />
+        <PackageVersion Include="Nullable" Version="1.3.1" />
+        <PackageVersion Include="System.Memory" Version="4.6.3"/>
+        <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
+    </ItemGroup>
+
+    <ItemGroup Label="Tests">
+        <PackageVersion Include="fluentassertions" Version="8.9.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
+        <PackageVersion Include="xunit" Version="2.8.0" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0" />
+        <PackageVersion Include="coverlet.collector" Version="10.0.0" />
+    </ItemGroup>
+</Project>
