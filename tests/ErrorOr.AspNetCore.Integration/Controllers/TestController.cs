@@ -24,4 +24,17 @@ public class TestController : ControllerBase
         };
         return errors.ToActionResult(HttpContext);
     }
+
+    [HttpGet("mixed-errors")]
+    public IActionResult GetMixedErrors()
+    {
+        // Mix of non-validation errors — exercises the non-validation list branch
+        // that flows through ProblemDetailsFactory.CreateProblemDetails.
+        var errors = new List<Error>
+        {
+            Error.NotFound("Item.NotFound", "Item was not found."),
+            Error.Failure("Item.Failed", "Processing failed."),
+        };
+        return errors.ToActionResult(HttpContext);
+    }
 }

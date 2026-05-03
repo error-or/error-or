@@ -37,4 +37,16 @@ public class MvcIntegrationTests(TestWebApplicationFactory factory)
         // DefaultProblemDetailsFactory injects traceId even for validation responses.
         json.TryGetProperty("traceId", out _).Should().BeTrue();
     }
+
+    [Fact]
+    public async Task MixedErrors_ReturnsFirstErrorStatusWithProblemDetailsAndTraceId()
+    {
+        var response = await _client.GetAsync("/mvc/mixed-errors");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType!.MediaType.Should().Be("application/problem+json");
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        json.GetProperty("status").GetInt32().Should().Be(404);
+        json.TryGetProperty("traceId", out _).Should().BeTrue();
+    }
 }
