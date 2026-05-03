@@ -17,9 +17,9 @@ public class ActionResultExtensionsTests
 
         var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
         objectResult.StatusCode.Should().Be(StatusCodes.Status404NotFound);
-        var pd = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        pd.Title.Should().Be("User.NotFound");
-        pd.Detail.Should().Be("User was not found.");
+        var problemDetails = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problemDetails.Title.Should().Be("User.NotFound");
+        problemDetails.Detail.Should().Be("User was not found.");
     }
 
     [Fact]
@@ -35,9 +35,9 @@ public class ActionResultExtensionsTests
 
         var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
         objectResult.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
-        var vpd = objectResult.Value.Should().BeOfType<HttpValidationProblemDetails>().Subject;
-        vpd.Errors.Should().ContainKey("Email.Invalid");
-        vpd.Errors.Should().ContainKey("Name.Required");
+        var validationProblemDetails = objectResult.Value.Should().BeOfType<HttpValidationProblemDetails>().Subject;
+        validationProblemDetails.Errors.Should().ContainKey("Email.Invalid");
+        validationProblemDetails.Errors.Should().ContainKey("Name.Required");
     }
 
     [Fact]
@@ -65,8 +65,8 @@ public class ActionResultExtensionsTests
         var result = error.ToActionResult(httpContext);
 
         var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
-        var pd = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        pd.Extensions.Should().ContainKey("factory-enriched");
+        var problemDetails = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problemDetails.Extensions.Should().ContainKey("factory-enriched");
     }
 
     [Fact]
@@ -81,9 +81,9 @@ public class ActionResultExtensionsTests
         var result = errors.ToActionResult(httpContext);
 
         var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
-        var vpd = objectResult.Value.Should().BeOfType<ValidationProblemDetails>().Subject;
-        vpd.Errors.Should().ContainKey("Email.Invalid");
-        vpd.Extensions.Should().ContainKey("factory-enriched");
+        var validationProblemDetails = objectResult.Value.Should().BeOfType<ValidationProblemDetails>().Subject;
+        validationProblemDetails.Errors.Should().ContainKey("Email.Invalid");
+        validationProblemDetails.Extensions.Should().ContainKey("factory-enriched");
     }
 
     [Fact]
@@ -96,9 +96,9 @@ public class ActionResultExtensionsTests
 
         var result = error.ToActionResult(httpContext);
 
-        var pd = ((ObjectResult)result).Value.Should().BeOfType<ProblemDetails>().Subject;
-        pd.Extensions.Should().ContainKey("orderId");
-        pd.Extensions.Should().ContainKey("factory-enriched");
+        var problemDetails = ((ObjectResult)result).Value.Should().BeOfType<ProblemDetails>().Subject;
+        problemDetails.Extensions.Should().ContainKey("orderId");
+        problemDetails.Extensions.Should().ContainKey("factory-enriched");
     }
 
     private static DefaultHttpContext BuildHttpContext(ProblemDetailsFactory factory)
@@ -143,7 +143,7 @@ public class ActionResultExtensionsTests
             string? detail = null,
             string? instance = null)
         {
-            var pd = new ProblemDetails
+            var problemDetails = new ProblemDetails
             {
                 Status = statusCode,
                 Title = title,
@@ -151,8 +151,8 @@ public class ActionResultExtensionsTests
                 Detail = detail,
                 Instance = instance,
             };
-            pd.Extensions["factory-enriched"] = true;
-            return pd;
+            problemDetails.Extensions["factory-enriched"] = true;
+            return problemDetails;
         }
 
         public override ValidationProblemDetails CreateValidationProblemDetails(
@@ -164,7 +164,7 @@ public class ActionResultExtensionsTests
             string? detail = null,
             string? instance = null)
         {
-            var vpd = new ValidationProblemDetails(modelStateDictionary)
+            var validationProblemDetails = new ValidationProblemDetails(modelStateDictionary)
             {
                 Status = statusCode,
                 Title = title,
@@ -172,8 +172,8 @@ public class ActionResultExtensionsTests
                 Detail = detail,
                 Instance = instance,
             };
-            vpd.Extensions["factory-enriched"] = true;
-            return vpd;
+            validationProblemDetails.Extensions["factory-enriched"] = true;
+            return validationProblemDetails;
         }
     }
 }

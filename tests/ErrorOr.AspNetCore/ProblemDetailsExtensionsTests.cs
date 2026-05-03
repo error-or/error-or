@@ -10,11 +10,11 @@ public class ProblemDetailsExtensionsTests
     {
         var error = Error.NotFound("User.NotFound", "User was not found.");
 
-        var pd = error.ToProblemDetails();
+        var problemDetails = error.ToProblemDetails();
 
-        pd.Status.Should().Be(StatusCodes.Status404NotFound);
-        pd.Title.Should().Be("User.NotFound");
-        pd.Detail.Should().Be("User was not found.");
+        problemDetails.Status.Should().Be(StatusCodes.Status404NotFound);
+        problemDetails.Title.Should().Be("User.NotFound");
+        problemDetails.Detail.Should().Be("User was not found.");
     }
 
     [Fact]
@@ -22,9 +22,9 @@ public class ProblemDetailsExtensionsTests
     {
         var error = Error.Validation(metadata: new Dictionary<string, object> { ["field"] = "Email" });
 
-        var pd = error.ToProblemDetails();
+        var problemDetails = error.ToProblemDetails();
 
-        pd.Extensions.Should().NotContainKey("field");
+        problemDetails.Extensions.Should().NotContainKey("field");
     }
 
     [Fact]
@@ -33,9 +33,9 @@ public class ProblemDetailsExtensionsTests
         var options = new ErrorOrAspNetCoreOptions { IncludeMetadataInProblemDetails = true };
         var error = Error.Validation(metadata: new Dictionary<string, object> { ["field"] = "Email" });
 
-        var pd = error.ToProblemDetails(options);
+        var problemDetails = error.ToProblemDetails(options);
 
-        pd.Extensions.Should().ContainKey("field").WhoseValue.Should().Be("Email");
+        problemDetails.Extensions.Should().ContainKey("field").WhoseValue.Should().Be("Email");
     }
 
     [Fact]
@@ -47,13 +47,13 @@ public class ProblemDetailsExtensionsTests
             Error.Validation("Name.Required", "Name is required."),
         };
 
-        var pd = errors.ToProblemDetails();
+        var problemDetails = errors.ToProblemDetails();
 
-        pd.Should().BeOfType<HttpValidationProblemDetails>();
-        pd.Status.Should().Be(StatusCodes.Status400BadRequest);
-        var vpd = (HttpValidationProblemDetails)pd;
-        vpd.Errors.Should().ContainKey("Email.Invalid").WhoseValue.Should().Contain("Email is invalid.");
-        vpd.Errors.Should().ContainKey("Name.Required").WhoseValue.Should().Contain("Name is required.");
+        problemDetails.Should().BeOfType<HttpValidationProblemDetails>();
+        problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+        var validationProblemDetails = (HttpValidationProblemDetails)problemDetails;
+        validationProblemDetails.Errors.Should().ContainKey("Email.Invalid").WhoseValue.Should().Contain("Email is invalid.");
+        validationProblemDetails.Errors.Should().ContainKey("Name.Required").WhoseValue.Should().Contain("Name is required.");
     }
 
     [Fact]
@@ -65,9 +65,9 @@ public class ProblemDetailsExtensionsTests
             Error.Validation("Email.Invalid", "Invalid format."),
         };
 
-        var pd = (HttpValidationProblemDetails)errors.ToProblemDetails();
+        var validationProblemDetails = (HttpValidationProblemDetails)errors.ToProblemDetails();
 
-        pd.Errors["Email.Invalid"].Should().BeEquivalentTo(new[] { "Too long.", "Invalid format." });
+        validationProblemDetails.Errors["Email.Invalid"].Should().BeEquivalentTo(new[] { "Too long.", "Invalid format." });
     }
 
     [Fact]
@@ -79,18 +79,18 @@ public class ProblemDetailsExtensionsTests
             Error.Validation("Email.Invalid", "Email is invalid."),
         };
 
-        var pd = errors.ToProblemDetails();
+        var problemDetails = errors.ToProblemDetails();
 
-        pd.Should().NotBeOfType<HttpValidationProblemDetails>();
-        pd.Status.Should().Be(StatusCodes.Status404NotFound);
+        problemDetails.Should().NotBeOfType<HttpValidationProblemDetails>();
+        problemDetails.Status.Should().Be(StatusCodes.Status404NotFound);
     }
 
     [Fact]
     public void ToProblemDetails_EmptyList_Returns500()
     {
-        var pd = new List<Error>().ToProblemDetails();
+        var problemDetails = new List<Error>().ToProblemDetails();
 
-        pd.Status.Should().Be(StatusCodes.Status500InternalServerError);
+        problemDetails.Status.Should().Be(StatusCodes.Status500InternalServerError);
     }
 
     [Fact]
@@ -101,10 +101,10 @@ public class ProblemDetailsExtensionsTests
 
         var errors = new List<Error> { Error.NotFound() };
 
-        var pd = errors.ToProblemDetails(options);
+        var problemDetails = errors.ToProblemDetails(options);
 
-        pd.Status.Should().Be(StatusCodes.Status418ImATeapot);
-        pd.Title.Should().Be("Custom");
+        problemDetails.Status.Should().Be(StatusCodes.Status418ImATeapot);
+        problemDetails.Title.Should().Be("Custom");
     }
 
     [Fact]
@@ -115,9 +115,9 @@ public class ProblemDetailsExtensionsTests
 
         var errors = new List<Error> { Error.NotFound("X.NotFound", "Not found.") };
 
-        var pd = errors.ToProblemDetails(options);
+        var problemDetails = errors.ToProblemDetails(options);
 
-        pd.Status.Should().Be(StatusCodes.Status404NotFound);
+        problemDetails.Status.Should().Be(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class ProblemDetailsExtensionsTests
             Error.Validation("Email.Invalid", "Bad email.", new Dictionary<string, object> { ["regex"] = @"\w+@\w+" }),
         };
 
-        var pd = (HttpValidationProblemDetails)errors.ToProblemDetails(options);
+        var validationProblemDetails = (HttpValidationProblemDetails)errors.ToProblemDetails(options);
 
-        pd.Extensions.Should().ContainKey("errorMetadata");
+        validationProblemDetails.Extensions.Should().ContainKey("errorMetadata");
     }
 }
