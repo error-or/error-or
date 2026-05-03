@@ -1,0 +1,19 @@
+dependencies:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '**/*.csproj'
+                - '**/*.fsproj'
+                - '**/packages.lock.json'
+                - 'global.json'
+                - 'Directory.Packages.props'
+
+ci:
+    - changed-files:
+          - any-glob-to-any-file:
+                - '.github/workflows/**'
+
+docs:
+    - changed-files:
+          - any-glob-to-any-file:
+                - 'README*'
+                - 'docs/**'

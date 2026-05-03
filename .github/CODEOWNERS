@@ -1,0 +1,4 @@
+# Workflow files have outsized security impact (they handle the NuGet API key
+# and gate releases), so changes to them require review from @amantinband.
+# Everything else is unowned and can be merged by any repo admin as usual.
+/.github/workflows/ @amantinband

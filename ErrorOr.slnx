@@ -1,0 +1,31 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="CHANGELOG.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE.md" />
+  </Folder>
+  <Folder Name="/Solution Items/GitHub/">
+    <File Path=".github/CODEOWNERS" />
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/labeler.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/GitHub/Issue Templates/">
+    <File Path=".github/ISSUE_TEMPLATE/bug.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/feature.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/question.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/GitHub/Workflows/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/labeler.yml" />
+    <File Path=".github/workflows/publish.yml" />
+    <File Path=".github/workflows/unlist.yml" />
+  </Folder>
+  <Project Path="src/ErrorOr.csproj" />
+  <Project Path="src/ErrorOr.AspNetCore/ErrorOr.AspNetCore.csproj" />
+  <Project Path="tests/Tests.csproj" />
+  <Project Path="tests/ErrorOr.AspNetCore/Tests.AspNetCore.csproj" />
+  <Project Path="tests/ErrorOr.AspNetCore.Integration/Tests.AspNetCore.Integration.csproj" />
+</Solution>
