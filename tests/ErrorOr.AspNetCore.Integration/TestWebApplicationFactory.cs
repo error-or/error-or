@@ -39,6 +39,7 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<TestWebApp
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapEndpoints();
+                    endpoints.MapOptionsVariantEndpoints();
                     endpoints.MapControllers();
                 });
             });
