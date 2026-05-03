@@ -1,4 +1,5 @@
 using ErrorOr.AspNetCore;
+using Microsoft.Extensions.Options;
 
 // Intentionally placed in Microsoft.Extensions.DependencyInjection so that AddErrorOrAspNetCore()
 // is discoverable via IntelliSense without an extra using directive — consistent with AddHealthChecks(),
@@ -15,8 +16,8 @@ public static class ErrorOrAspNetCoreServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configure">An optional action to configure <see cref="ErrorOrAspNetCoreOptions"/>.</param>
-    /// <returns>The service collection, for chaining.</returns>
-    public static IServiceCollection AddErrorOrAspNetCore(
+    /// <returns>An <see cref="OptionsBuilder{ErrorOrAspNetCoreOptions}"/> for further configuration.</returns>
+    public static OptionsBuilder<ErrorOrAspNetCoreOptions> AddErrorOrAspNetCore(
         this IServiceCollection services,
         Action<ErrorOrAspNetCoreOptions>? configure = null)
     {
@@ -27,6 +28,6 @@ public static class ErrorOrAspNetCoreServiceCollectionExtensions
             optionsBuilder.Configure(configure);
         }
 
-        return services;
+        return optionsBuilder;
     }
 }

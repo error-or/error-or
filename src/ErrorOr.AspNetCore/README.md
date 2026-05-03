@@ -94,21 +94,6 @@ builder.Services.AddErrorOrAspNetCore(opts =>
 });
 ```
 
----
-
-## Namespaces
-
-| Scenario               | Using directive                |
-|------------------------|-------------------------------|
-| Service registration   | (automatic — no extra using)  |
-| MVC `ToActionResult()` | `ErrorOr.AspNetCore.Mvc`      |
-| Minimal API `ToResult()`| `ErrorOr.AspNetCore.Http`    |
-| Options / shared types | `ErrorOr.AspNetCore`          |
-
-`AddErrorOrAspNetCore()` lives in `Microsoft.Extensions.DependencyInjection` so it is discoverable alongside `AddHealthChecks()`, `AddAuthentication()`, and other built-in extension methods — no extra using directive required.
-
----
-
 ## License
 
 [MIT](https://github.com/error-or/error-or/blob/main/LICENSE)
