@@ -585,13 +585,22 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void ImplicitCastEmptyErrorList_ShouldBeError()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = new List<Error>();
+
+        // Act & Assert
+        errorOrInt.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void ImplicitCastEmptyErrorList_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<int> errorOrInt = new List<Error>();
 
         // Act & Assert
-        errorOrInt.IsError.Should().BeFalse();
         errorOrInt.Value.Should().Be(default);
     }
 
@@ -609,7 +618,7 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void ImplicitCastEmptyErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    public void ImplicitCastEmptyErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnUnexpected()
     {
         // Arrange
         ErrorOr<int> errorOrInt = new List<Error>();
@@ -618,7 +627,7 @@ public class ErrorOrInstantiationTests
         List<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
-        errors.Should().BeEmpty();
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
@@ -635,13 +644,22 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void ImplicitCastEmptyErrorArray_ShouldBeError()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = Array.Empty<Error>();
+
+        // Act & Assert
+        errorOrInt.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void ImplicitCastEmptyErrorArray_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<int> errorOrInt = Array.Empty<Error>();
 
         // Act & Assert
-        errorOrInt.IsError.Should().BeFalse();
         errorOrInt.Value.Should().Be(default);
     }
 
@@ -659,7 +677,7 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void ImplicitCastEmptyErrorArray_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    public void ImplicitCastEmptyErrorArray_WhenAccessingErrorsOrEmptyList_ShouldReturnUnexpected()
     {
         // Arrange
         ErrorOr<int> errorOrInt = Array.Empty<Error>();
@@ -668,7 +686,7 @@ public class ErrorOrInstantiationTests
         List<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
-        errors.Should().BeEmpty();
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
@@ -735,13 +753,22 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void ImplicitCastNullErrorList_ShouldBeError()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = default(List<Error>)!;
+
+        // Act & Assert
+        errorOrInt.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void ImplicitCastNullErrorList_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<int> errorOrInt = default(List<Error>)!;
 
         // Act & Assert
-        errorOrInt.IsError.Should().BeFalse();
         errorOrInt.Value.Should().Be(default);
     }
 
@@ -759,7 +786,7 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void ImplicitCastNullErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    public void ImplicitCastNullErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnUnexpected()
     {
         // Arrange
         ErrorOr<int> errorOrInt = default(List<Error>)!;
@@ -768,7 +795,7 @@ public class ErrorOrInstantiationTests
         List<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
-        errors.Should().BeEmpty();
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
@@ -785,13 +812,22 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void ImplicitCastNullErrorArray_ShouldBeError()
+    {
+        // Arrange
+        ErrorOr<int> errorOrInt = default(Error[])!;
+
+        // Act & Assert
+        errorOrInt.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void ImplicitCastNullErrorArray_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<int> errorOrInt = default(Error[])!;
 
         // Act & Assert
-        errorOrInt.IsError.Should().BeFalse();
         errorOrInt.Value.Should().Be(default);
     }
 
@@ -809,7 +845,7 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void ImplicitCastNullErrorArray_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
+    public void ImplicitCastNullErrorArray_WhenAccessingErrorsOrEmptyList_ShouldReturnUnexpected()
     {
         // Arrange
         ErrorOr<int> errorOrInt = default(Error[])!;
@@ -818,7 +854,7 @@ public class ErrorOrInstantiationTests
         List<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
-        errors.Should().BeEmpty();
+        errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
     }
 
     [Fact]
