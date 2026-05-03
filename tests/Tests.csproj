@@ -12,6 +12,9 @@
     <Compile Remove="ErrorOr.AspNetCore\**" />
     <None Remove="ErrorOr.AspNetCore\**" />
     <EmbeddedResource Remove="ErrorOr.AspNetCore\**" />
+    <Compile Remove="ErrorOr.AspNetCore.Integration\**" />
+    <None Remove="ErrorOr.AspNetCore.Integration\**" />
+    <EmbeddedResource Remove="ErrorOr.AspNetCore.Integration\**" />
   </ItemGroup>
 
   <ItemGroup>
