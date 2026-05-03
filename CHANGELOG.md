@@ -6,6 +6,24 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
+- [#159](https://github.com/amantinband/error-or/pull/159) Added `IsSuccess` property to `ErrorOr`
+
+- [#158](https://github.com/amantinband/error-or/pull/158) Added JSON Serialization support. The `IRecordable` interface provides a way to obtain a JSON representation of the current state.
+
+    ```cs
+    void Log(IErrorOr result)
+    {
+        Console.WriteLine(result.GetRecording());
+        // Or explicit call
+        Console.WriteLine(result.ToString());
+    }
+    ```
+
+- [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnshure` and `ThenEnshureAsync` methods.
+  They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
+  If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
+
+
 - [#94](https://github.com/amantinband/error-or/issues/94), [#95](https://github.com/amantinband/error-or/pull/95) Added missing async versions of `FailIf` methods
 
     ```cs

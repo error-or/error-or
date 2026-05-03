@@ -7,6 +7,37 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorOr", "src\ErrorOr.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "tests\Tests.csproj", "{0E84EC69-4E4C-4195-907D-06C96D0140A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6AF0E769-9C8A-4452-84D7-BCABF5B3D7A2}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		LICENSE.md = LICENSE.md
+		CHANGELOG.md = CHANGELOG.md
+		.gitignore = .gitignore
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4FBA3A7F-9FC7-4870-A771-F5BDDA2CD783}"
+	ProjectSection(SolutionItems) = preProject
+		.github\CODEOWNERS = .github\CODEOWNERS
+		.github\dependabot.yml = .github\dependabot.yml
+		.github\labeler.yml = .github\labeler.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{98D7AA85-0C5E-4C79-B93C-AC12D5A69A5D}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\labeler.yml = .github\workflows\labeler.yml
+		.github\workflows\unlist.yml = .github\workflows\unlist.yml
+		.github\workflows\publish.yml = .github\workflows\publish.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Issue Templates", "Issue Templates", "{89038063-2B5A-49DA-ADB8-36C082142234}"
+	ProjectSection(SolutionItems) = preProject
+		.github\ISSUE_TEMPLATE\bug.yml = .github\ISSUE_TEMPLATE\bug.yml
+		.github\ISSUE_TEMPLATE\feature.yml = .github\ISSUE_TEMPLATE\feature.yml
+		.github\ISSUE_TEMPLATE\question.yml = .github\ISSUE_TEMPLATE\question.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +55,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4FBA3A7F-9FC7-4870-A771-F5BDDA2CD783} = {6AF0E769-9C8A-4452-84D7-BCABF5B3D7A2}
+		{98D7AA85-0C5E-4C79-B93C-AC12D5A69A5D} = {4FBA3A7F-9FC7-4870-A771-F5BDDA2CD783}
+		{89038063-2B5A-49DA-ADB8-36C082142234} = {4FBA3A7F-9FC7-4870-A771-F5BDDA2CD783}
 	EndGlobalSection
 EndGlobal
