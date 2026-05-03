@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace ErrorOr.AspNetCore.Http;
@@ -14,19 +13,20 @@ public static class ErrorOrHttpExtensions
     /// <returns>A problem <see cref="IResult"/>.</returns>
     public static IResult ToResult(this Error error, ErrorOrAspNetCoreOptions? options = null)
     {
-        var pd = error.ToProblemDetails(options);
-        return TypedResults.Problem(pd);
+        var problemDetails = error.ToProblemDetails(options);
+        return TypedResults.Problem(problemDetails);
     }
 
     /// <summary>
-    /// Converts an <see cref="Error"/> to an <see cref="IResult"/>, resolving <see cref="ErrorOrAspNetCoreOptions"/>
-    /// from the provided <see cref="IServiceProvider"/>.
+    /// Converts an <see cref="Error"/> to an <see cref="IResult"/>, using the provided
+    /// <see cref="IOptions{TOptions}"/>. Prefer this overload in Minimal API handlers where
+    /// <see cref="IOptions{TOptions}"/> can be injected directly as a route parameter.
     /// </summary>
     /// <param name="error">The error to convert.</param>
-    /// <param name="services">The service provider used to resolve registered options.</param>
+    /// <param name="options">The registered options instance.</param>
     /// <returns>A problem <see cref="IResult"/>.</returns>
-    public static IResult ToResult(this Error error, IServiceProvider services)
-        => error.ToResult(services.GetService<IOptions<ErrorOrAspNetCoreOptions>>()?.Value);
+    public static IResult ToResult(this Error error, IOptions<ErrorOrAspNetCoreOptions> options)
+        => error.ToResult(options.Value);
 
     /// <summary>
     /// Converts a list of <see cref="Error"/> objects to an <see cref="IResult"/> suitable for Minimal API responses.
@@ -37,29 +37,30 @@ public static class ErrorOrHttpExtensions
     /// <returns>A problem <see cref="IResult"/>.</returns>
     public static IResult ToResult(this List<Error> errors, ErrorOrAspNetCoreOptions? options = null)
     {
-        var pd = errors.ToProblemDetails(options);
+        var problemDetails = errors.ToProblemDetails(options);
 
-        if (pd is HttpValidationProblemDetails vpd)
+        if (problemDetails is HttpValidationProblemDetails validationProblemDetails)
         {
             return TypedResults.ValidationProblem(
-                vpd.Errors,
-                detail: vpd.Detail,
-                instance: vpd.Instance,
-                title: vpd.Title,
-                type: vpd.Type,
-                extensions: vpd.Extensions.Count > 0 ? vpd.Extensions : null);
+                validationProblemDetails.Errors,
+                type: validationProblemDetails.Type,
+                title: validationProblemDetails.Title,
+                detail: validationProblemDetails.Detail,
+                instance: validationProblemDetails.Instance,
+                extensions: validationProblemDetails.Extensions.Count > 0 ? validationProblemDetails.Extensions : null);
         }
 
-        return TypedResults.Problem(pd);
+        return TypedResults.Problem(problemDetails);
     }
 
     /// <summary>
-    /// Converts a list of <see cref="Error"/> objects to an <see cref="IResult"/>, resolving
-    /// <see cref="ErrorOrAspNetCoreOptions"/> from the provided <see cref="IServiceProvider"/>.
+    /// Converts a list of <see cref="Error"/> objects to an <see cref="IResult"/>, using the provided
+    /// <see cref="IOptions{TOptions}"/>. Prefer this overload in Minimal API handlers where
+    /// <see cref="IOptions{TOptions}"/> can be injected directly as a route parameter.
     /// </summary>
     /// <param name="errors">The errors to convert.</param>
-    /// <param name="services">The service provider used to resolve registered options.</param>
+    /// <param name="options">The registered options instance.</param>
     /// <returns>A problem <see cref="IResult"/>.</returns>
-    public static IResult ToResult(this List<Error> errors, IServiceProvider services)
-        => errors.ToResult(services.GetService<IOptions<ErrorOrAspNetCoreOptions>>()?.Value);
+    public static IResult ToResult(this List<Error> errors, IOptions<ErrorOrAspNetCoreOptions> options)
+        => errors.ToResult(options.Value);
 }

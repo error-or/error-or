@@ -49,16 +49,14 @@ public class ResultExtensionsTests
     }
 
     [Fact]
-    public void ToResult_WithServiceProvider_ResolvesOptions()
+    public void ToResult_WithIOptions_ResolvesOptions()
     {
-        var options = new ErrorOrAspNetCoreOptions { IncludeMetadataInProblemDetails = true };
-        var services = new ServiceProviderStub(options);
+        var options = Options.Create(new ErrorOrAspNetCoreOptions { IncludeMetadataInProblemDetails = true });
         var error = Error.NotFound(metadata: new Dictionary<string, object> { ["hint"] = "check id" });
 
-        var result = error.ToResult(services);
+        var result = error.ToResult(options);
 
         var problem = result.Should().BeOfType<ProblemHttpResult>().Subject;
-
         problem.ProblemDetails.Extensions.Should().ContainKey("hint");
     }
 
@@ -69,11 +67,5 @@ public class ResultExtensionsTests
 
         var problem = result.Should().BeOfType<ProblemHttpResult>().Subject;
         problem.ProblemDetails.Status.Should().Be(StatusCodes.Status500InternalServerError);
-    }
-
-    private sealed class ServiceProviderStub(ErrorOrAspNetCoreOptions options) : IServiceProvider
-    {
-        public object? GetService(Type serviceType)
-            => serviceType == typeof(IOptions<ErrorOrAspNetCoreOptions>) ? Options.Create(options) : null;
     }
 }
