@@ -9,75 +9,86 @@ namespace ErrorOr.AspNetCore.Mvc;
 
 public static class ErrorOrMvcExtensions
 {
-    /// <summary>
-    /// Converts an <see cref="Error"/> to an <see cref="IActionResult"/> suitable for MVC controller responses.
-    /// When an <see cref="HttpContext"/> is provided, the DI-registered <see cref="ProblemDetailsFactory"/> and
-    /// <see cref="ErrorOrAspNetCoreOptions"/> are resolved automatically.
-    /// </summary>
-    /// <param name="error">The error to convert.</param>
-    /// <param name="httpContext">
-    /// The current <see cref="HttpContext"/>. When provided, <see cref="ProblemDetailsFactory"/> is used
-    /// to enrich the response (e.g. adding a traceId extension).
-    /// </param>
-    /// <returns>An <see cref="ObjectResult"/> containing a <see cref="ProblemDetails"/> body.</returns>
-    public static IActionResult ToActionResult(this Error error, HttpContext? httpContext = null)
+    extension(Error error)
     {
-        var options = httpContext?.RequestServices.GetService<IOptions<ErrorOrAspNetCoreOptions>>()?.Value;
-        var pd = error.ToProblemDetails(options);
-
-        if (httpContext?.RequestServices.GetService<ProblemDetailsFactory>() is { } factory)
+        /// <summary>
+        /// Converts an <see cref="Error"/> to an <see cref="IActionResult"/> suitable for MVC controller responses.
+        /// When an <see cref="HttpContext"/> is provided, the DI-registered <see cref="ProblemDetailsFactory"/> and
+        /// <see cref="ErrorOrAspNetCoreOptions"/> are resolved automatically.
+        /// </summary>
+        /// <param name="httpContext">
+        /// The current <see cref="HttpContext"/>. When provided, <see cref="ProblemDetailsFactory"/> is used
+        /// to enrich the response (e.g. adding a traceId extension).
+        /// </param>
+        /// <returns>An <see cref="ObjectResult"/> containing a <see cref="ProblemDetails"/> body.</returns>
+        public IActionResult ToActionResult(HttpContext? httpContext = null)
         {
-            var factoryPd = factory.CreateProblemDetails(httpContext, pd.Status, pd.Title, detail: pd.Detail);
-            CopyMissingExtensions(pd, factoryPd);
-            return new ObjectResult(factoryPd) { StatusCode = factoryPd.Status };
-        }
+            var options = httpContext?.RequestServices.GetService<IOptions<ErrorOrAspNetCoreOptions>>()?.Value;
+            var problemDetails = error.ToProblemDetails(options);
 
-        return new ObjectResult(pd) { StatusCode = pd.Status };
+            if (httpContext?.RequestServices.GetService<ProblemDetailsFactory>() is { } factory)
+            {
+                var factoryPd = factory.CreateProblemDetails(
+                    httpContext,
+                    problemDetails.Status,
+                    problemDetails.Title,
+                    detail: problemDetails.Detail);
+
+                CopyMissingExtensions(problemDetails, factoryPd);
+
+                return new ObjectResult(factoryPd) { StatusCode = factoryPd.Status };
+            }
+
+            return new ObjectResult(problemDetails) { StatusCode = problemDetails.Status };
+        }
     }
 
-    /// <summary>
-    /// Converts a list of <see cref="Error"/> objects to an <see cref="IActionResult"/> suitable for MVC controller responses.
-    /// When all errors are validation errors, a <see cref="ValidationProblemDetails"/> result is returned.
-    /// When an <see cref="HttpContext"/> is provided, the DI-registered <see cref="ProblemDetailsFactory"/> and
-    /// <see cref="ErrorOrAspNetCoreOptions"/> are resolved automatically.
-    /// </summary>
-    /// <param name="errors">The errors to convert.</param>
-    /// <param name="httpContext">
-    /// The current <see cref="HttpContext"/>. When provided, <see cref="ProblemDetailsFactory"/> is used
-    /// to enrich the response (e.g. adding a traceId extension) while preserving validation error details.
-    /// </param>
-    /// <returns>An <see cref="ObjectResult"/> containing a <see cref="ProblemDetails"/> body.</returns>
-    public static IActionResult ToActionResult(this List<Error> errors, HttpContext? httpContext = null)
+    extension(List<Error> errors)
     {
-        var options = httpContext?.RequestServices.GetService<IOptions<ErrorOrAspNetCoreOptions>>()?.Value;
-        var pd = errors.ToProblemDetails(options);
-
-        if (httpContext?.RequestServices.GetService<ProblemDetailsFactory>() is { } factory)
+        /// <summary>
+        /// Converts a list of <see cref="Error"/> objects to an <see cref="IActionResult"/> suitable for MVC controller responses.
+        /// When all errors are validation errors, a <see cref="ValidationProblemDetails"/> result is returned.
+        /// When an <see cref="HttpContext"/> is provided, the DI-registered <see cref="ProblemDetailsFactory"/> and
+        /// <see cref="ErrorOrAspNetCoreOptions"/> are resolved automatically.
+        /// </summary>
+        /// <param name="httpContext">
+        /// The current <see cref="HttpContext"/>. When provided, <see cref="ProblemDetailsFactory"/> is used
+        /// to enrich the response (e.g. adding a traceId extension) while preserving validation error details.
+        /// </param>
+        /// <returns>An <see cref="ObjectResult"/> containing a <see cref="ProblemDetails"/> body.</returns>
+        public IActionResult ToActionResult(HttpContext? httpContext = null)
         {
-            ProblemDetails factoryPd;
+            var options = httpContext?.RequestServices.GetService<IOptions<ErrorOrAspNetCoreOptions>>()?.Value;
+            var problemDetails = errors.ToProblemDetails(options);
 
-            if (pd is HttpValidationProblemDetails)
+            if (httpContext?.RequestServices.GetService<ProblemDetailsFactory>() is { } factory)
             {
-                // Project errors into a ModelStateDictionary so ProblemDetailsFactory can apply its
-                // customizations (e.g. traceId) WITHOUT losing the per-field validation detail.
-                var modelState = new ModelStateDictionary();
-                foreach (var error in errors)
+                ProblemDetails factoryPd;
+
+                if (problemDetails is HttpValidationProblemDetails)
                 {
-                    modelState.AddModelError(error.Code, error.Description);
+                    // Project errors into a ModelStateDictionary so ProblemDetailsFactory can apply its
+                    // customizations (e.g. traceId) WITHOUT losing the per-field validation detail.
+                    var modelState = new ModelStateDictionary();
+                    foreach (var error in errors)
+                    {
+                        modelState.AddModelError(error.Code, error.Description);
+                    }
+
+                    factoryPd = factory.CreateValidationProblemDetails(
+                        httpContext, modelState, statusCode: StatusCodes.Status400BadRequest);
+                }
+                else
+                {
+                    factoryPd = factory.CreateProblemDetails(httpContext, problemDetails.Status, problemDetails.Title, detail: problemDetails.Detail);
                 }
 
-                factoryPd = factory.CreateValidationProblemDetails(httpContext, modelState, statusCode: StatusCodes.Status400BadRequest);
-            }
-            else
-            {
-                factoryPd = factory.CreateProblemDetails(httpContext, pd.Status, pd.Title, detail: pd.Detail);
+                CopyMissingExtensions(problemDetails, factoryPd);
+                return new ObjectResult(factoryPd) { StatusCode = factoryPd.Status };
             }
 
-            CopyMissingExtensions(pd, factoryPd);
-            return new ObjectResult(factoryPd) { StatusCode = factoryPd.Status };
+            return new ObjectResult(problemDetails) { StatusCode = problemDetails.Status };
         }
-
-        return new ObjectResult(pd) { StatusCode = pd.Status };
     }
 
     private static void CopyMissingExtensions(ProblemDetails source, ProblemDetails destination)
