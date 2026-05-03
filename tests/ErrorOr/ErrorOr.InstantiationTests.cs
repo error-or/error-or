@@ -542,6 +542,16 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void ErrorOr_FromEmptyErrorCollectionExpression_ShouldBeError()
+    {
+        // Act
+        ErrorOr<Person> errorOrPerson = [];
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void GenericErrorOrInterface_FromErrorCollectionExpression_WhenAccessingErrors_ShouldReturnErrorList()
     {
         // Arrange
