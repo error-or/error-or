@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// <summary>
 /// Extension methods for registering ErrorOr ASP.NET Core services.
 /// </summary>
-public static class ErrorOrAspNetCoreServiceCollectionExtensions
+public static class DependencyInjection
 {
     /// <summary>
     /// Registers ErrorOr ASP.NET Core services and options.
