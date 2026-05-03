@@ -6,24 +6,6 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- [#159](https://github.com/amantinband/error-or/pull/159) Added `IsSuccess` property to `ErrorOr`
-
-- [#158](https://github.com/amantinband/error-or/pull/158) Added JSON Serialization support. The `IRecordable` interface provides a way to obtain a JSON representation of the current state.
-
-    ```cs
-    void Log(IErrorOr result)
-    {
-        Console.WriteLine(result.GetRecording());
-        // Or explicit call
-        Console.WriteLine(result.ToString());
-    }
-    ```
-
-- [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnshure` and `ThenEnshureAsync` methods.
-  They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
-  If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
-
-
 - [#94](https://github.com/amantinband/error-or/issues/94), [#95](https://github.com/amantinband/error-or/pull/95) Added missing async versions of `FailIf` methods
 
     ```cs
@@ -125,6 +107,23 @@ All notable changes to this project are documented in this file.
 
 - [#149](https://github.com/amantinband/error-or/pull/149) Added `Else`/`ElseAsync` overloads returning `ErrorOr`
 
+- [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnshure` and `ThenEnshureAsync` methods.
+  They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
+  If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
+
+- [#159](https://github.com/amantinband/error-or/pull/159) Added `IsSuccess` property to `ErrorOr`
+
+- [#158](https://github.com/amantinband/error-or/pull/158) Added JSON Serialization support. The `IRecordable` interface provides a way to obtain a JSON representation of the current state.
+
+    ```cs
+    void Log(IErrorOr result)
+    {
+        Console.WriteLine(result.GetRecording());
+        // Or explicit call
+        Console.WriteLine(result.ToString());
+    }
+    ```
+
 ### Fixed
 
 - [#85](https://github.com/amantinband/error-or/issues/85), [#97](https://github.com/amantinband/error-or/pull/97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
@@ -134,6 +133,8 @@ All notable changes to this project are documented in this file.
 - [#150](https://github.com/amantinband/error-or/pull/150) `EmptyErrors.Instance` returns new `List<Error>` instance on each call
 
     This allows to avoid mutating empty list
+
+- [#178](https://github.com/amantinband/error-or/pull/178) Initializing `ErrorOr<T>` with empty or null error collection results with unexpected error.
 
 ### Optimized
 
