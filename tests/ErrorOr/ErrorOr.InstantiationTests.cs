@@ -227,6 +227,32 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task ImplicitCastConditionalToObject_WhenBranchesAreDifferentErrorOrTypes_ShouldNestErrorOrValue()
+    {
+        // Repro guard for issue #144: conditional branch assignment can wrap ErrorOr<T> into ErrorOr<object>.
+        var useFirstBranch = true;
+
+        ErrorOr<object> request = useFirstBranch
+            ? await CreateRequestModel1Async()
+            : await CreateRequestModel2Async();
+
+        request.IsError.Should().BeFalse();
+        request.Value.Should().BeOfType<ErrorOr<ModelClass1>>();
+
+        return;
+
+        static Task<ErrorOr<ModelClass1>> CreateRequestModel1Async()
+        {
+            return Task.FromResult<ErrorOr<ModelClass1>>(new ModelClass1("first"));
+        }
+
+        static Task<ErrorOr<ModelClass2>> CreateRequestModel2Async()
+        {
+            return Task.FromResult<ErrorOr<ModelClass2>>(new ModelClass2(7));
+        }
+    }
+
+    [Fact]
     public void ImplicitCastErrorOrType_WhenAccessingResult_ShouldReturnValue()
     {
         // Act
@@ -248,6 +274,10 @@ public class ErrorOrInstantiationTests
         errorOrUpdated.IsError.Should().BeFalse();
         errorOrUpdated.Value.Should().Be(Result.Updated);
     }
+
+    private record ModelClass1(string Name);
+
+    private record ModelClass2(int Count);
 
     [Fact]
     public void ImplicitCastSingleError_WhenAccessingErrors_ShouldReturnErrorList()
