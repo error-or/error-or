@@ -342,10 +342,14 @@ ErrorOr<int> result = await Task.FromResult(5).ToErrorOrAsync();
 ```cs
 ErrorOr<int> result = Error.Unexpected().ToErrorOr<int>();
 ErrorOr<int> result = new[] { Error.Unauthorized(), Error.Validation() }.ToErrorOr<int>();
+```
 
+```cs
 Task<Error> errorTask = Task.FromResult(Error.Validation());
 ErrorOr<int> result = errorTask.ToErrorOrAsync<int>();
+```
 
+```cs
 List<Error> errors = [Error.Unauthorized(), Error.Validation()];
 Task<List<Error>> errorsTask = Task.FromResult(errors);
 ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
