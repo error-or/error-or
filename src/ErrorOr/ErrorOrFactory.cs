@@ -6,7 +6,7 @@ namespace ErrorOr;
 public static class ErrorOrFactory
 {
     /// <summary>
-    /// Creates a new instance of <see cref="ErrorOr{TValue}"/> with a value.
+    /// Creates a new instance of <see cref="ErrorOr{TValue}"/> from a value.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="value">The value to wrap.</param>
@@ -61,7 +61,7 @@ public static class ErrorOrFactory
     }
 
     /// <summary>
-    /// Creates an awaitable <see cref="ErrorOr{TValue}"/> from a list of errors.
+    /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from a list of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="errors">List of errors.</param>
@@ -83,7 +83,7 @@ public static class ErrorOrFactory
     }
 
     /// <summary>
-    /// Creates an awaitable <see cref="ErrorOr{TValue}"/> from an enumeration of errors.
+    /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from an enumeration of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="errors">Enumeration of errors.</param>
