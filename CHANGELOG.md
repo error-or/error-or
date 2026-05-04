@@ -124,6 +124,8 @@ All notable changes to this project are documented in this file.
     }
     ```
 
+- [#179](https://github.com/error-or/error-or/pull/179) Support for .NET 10 was added
+
 ### Fixed
 
 - [#85](https://github.com/amantinband/error-or/issues/85), [#97](https://github.com/amantinband/error-or/pull/97) `ErrorOr` turned into Value Object by reimplementing `Equals` and `GetHashCode` methods
