@@ -8,6 +8,7 @@
 
 [![GitHub contributors](https://img.shields.io/github/contributors/amantinband/error-or)](https://GitHub.com/amantinband/error-or/graphs/contributors/) [![GitHub Stars](https://img.shields.io/github/stars/amantinband/error-or.svg)](https://github.com/amantinband/error-or/stargazers) [![GitHub license](https://img.shields.io/github/license/amantinband/error-or)](https://github.com/amantinband/error-or/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/amantinband/error-or/branch/main/graph/badge.svg?token=DR2EBIWK7B)](https://codecov.io/gh/amantinband/error-or)
+
 ---
 
 ### A simple, fluent discriminated union of an error or a result
@@ -18,51 +19,51 @@
 
 - [Give it a star ⭐!](#give-it-a-star-)
 - [Getting Started 🏃](#getting-started-)
-  - [Replace throwing exceptions with `ErrorOr<T>`](#replace-throwing-exceptions-with-errorort)
-  - [Support For Multiple Errors](#support-for-multiple-errors)
-  - [Various Functional Methods and Extension Methods](#various-functional-methods-and-extension-methods)
-    - [Real world example](#real-world-example)
-    - [Simple Example with intermediate steps](#simple-example-with-intermediate-steps)
-      - [No Failure](#no-failure)
-      - [Failure](#failure)
+    - [Replace throwing exceptions with `ErrorOr<T>`](#replace-throwing-exceptions-with-errorort)
+    - [Support For Multiple Errors](#support-for-multiple-errors)
+    - [Various Functional Methods and Extension Methods](#various-functional-methods-and-extension-methods)
+        - [Real world example](#real-world-example)
+        - [Simple Example with intermediate steps](#simple-example-with-intermediate-steps)
+            - [No Failure](#no-failure)
+            - [Failure](#failure)
 - [Creating an `ErrorOr` instance](#creating-an-erroror-instance)
-  - [Using implicit conversion](#using-implicit-conversion)
-  - [Using The `ErrorOrFactory`](#using-the-errororfactory)
-  - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
+    - [Using implicit conversion](#using-implicit-conversion)
+    - [Using The `ErrorOrFactory`](#using-the-errororfactory)
+    - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
 - [Properties](#properties)
-  - [`IsError`](#iserror)
-  - [`IsSuccess`](#issuccess)
-  - [`Value`](#value)
-  - [`Errors`](#errors)
-  - [`FirstError`](#firsterror)
-  - [`ErrorsOrEmptyList`](#errorsoremptylist)
+    - [`IsError`](#iserror)
+    - [`IsSuccess`](#issuccess)
+    - [`Value`](#value)
+    - [`Errors`](#errors)
+    - [`FirstError`](#firsterror)
+    - [`ErrorsOrEmptyList`](#errorsoremptylist)
 - [Methods](#methods)
-  - [`Match`](#match)
-    - [`Match`](#match-1)
-    - [`MatchAsync`](#matchasync)
-    - [`MatchFirst`](#matchfirst)
-    - [`MatchFirstAsync`](#matchfirstasync)
-  - [`Switch`](#switch)
-    - [`Switch`](#switch-1)
-    - [`SwitchAsync`](#switchasync)
-    - [`SwitchFirst`](#switchfirst)
-    - [`SwitchFirstAsync`](#switchfirstasync)
-  - [`Then`](#then)
-    - [`Then`](#then-1)
-    - [`ThenAsync`](#thenasync)
-    - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
-    - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
-    - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
-  - [`FailIf`](#failif)
-  - [`Else`](#else)
-    - [`Else`](#else-1)
-    - [`ElseAsync`](#elseasync)
-    - [`ElseDo` and `ElseDoAsync`](#elsedo-and-elsedoasync)
+    - [`Match`](#match)
+        - [`Match`](#match-1)
+        - [`MatchAsync`](#matchasync)
+        - [`MatchFirst`](#matchfirst)
+        - [`MatchFirstAsync`](#matchfirstasync)
+    - [`Switch`](#switch)
+        - [`Switch`](#switch-1)
+        - [`SwitchAsync`](#switchasync)
+        - [`SwitchFirst`](#switchfirst)
+        - [`SwitchFirstAsync`](#switchfirstasync)
+    - [`Then`](#then)
+        - [`Then`](#then-1)
+        - [`ThenAsync`](#thenasync)
+        - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
+        - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
+        - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
+    - [`FailIf`](#failif)
+    - [`Else`](#else)
+        - [`Else`](#else-1)
+        - [`ElseAsync`](#elseasync)
+        - [`ElseDo` and `ElseDoAsync`](#elsedo-and-elsedoasync)
 - [Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)](#mixing-features-then-failif-else-switch-match)
 - [Recording Outcomes](#recording-outcomes)
 - [Error Types](#error-types)
-  - [Built in error types](#built-in-error-types)
-  - [Custom error types](#custom-error-types)
+    - [Built in error types](#built-in-error-types)
+    - [Custom error types](#custom-error-types)
 - [Built in result types (`Result.Success`, ..)](#built-in-result-types-resultsuccess-)
 - [Organizing Errors](#organizing-errors)
 - [Mediator + FluentValidation + `ErrorOr` 🤝](#mediator--fluentvalidation--erroror-)
@@ -274,6 +275,12 @@ ErrorOr<int> result = ErrorOrFactory.From<int>([Error.Validation(), Error.Valida
 ```
 
 ```cs
+ErrorOr<int> result = await ErrorOrFactory.FromAsync(5);
+ErrorOr<int> result = await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+ErrorOr<int> result = await ErrorOrFactory.FromAsync<int>([Error.Validation(), Error.Validation()]);
+```
+
+```cs
 public ErrorOr<int> GetValue()
 {
     return ErrorOrFactory.From(5);
@@ -297,6 +304,30 @@ public ErrorOr<int> MultipleErrorsToErrorOr()
 }
 ```
 
+```cs
+public async Tak<ErrorOr<int>> GetValueAsync()
+{
+    return await ErrorOrFactory.FromAsync(5);
+}
+```
+
+```cs
+public async Tak<ErrorOr<int>> SingleErrorToErrorOrAsync()
+{
+    return await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+}
+```
+
+```cs
+public async Tak<ErrorOr<int>> MultipleErrorsToErrorOrAsync()
+{
+    return await ErrorOrFactory.FromAsync([
+        Error.Validation(description: "Invalid Name"),
+        Error.Validation(description: "Invalid Last Name")
+    ]);
+}
+```
+
 ## Using The `ToErrorOr` Extension Method
 
 ### Values
@@ -310,7 +341,18 @@ ErrorOr<int> result = await Task.FromResult(5).ToErrorOrAsync();
 
 ```cs
 ErrorOr<int> result = Error.Unexpected().ToErrorOr<int>();
-ErrorOr<int> result = new[] { Error.Validation(), Error.Validation() }.ToErrorOr<int>();
+ErrorOr<int> result = new[] { Error.Unauthorized(), Error.Validation() }.ToErrorOr<int>();
+```
+
+```cs
+Task<Error> errorTask = Task.FromResult(Error.Validation());
+ErrorOr<int> result = errorTask.ToErrorOrAsync<int>();
+```
+
+```cs
+List<Error> errors = [Error.Unauthorized(), Error.Validation()];
+Task<List<Error>> errorsTask = Task.FromResult(errors);
+ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
 ```
 
 # Properties

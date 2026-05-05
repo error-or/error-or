@@ -105,11 +105,53 @@ All notable changes to this project are documented in this file.
     ErrorOr<int> result = [Error.Validation(), Error.Validation()];
     ```
 
+- [#134](https://github.com/error-or/error-or/pull/134) Added `FromAsync` and missing `ToErrorOrAsync` methods
+
+    Added support for `FromAsync` methods.
+
+    ```cs
+    public async Tak<ErrorOr<int>> GetValueAsync()
+    {
+        return await ErrorOrFactory.FromAsync(5);
+    }
+    ```
+
+    ```cs
+    public async Tak<ErrorOr<int>> SingleErrorToErrorOrAsync()
+    {
+        return await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+    }
+    ```
+
+    ```cs
+    public async Tak<ErrorOr<int>> MultipleErrorsToErrorOrAsync()
+    {
+        return await ErrorOrFactory.FromAsync([
+            Error.Validation(description: "Invalid Name"),
+            Error.Validation(description: "Invalid Last Name")
+        ]);
+    }
+    ```
+
+    Added support for `ToErrorOrAsync` methods from errors:
+
+    ```cs
+    Task<Error> errorTask = Task.FromResult(Error.Validation());
+    ErrorOr<int> result = errorTask.ToErrorOrAsync<int>();
+    ```
+
+    ```cs
+    List<Error> errors = [Error.Unauthorized(), Error.Validation()];
+    Task<List<Error>> errorsTask = Task.FromResult(errors);
+    ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
+    ```
+
 - [#149](https://github.com/amantinband/error-or/pull/149) Added `Else`/`ElseAsync` overloads returning `ErrorOr`
 
 - [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnshure` and `ThenEnshureAsync` methods.
-  They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
-  If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
+
+    They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
+    If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
 
 - [#159](https://github.com/amantinband/error-or/pull/159) Added `IsSuccess` property to `ErrorOr`
 

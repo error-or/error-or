@@ -112,6 +112,20 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncValue_WhenAccessingValue_ShouldReturnValue()
+    {
+        // Arrange
+        IEnumerable<string> value = ["value"];
+
+        // Act
+        ErrorOr<IEnumerable<string>> errorOrPerson = await ErrorOrFactory.FromAsync(value);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeFalse();
+        errorOrPerson.Value.Should().BeSameAs(value);
+    }
+
+    [Fact]
     public void CreateFromErrorList_UsingFactory_WhenAccessingErrors_ShouldReturnErrorList()
     {
         // Arrange
@@ -119,6 +133,20 @@ public class ErrorOrInstantiationTests
 
         // Act
         ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>([error]);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.Errors.Should().ContainSingle().Which.Should().Be(error);
+    }
+
+    [Fact]
+    public async Task CreateFromAsyncErrorList_UsingFactory_WhenAccessingErrors_ShouldReturnErrorList()
+    {
+        // Arrange
+        var error = Error.Validation("User.Name", "Name is too short");
+
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>([error]);
 
         // Assert
         errorOrPerson.IsError.Should().BeTrue();
@@ -204,6 +232,16 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncSingleError_UsingFactory_ShouldBeError()
+    {
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>(Error.Validation("User.Name", "Name is too short"));
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void CreateFromArrayOfErrors_UsingFactory_ShouldBeError()
     {
         // Arrange
@@ -214,6 +252,22 @@ public class ErrorOrInstantiationTests
 
         // Act
         ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>(errors);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CreateFromAsyncArrayOfErrors_UsingFactory_ShouldBeError()
+    {
+        // Arrange
+        Error[] errors = [
+            Error.Validation("User.Name", "Name is too short"),
+            Error.Forbidden("User.Forbidden", "You are not allowed to create user")
+        ];
+
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>(errors);
 
         // Assert
         errorOrPerson.IsError.Should().BeTrue();
