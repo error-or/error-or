@@ -24,5 +24,8 @@
     <File Path=".github/workflows/unlist.yml" />
   </Folder>
   <Project Path="src/ErrorOr.csproj" />
+  <Project Path="src/ErrorOr.AspNetCore/ErrorOr.AspNetCore.csproj" />
   <Project Path="tests/Tests.csproj" />
+  <Project Path="tests/ErrorOr.AspNetCore/Tests.AspNetCore.csproj" />
+  <Project Path="tests/ErrorOr.AspNetCore.Integration/Tests.AspNetCore.Integration.csproj" />
 </Solution>
