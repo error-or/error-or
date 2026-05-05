@@ -69,10 +69,10 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     }
 
     /// <inheritdoc/>
-    public IEnumerator<Error> GetEnumerator() => _errors!.GetEnumerator();
+    object? IErrorOr.Value => _value;
 
     /// <inheritdoc/>
-    object? IErrorOr.Value => _value;
+    public IEnumerator<Error> GetEnumerator() => _errors!.GetEnumerator();
 
     /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.

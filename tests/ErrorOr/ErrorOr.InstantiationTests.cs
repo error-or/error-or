@@ -38,6 +38,22 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void CreateFromValue_WhenAccessingValue_ViaWeaklyTypedInterface_ShouldReturnValue()
+    {
+        // Arrange
+        IEnumerable<string> value = ["value"];
+
+        // Act
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+        IErrorOr errorOrValue = ErrorOrFactory.From(value);
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
+        // Assert
+        errorOrValue.IsError.Should().BeFalse();
+        errorOrValue.Value.Should().BeSameAs(value);
+    }
+
+    [Fact]
     public void CreateFromValue_WhenAccessingValue_ViaIRecordable_ShouldReturnJson()
     {
         // Arrange
@@ -83,39 +99,6 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void CreateFromValue_WhenAccessingValue_ViaStronglyTypedInterface_ShouldReturnValue()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-
-        // Act
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IErrorOr<IEnumerable<string>> errorOrValue = ErrorOrFactory.From(value);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
-
-        // Assert
-        errorOrValue.IsError.Should().BeFalse();
-        errorOrValue.Value.Should().BeSameAs(value);
-    }
-
-    [Fact]
-    public void CreateFromValue_WhenAccessingValue_ViaWeaklyTypedInterface_ShouldReturnValue()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-
-        // Act
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IErrorOr errorOrValue = ErrorOrFactory.From(value);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
-
-        // Assert
-        errorOrValue.IsError.Should().BeFalse();
-        errorOrValue.Value.Should().BeSameAs(value);
-    }
-
-    [Fact]
-    public void CreateFromValue_WhenAccessingErrors_ShouldThrow()
     public void CreateFromValue_WhenAccessingErrorsOrEmptyList_ShouldReturnEmptyList()
     {
         // Arrange
