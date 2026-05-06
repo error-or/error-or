@@ -19,5 +19,13 @@ jobs:
                   dotnet-version: 10.0.x
             - name: Restore dependencies
               run: dotnet restore
-            - run: dotnet build -c Release --no-restore
-            - run: dotnet test -c Release --no-restore --verbosity normal
+            - name: Build
+              run: dotnet build -c Release --no-restore
+            - name: Test Debug
+              run: dotnet test -c Debug --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+            - name: Test Release
+              run: dotnet test -c Release --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+            - name: Upload coverage to Codecov
+              uses: codecov/codecov-action@v6
+              with:
+                  token: ${{ secrets.CODE_COV_TOKEN }}
