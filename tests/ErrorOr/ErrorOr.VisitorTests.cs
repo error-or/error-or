@@ -124,30 +124,20 @@ public class ErrorOrRecordableTests
         AddressRecord? Address,
         List<string>? Tags);
 
-    private sealed class SystemTextJsonErrorOrVisitor : IErrorOrVisitor
+    private sealed class SystemTextJsonErrorOrVisitor : BaseErrorOrVisitor
     {
         public string? SerializationResult { get; private set; }
 
-        public ErrorOr<Success> VisitValue<TValue>(TValue value)
+        public override ErrorOr<Success> VisitValue<TValue>(TValue value)
         {
             SerializationResult = JsonSerializer.Serialize(value, JsonOptions);
             return Result.Success;
         }
 
-        public ErrorOr<Success> VisitErrors(List<Error> errors)
+        public override ErrorOr<Success> VisitErrors(List<Error> errors)
         {
             SerializationResult = JsonSerializer.Serialize(errors, JsonOptions);
             return Result.Success;
-        }
-
-        IErrorOr IErrorOrVisitor.VisitValue<TValue>(TValue value)
-        {
-            return VisitValue(value);
-        }
-
-        IErrorOr IErrorOrVisitor.VisitErrors(List<Error> errors)
-        {
-            return VisitErrors(errors);
         }
     }
 }
