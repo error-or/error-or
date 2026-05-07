@@ -9,7 +9,6 @@
         <PackageVersion Include="System.Memory" Version="4.6.3"/>
         <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     </ItemGroup>
-
     <ItemGroup Label="Tests">
         <PackageVersion Include="fluentassertions" Version="8.9.0" />
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
