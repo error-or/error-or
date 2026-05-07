@@ -26,7 +26,7 @@ public class ErrorOrRecordableTests
             new AddressRecord("123 Main St", "Springfield", null),
             ["Developer", "Admin"]);
 
-        IRecordable errorOr = ErrorOrFactory.From(person);
+        IErrorOr errorOr = ErrorOrFactory.From(person);
         var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
