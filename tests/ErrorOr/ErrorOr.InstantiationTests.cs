@@ -8,25 +8,6 @@ public class ErrorOrInstantiationTests
 {
     private record Person(string Name);
 
-    private sealed class SystemTextJsonRecorder : IRecordingSerializer
-    {
-        public string SerializeValue<TValue>(TValue value) =>
-            System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never,
-            });
-
-        public string SerializeErrors(List<Error> errors) =>
-            System.Text.Json.JsonSerializer.Serialize(errors, new System.Text.Json.JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never,
-            });
-    }
-
     [Fact]
     public void CreateFromValue_WhenAccessingValue_ShouldReturnValue()
     {
@@ -55,37 +36,6 @@ public class ErrorOrInstantiationTests
         // Assert
         errorOrValue.IsError.Should().BeFalse();
         errorOrValue.Value.Should().BeSameAs(value);
-    }
-
-    [Fact]
-    public void CreateFromValue_WhenAccessingValue_ViaIRecordable_ShouldReturnJson()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-
-        // Act
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IRecordable errorOrValue = ErrorOrFactory.From(value);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
-
-        // Assert
-        errorOrValue.GetRecording(new SystemTextJsonRecorder()).Should().Be(System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true }));
-    }
-
-    [Fact]
-    public void CreateFromError_WhenAccessingValue_ViaIRecordable_ShouldReturnJsonErrors()
-    {
-        // Arrange
-        var error = Error.Unexpected();
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IRecordable errorOrValue = (ErrorOr<string>)error;
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
-
-        // Act
-        var recording = errorOrValue.GetRecording(new SystemTextJsonRecorder());
-
-        // Assert
-        recording.Should().Be(System.Text.Json.JsonSerializer.Serialize(new[] { error }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true, Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } }));
     }
 
     [Fact]

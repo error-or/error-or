@@ -1,15 +1,7 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace ErrorOr;
+﻿namespace ErrorOr;
 
 public readonly partial record struct ErrorOr<TValue>
 {
-    /// <inheritdoc/>
-    public override string ToString() => IsError
-        ? JsonSerializer.Serialize(Errors, RecordableDefaults.JsonOptions)
-        : JsonSerializer.Serialize(Value, RecordableDefaults.JsonOptions);
-
     /// <summary>
     /// Returns a string representation of the current state using the provided <paramref name="recorder"/> function.
     /// </summary>
@@ -20,7 +12,7 @@ public readonly partial record struct ErrorOr<TValue>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="recorder"/> is <see langword="null"/>.</exception>
     /// <remarks>
     /// Use this overload to produce recordings in any format without taking a dependency on
-    /// <see cref="System.Text.Json"/>. The caller can inspect <see cref="ErrorOr{TValue}.IsError"/>,
+    /// <c>System.Text.Json</c>. The caller can inspect <see cref="ErrorOr{TValue}.IsError"/>,
     /// <see cref="ErrorOr{TValue}.Value"/>, and <see cref="ErrorOr{TValue}.Errors"/> within the function.
     /// </remarks>
     public string GetRecording(Func<ErrorOr<TValue>, string> recorder)
@@ -43,7 +35,7 @@ public readonly partial record struct ErrorOr<TValue>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="onValue"/> or <paramref name="onError"/> is <see langword="null"/>.</exception>
     /// <remarks>
     /// Use this overload to produce recordings in any format without taking a dependency on
-    /// <see cref="System.Text.Json"/>. Mirrors the <c>Match</c> pattern — one delegate per state.
+    /// <c>System.Text.Json</c>. Mirrors the <c>Match</c> pattern — one delegate per state.
     /// </remarks>
     public string GetRecording(Func<TValue, string> onValue, Func<List<Error>, string> onError)
     {
@@ -70,14 +62,4 @@ public readonly partial record struct ErrorOr<TValue>
 
         return IsError ? serializer.SerializeErrors(Errors!) : serializer.SerializeValue(Value);
     }
-}
-
-internal static class RecordableDefaults
-{
-    internal static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() },
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-    };
 }

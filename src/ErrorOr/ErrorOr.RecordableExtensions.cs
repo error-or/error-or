@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Extension methods for <see cref="IErrorOr"/> and <see cref="IErrorOr{TValue}"/> that provide
-/// format-agnostic recording without a dependency on <see cref="System.Text.Json"/>.
+/// format-agnostic recording without a dependency on <c>System.Text.Json</c>.
 /// </summary>
 public static partial class ErrorOrExtensions
 {
