@@ -515,6 +515,211 @@ public class ErrorOrRecordableTests
         public List<AddressRecord>? Addresses { get; } = addresses;
     }
 
+    [Fact]
+    public void GetRecording_WithSerializer_WhenIsValue_ShouldCallSerializeValue()
+    {
+        // Arrange
+        var person = new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null);
+        IRecordable errorOr = ErrorOrFactory.From(person);
+        var serializer = new PlainTextRecordingSerializer();
+
+        // Act
+        var recording = errorOr.GetRecording(serializer);
+
+        // Assert
+        recording.Should().Be($"value:{person.Name}:{person.Age}");
+    }
+
+    [Fact]
+    public void GetRecording_WithSerializer_WhenIsError_ShouldCallSerializeErrors()
+    {
+        // Arrange
+        var error = Error.Unexpected("Test.Error", "Oops.");
+        IRecordable errorOr = (ErrorOr<PersonRecord>)error;
+        var serializer = new PlainTextRecordingSerializer();
+
+        // Act
+        var recording = errorOr.GetRecording(serializer);
+
+        // Assert
+        recording.Should().Be("errors:Test.Error");
+    }
+
+    [Fact]
+    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsValue_ShouldCallSerializeValue()
+    {
+        // Arrange
+        var person = new PersonRecord("Bob", null, 25, PersonStatus.Active, null, null);
+        IErrorOr errorOr = ErrorOrFactory.From(person);
+        var serializer = new PlainTextRecordingSerializer();
+
+        // Act
+        var recording = errorOr.GetRecording(serializer);
+
+        // Assert
+        recording.Should().Be($"value:{person.Name}:{person.Age}");
+    }
+
+    [Fact]
+    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsError_ShouldCallSerializeErrors()
+    {
+        // Arrange
+        var error = Error.Validation("Val.Error", "Invalid.");
+        IErrorOr errorOr = (ErrorOr<PersonRecord>)error;
+        var serializer = new PlainTextRecordingSerializer();
+
+        // Act
+        var recording = errorOr.GetRecording(serializer);
+
+        // Assert
+        recording.Should().Be("errors:Val.Error");
+    }
+
+    [Fact]
+    public void GetRecording_WithSerializer_NullSerializer_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
+
+        // Act
+        var act = () => errorOr.GetRecording((IRecordingSerializer)null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("serializer");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_WhenIsValue_ShouldCallOnValue()
+    {
+        // Arrange
+        var person = new PersonRecord("Carol", null, 40, PersonStatus.Active, null, null);
+        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
+
+        // Act
+        var recording = errorOr.GetRecording(
+            onValue: p => $"Name={p.Name},Age={p.Age}",
+            onError: errors => $"Errors={errors.Count}");
+
+        // Assert
+        recording.Should().Be("Name=Carol,Age=40");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_WhenIsError_ShouldCallOnError()
+    {
+        // Arrange
+        var error = Error.Unexpected("Err.Code", "Bad.");
+        ErrorOr<PersonRecord> errorOr = error;
+
+        // Act
+        var recording = errorOr.GetRecording(
+            onValue: p => $"Name={p.Name}",
+            onError: errors => string.Join(",", errors.Select(e => e.Code)));
+
+        // Assert
+        recording.Should().Be("Err.Code");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_NullOnValue_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
+
+        // Act
+        var act = () => errorOr.GetRecording((Func<PersonRecord, string>)null!, errors => "errors");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("onValue");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_NullOnError_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
+
+        // Act
+        var act = () => errorOr.GetRecording(p => p.Name, (Func<List<Error>, string>)null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("onError");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_ViaIErrorOrTyped_WhenIsValue_ShouldCallOnValue()
+    {
+        // Arrange
+        var person = new PersonRecord("Dave", null, 35, PersonStatus.Active, null, null);
+        IErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
+
+        // Act
+        var recording = errorOr.GetRecording(
+            onValue: p => $"Name={p.Name}",
+            onError: errors => "errors");
+
+        // Assert
+        recording.Should().Be("Name=Dave");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_ViaIErrorOrTyped_WhenIsError_ShouldCallOnError()
+    {
+        // Arrange
+        var error = Error.Unexpected("X.Code", "Desc.");
+        IErrorOr<PersonRecord> errorOr = (ErrorOr<PersonRecord>)error;
+
+        // Act
+        var recording = errorOr.GetRecording(
+            onValue: p => p.Name,
+            onError: errors => string.Join(";", errors.Select(e => e.Code)));
+
+        // Assert
+        recording.Should().Be("X.Code");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_ViaIErrorOrTyped_NullOnValue_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        IErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
+
+        // Act
+        var act = () => errorOr.GetRecording((Func<PersonRecord, string>)null!, errors => "errors");
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("onValue");
+    }
+
+    [Fact]
+    public void GetRecording_WithTwoFuncs_ViaIErrorOrTyped_NullOnError_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        IErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
+
+        // Act
+        var act = () => errorOr.GetRecording(p => p.Name, (Func<List<Error>, string>)null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("onError");
+    }
+
+    private sealed class PlainTextRecordingSerializer : IRecordingSerializer
+    {
+        public string SerializeValue<TValue>(TValue value)
+        {
+            if (value is PersonRecord p)
+            {
+                return $"value:{p.Name}:{p.Age}";
+            }
+
+            return $"value:{value}";
+        }
+
+        public string SerializeErrors(List<Error> errors)
+            => $"errors:{string.Join(",", errors.Select(e => e.Code))}";
+    }
+
     private readonly struct PersonStruct(string name, string? middleName, PersonStatus status, List<AddressRecord>? addresses)
     {
         public string Name { get; } = name;
