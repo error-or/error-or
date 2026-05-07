@@ -46,5 +46,6 @@ public interface IErrorOr
     /// Accepts the provided <paramref name="visitor"/> and invokes visit method appropriate to current state of <see cref="IErrorOr" />.
     /// </summary>
     /// <param name="visitor">An <see cref="IErrorOrVisitor"/> implementing visit methods for value and errors.</param>
-    void Accept(IErrorOrVisitor visitor);
+    /// <returns>Result of visitor acceptance.</returns>
+    IErrorOr Accept(IErrorOrVisitor visitor);
 }

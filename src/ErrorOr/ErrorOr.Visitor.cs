@@ -2,21 +2,24 @@ namespace ErrorOr;
 
 public readonly partial record struct ErrorOr<TValue>
 {
-    /// <inheritdoc/>
-    public void Accept(IErrorOrVisitor visitor)
+    /// <summary>
+    /// Accepts the provided <paramref name="visitor"/> and invokes visit method appropriate to current state of <see cref="IErrorOr" />.
+    /// </summary>
+    /// <param name="visitor">An <see cref="IErrorOrVisitor"/> implementing visit methods for value and errors.</param>
+    /// <returns>Unexpected error when visitor is null; otherwise success.</returns>
+    public ErrorOr<Success> Accept(IErrorOrVisitor visitor)
     {
         if (visitor is null)
         {
-            throw new ArgumentNullException(nameof(visitor));
+            return KnownErrors.NullVisitor;
         }
 
-        if (IsError)
-        {
-            visitor.VisitErrors(Errors);
-        }
-        else
-        {
-            visitor.VisitValue(Value);
-        }
+        Switch(value => visitor.VisitValue(value), errors => visitor.VisitErrors(errors));
+        return Result.Success;
+    }
+
+    IErrorOr IErrorOr.Accept(IErrorOrVisitor visitor)
+    {
+        return Accept(visitor);
     }
 }

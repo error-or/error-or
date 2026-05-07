@@ -14,6 +14,10 @@ internal static class KnownErrors
         code: "ErrorOr.EmptyInitialErrors",
         description: "Error list cannot be null or empty when initializing ErrorOr.");
 
+    public static Error NullVisitor { get; } = Error.Unexpected(
+        code: "ErrorOr.NullVisitor",
+        description: "Provided visitor cannot be null.");
+
     public static List<Error> CachedNoErrorsList { get; } = new (1) { NoErrors };
 
     public static List<Error> CachedInvalidInitialErrorsList { get; } = new(1) { EmptyInitialErrors };

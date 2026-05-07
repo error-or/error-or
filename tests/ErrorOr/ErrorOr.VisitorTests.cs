@@ -88,7 +88,7 @@ public class ErrorOrRecordableTests
     }
 
     [Fact]
-    public void Accept_WithNullVisitor_ShouldThrowArgumentNullException()
+    public void Accept_WithNullVisitor_ShouldBeUnexpected()
     {
         // Arrange
         ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord(
@@ -100,10 +100,11 @@ public class ErrorOrRecordableTests
             null));
 
         // Act
-        var act = () => errorOr.Accept(null!);
+        var result = errorOr.Accept(null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithParameterName("visitor");
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
     }
 
     private enum PersonStatus
