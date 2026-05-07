@@ -14,7 +14,7 @@ public abstract class BaseErrorOrVisitor : IErrorOrVisitor
     /// <param name="value">The value to be processed.</param>
     /// <returns>An <see cref="ErrorOr{Success}"/> that represents the outcome of processing the value. Returns a success result
     /// if the operation completes successfully; otherwise, returns an error result.</returns>
-    public abstract ErrorOr<Success> VisitValue<TValue>(TValue value);
+    public abstract ErrorOr<Success> Visit<TValue>(TValue value);
 
     /// <summary>
     /// Processes a collection of errors and returns a result indicating success or an error.
@@ -22,9 +22,9 @@ public abstract class BaseErrorOrVisitor : IErrorOrVisitor
     /// <param name="errors">The list of errors to process. Cannot be null.</param>
     /// <returns>An <see cref="ErrorOr{Success}"/> value representing the outcome of processing the errors. Returns a success result if the
     /// errors are handled successfully; otherwise, returns an error result.</returns>
-    public abstract ErrorOr<Success> VisitErrors(List<Error> errors);
+    public abstract ErrorOr<Success> Visit(List<Error> errors);
 
-    IErrorOr IErrorOrVisitor.VisitValue<TValue>(TValue value) => VisitValue(value);
+    IErrorOr IErrorOrVisitor.Visit<TValue>(TValue value) => Visit(value);
 
-    IErrorOr IErrorOrVisitor.VisitErrors(List<Error> errors) => VisitErrors(errors);
+    IErrorOr IErrorOrVisitor.Visit(List<Error> errors) => Visit(errors);
 }

@@ -14,7 +14,7 @@ public readonly partial record struct ErrorOr<TValue>
             return KnownErrors.NullVisitor;
         }
 
-        var result = IsError ? visitor.VisitErrors(Errors) : visitor.VisitValue(Value);
+        var result = IsError ? visitor.Visit(Errors) : visitor.Visit(Value);
         if (result.IsError)
         {
             return result.Errors!;

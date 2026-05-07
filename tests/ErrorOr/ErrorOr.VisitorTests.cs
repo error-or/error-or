@@ -126,13 +126,13 @@ public class ErrorOrRecordableTests
 
         public string? SerializedOutput { get; private set; }
 
-        public override ErrorOr<Success> VisitValue<TValue>(TValue value)
+        public override ErrorOr<Success> Visit<TValue>(TValue value)
         {
             SerializedOutput = JsonSerializer.Serialize(value, Options);
             return Result.Success;
         }
 
-        public override ErrorOr<Success> VisitErrors(List<Error> errors)
+        public override ErrorOr<Success> Visit(List<Error> errors)
         {
             SerializedOutput = JsonSerializer.Serialize(errors, Options);
             return Result.Success;
