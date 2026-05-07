@@ -6,7 +6,7 @@
 /// </summary>
 /// <remarks>
 /// Implement this interface to record <see cref="ErrorOr{TValue}"/> state in a custom format
-/// (e.g., XML, MessagePack, plain text). The library calls <see cref="SerializeValue{TValue}"/>
+/// (e.g. XML, Json, plain text). The library calls <see cref="SerializeValue{TValue}"/>
 /// with the fully-typed value, so no boxing is visible to the implementor.
 /// </remarks>
 public interface IRecordingSerializer
