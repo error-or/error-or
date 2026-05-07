@@ -128,8 +128,26 @@ public class ErrorOrRecordableTests
     {
         public string? SerializationResult { get; private set; }
 
-        public void VisitValue<TValue>(TValue value) => SerializationResult = JsonSerializer.Serialize(value, JsonOptions);
+        public ErrorOr<Success> VisitValue<TValue>(TValue value)
+        {
+            SerializationResult = JsonSerializer.Serialize(value, JsonOptions);
+            return Result.Success;
+        }
 
-        public void VisitErrors(List<Error> errors) => SerializationResult = JsonSerializer.Serialize(errors, JsonOptions);
+        public ErrorOr<Success> VisitErrors(List<Error> errors)
+        {
+            SerializationResult = JsonSerializer.Serialize(errors, JsonOptions);
+            return Result.Success;
+        }
+
+        IErrorOr IErrorOrVisitor.VisitValue<TValue>(TValue value)
+        {
+            return VisitValue(value);
+        }
+
+        IErrorOr IErrorOrVisitor.VisitErrors(List<Error> errors)
+        {
+            return VisitErrors(errors);
+        }
     }
 }

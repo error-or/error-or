@@ -14,11 +14,13 @@ public interface IErrorOrVisitor
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="value">The success value to visit.</param>
-    void VisitValue<TValue>(TValue value);
+    /// <returns>An <see cref="IErrorOr"/> representing the result of the visit.</returns>
+    IErrorOr VisitValue<TValue>(TValue value);
 
     /// <summary>
     /// Visits a list of errors.
     /// </summary>
     /// <param name="errors">The list of errors to visit.</param>
-    void VisitErrors(List<Error> errors);
+    /// <returns>An <see cref="IErrorOr"/> representing the result of the visit.</returns>
+    IErrorOr VisitErrors(List<Error> errors);
 }
