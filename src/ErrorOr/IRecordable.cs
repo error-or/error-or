@@ -1,6 +1,4 @@
-using System.Text.Json;
-
-namespace ErrorOr;
+﻿namespace ErrorOr;
 
 /// <summary>
 /// Interface for producing a loggable string representation of an <see cref="ErrorOr{TValue}"/> value
@@ -13,21 +11,15 @@ namespace ErrorOr;
 public interface IRecordable
 {
     /// <summary>
-    /// Returns a JSON representation of the current state.
+    /// Returns a string representation of the current state using the provided <paramref name="serializer"/>.
     /// </summary>
+    /// <param name="serializer">An <see cref="IRecordingSerializer"/> that produces the string representation.</param>
     /// <returns>
-    /// When <see cref="IErrorOr.IsError"/> is <c>false</c>, returns a JSON representation of the value.
-    /// When <see cref="IErrorOr.IsError"/> is <c>true</c>, returns a JSON array of the recorded errors.
+    /// When <see cref="IErrorOr.IsError"/> is <c>false</c>, returns the result of
+    /// <see cref="IRecordingSerializer.SerializeValue{TValue}"/> called with the success value.
+    /// When <see cref="IErrorOr.IsError"/> is <c>true</c>, returns the result of
+    /// <see cref="IRecordingSerializer.SerializeErrors"/> called with the error list.
     /// </returns>
-    string GetRecording();
-
-    /// <summary>
-    /// Returns a JSON representation of the current state using the specified <see cref="JsonSerializerOptions"/>.
-    /// </summary>
-    /// <param name="options">The <see cref="JsonSerializerOptions"/> to use for serialization.</param>
-    /// <returns>
-    /// When <see cref="IErrorOr.IsError"/> is <c>false</c>, returns a JSON representation of the value.
-    /// When <see cref="IErrorOr.IsError"/> is <c>true</c>, returns a JSON array of the recorded errors.
-    /// </returns>
-    string GetRecording(JsonSerializerOptions options);
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="serializer"/> is <see langword="null"/>.</exception>
+    string GetRecording(IRecordingSerializer serializer);
 }

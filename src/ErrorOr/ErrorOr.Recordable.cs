@@ -1,31 +1,15 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace ErrorOr;
+﻿namespace ErrorOr;
 
 public readonly partial record struct ErrorOr<TValue>
 {
     /// <inheritdoc/>
-    public string GetRecording() => GetRecording(RecordableDefaults.JsonOptions);
-
-    /// <inheritdoc/>
-    public string GetRecording(JsonSerializerOptions options)
+    public string GetRecording(IRecordingSerializer serializer)
     {
-        if (IsError)
+        if (serializer is null)
         {
-            return JsonSerializer.Serialize(Errors, options);
+            throw new ArgumentNullException(nameof(serializer));
         }
 
-        return JsonSerializer.Serialize(Value, options);
+        return IsError ? serializer.SerializeErrors(Errors) : serializer.SerializeValue(Value);
     }
-}
-
-internal static class RecordableDefaults
-{
-    internal static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() },
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-    };
 }

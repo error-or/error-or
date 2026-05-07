@@ -1,14 +1,20 @@
-namespace Tests;
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using ErrorOr;
 using FluentAssertions;
+namespace Tests;
 
 public class ErrorOrRecordableTests
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+    };
+
     [Fact]
-    public void GetRecording_WhenTValueIsRecordClass_ShouldReturnJson()
+    public void GetRecording_WithSerializer_WhenIsValue_ShouldReturnJson()
     {
         // Arrange
         var person = new PersonRecord(
@@ -19,313 +25,86 @@ public class ErrorOrRecordableTests
             new AddressRecord("123 Main St", "Springfield", null),
             ["Developer", "Admin"]);
 
-        IRecordable errorOr = ErrorOrFactory.From(person);
+        IErrorOr errorOr = ErrorOrFactory.From(person);
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
-        var recording = errorOr.GetRecording();
+        var recording = errorOr.GetRecording(serializer);
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
     }
 
     [Fact]
-    public void GetRecording_WhenTValueIsRecordStruct_ShouldReturnJson()
+    public void GetRecording_WithSerializer_WhenIsError_ShouldReturnJsonErrors()
     {
         // Arrange
-        var person = new PersonRecordStruct(
-            "Alice",
-            null,
-            30,
-            PersonStatus.Active,
-            [new AddressRecord("123 Main St", "Springfield", null), new AddressRecord("456 Oak Ave", "Shelbyville", "62565")]);
-
-        IRecordable errorOr = ErrorOrFactory.From(person);
+        Error error = Error.Unexpected("Test.Error", "Oops.");
+        IRecordable errorOr = ErrorOrFactory.From<PersonRecord>(error);
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
-        var recording = errorOr.GetRecording();
-
-        // Assert
-        recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
-    }
-
-    [Fact]
-    public void GetRecording_WhenTValueIsPlainClass_ShouldReturnJson()
-    {
-        // Arrange
-        var person = new PersonClass(
-            "Alice",
-            null,
-            30,
-            PersonStatus.Active,
-            [new AddressRecord("123 Main St", "Springfield", null), new AddressRecord("456 Oak Ave", "Shelbyville", "62565")]);
-
-        IRecordable errorOr = ErrorOrFactory.From(person);
-
-        // Act
-        var recording = errorOr.GetRecording();
-
-        // Assert
-        recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
-    }
-
-    [Fact]
-    public void GetRecording_WhenTValueIsPlainStruct_ShouldReturnJson()
-    {
-        // Arrange
-        var person = new PersonStruct(
-            "Alice",
-            null,
-            PersonStatus.Active,
-            [new AddressRecord("123 Main St", "Springfield", null)]);
-
-        IRecordable errorOr = ErrorOrFactory.From(person);
-
-        // Act
-        var recording = errorOr.GetRecording();
-
-        // Assert
-        recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
-    }
-
-    [Fact]
-    public void GetRecording_WhenIsError_ShouldReturnJsonErrors()
-    {
-        // Arrange
-        var error = Error.Unexpected();
-
-        IRecordable errorOr = (ErrorOr<PersonRecord>)error;
-
-        // Act
-        var recording = errorOr.GetRecording();
+        var recording = errorOr.GetRecording(serializer);
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
     }
 
     [Fact]
-    public void ToString_WhenTValueIsValue_ShouldReturnJson()
-    {
-        // Arrange
-        var person = new PersonRecord(
-            "Alice",
-            null,
-            30,
-            PersonStatus.Active,
-            new AddressRecord("123 Main St", "Springfield", null),
-            ["Developer", "Admin"]);
-
-        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
-
-        // Act
-        var result = errorOr.ToString();
-
-        // Assert
-        result.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
-    }
-
-    [Fact]
-    public void ToString_WhenIsError_ShouldReturnJsonErrors()
-    {
-        // Arrange
-        var error = Error.Unexpected();
-
-        ErrorOr<PersonRecord> errorOr = error;
-
-        // Act
-        var result = errorOr.ToString();
-
-        // Assert
-        result.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
-    }
-
-    [Fact]
-    public void GetRecording_WithCompactJsonOptions_ShouldReturnCompactJson()
+    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsValue_ShouldReturnJson()
     {
         // Arrange
         var person = new PersonRecord(
             "Bob",
-            "James",
-            25,
-            PersonStatus.Active,
-            new AddressRecord("456 Elm St", "Springfield", null),
-            ["Developer"]);
-
-        var compactOptions = new JsonSerializerOptions
-        {
-            WriteIndented = false,
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            Converters = { new JsonStringEnumConverter() },
-        };
-
-        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
-
-        // Act
-        var recording = errorOr.GetRecording(compactOptions);
-
-        // Assert
-        recording.Should().Be(JsonSerializer.Serialize(person, compactOptions));
-        recording.Should().NotContain("\n");
-        recording.Should().NotContain("  ");
-    }
-
-    [Fact]
-    public void GetRecording_WithIgnoreNullValuesOption_ShouldOmitNullProperties()
-    {
-        // Arrange
-        var person = new PersonRecord(
-            "Charlie",
             null,
-            35,
+            25,
             PersonStatus.Inactive,
             null,
             null);
 
-        var ignoreNullOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters = { new JsonStringEnumConverter() },
-        };
-
-        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
+        IErrorOr errorOr = ErrorOrFactory.From(person);
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
-        var recording = errorOr.GetRecording(ignoreNullOptions);
+        var recording = errorOr.GetRecording(serializer);
 
         // Assert
-        recording.Should().Be(JsonSerializer.Serialize(person, ignoreNullOptions));
-        recording.Should().NotContain("\"middleName\"");
-        recording.Should().NotContain("\"address\"");
-        recording.Should().NotContain("\"tags\"");
+        recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
     }
 
     [Fact]
-    public void GetRecording_WithPropertyNamingPolicy_ShouldUseCamelCase()
+    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsError_ShouldReturnJsonErrors()
     {
         // Arrange
-        var person = new PersonRecord(
-            "Diana",
-            "Marie",
-            28,
-            PersonStatus.Active,
-            new AddressRecord("789 Oak Ave", "Capital City", "12345"),
-            ["Engineer", "Lead"]);
-
-        var camelCaseOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            Converters = { new JsonStringEnumConverter() },
-        };
-
-        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
+        Error error = Error.Validation("Val.Error", "Invalid.");
+        IRecordable errorOr = ErrorOrFactory.From<PersonRecord>(error);
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
-        var recording = errorOr.GetRecording(camelCaseOptions);
+        var recording = errorOr.GetRecording(serializer);
 
         // Assert
-        recording.Should().Be(JsonSerializer.Serialize(person, camelCaseOptions));
-        recording.Should().Contain("\"name\"");
-        recording.Should().Contain("\"middleName\"");
-        recording.Should().Contain("\"age\"");
-        recording.Should().NotContain("\"Name\"");
-        recording.Should().NotContain("\"MiddleName\"");
+        recording.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
     }
 
     [Fact]
-    public void GetRecording_WithCustomOptions_WhenError_ShouldRespectOptions()
+    public void GetRecording_WithSerializer_NullSerializer_ShouldThrowArgumentNullException()
     {
         // Arrange
-        var error = Error.Unexpected();
-        var compactOptions = new JsonSerializerOptions
-        {
-            WriteIndented = false,
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            Converters = { new JsonStringEnumConverter() },
-        };
-
-        ErrorOr<PersonRecord> errorOr = error;
-
-        // Act
-        var recording = errorOr.GetRecording(compactOptions);
-
-        // Assert
-        recording.Should().Be(JsonSerializer.Serialize(new[] { error }, compactOptions));
-        recording.Should().NotContain("\n");
-    }
-
-    [Fact]
-    public void GetRecording_CustomOptionsVsDefault_ShouldProduceDifferentOutput()
-    {
-        // Arrange
-        var person = new PersonRecord(
-            "Eve",
+        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord(
+            "Alice",
             null,
-            40,
+            30,
             PersonStatus.Suspended,
-            new AddressRecord("321 Pine St", "Metropolis", null),
-            null);
-
-        var compactOptions = new JsonSerializerOptions
-        {
-            WriteIndented = false,
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            Converters = { new JsonStringEnumConverter() },
-        };
-
-        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
+            null,
+            null));
 
         // Act
-        var defaultRecording = errorOr.GetRecording();
-        var customRecording = errorOr.GetRecording(compactOptions);
+        var act = () => errorOr.GetRecording(null!);
 
         // Assert
-        defaultRecording.Should().NotBe(customRecording);
-        defaultRecording.Should().Contain("\n");
-        customRecording.Should().NotContain("\n");
+        act.Should().Throw<ArgumentNullException>().WithParameterName("serializer");
     }
-
-    [Fact]
-    public void GetRecording_WithInterfaceType_CustomOptions_ShouldReturnJson()
-    {
-        // Arrange
-        var person = new PersonRecord(
-            "Frank",
-            "Xavier",
-            32,
-            PersonStatus.Active,
-            new AddressRecord("654 Maple Dr", "Smallville", "54321"),
-            ["Manager"]);
-
-        var camelCaseOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            Converters = { new JsonStringEnumConverter() },
-        };
-
-        IRecordable errorOr = ErrorOrFactory.From(person);
-
-        // Act
-        var recording = errorOr.GetRecording(camelCaseOptions);
-
-        // Assert
-        recording.Should().Be(JsonSerializer.Serialize(person, camelCaseOptions));
-        recording.Should().Contain("\"name\"");
-        recording.Should().Contain("\"status\"");
-    }
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-        Converters =
-        {
-            new JsonStringEnumConverter(),
-        },
-    };
 
     private enum PersonStatus
     {
@@ -344,27 +123,10 @@ public class ErrorOrRecordableTests
         AddressRecord? Address,
         List<string>? Tags);
 
-    private readonly record struct PersonRecordStruct(
-        string Name,
-        string? MiddleName,
-        int Age,
-        PersonStatus Status,
-        List<AddressRecord>? Addresses);
-
-    private class PersonClass(string name, string? middleName, int age, PersonStatus status, List<AddressRecord>? addresses)
+    private sealed class SystemTextJsonRecordingSerializer : IRecordingSerializer
     {
-        public string Name { get; } = name;
-        public string? MiddleName { get; } = middleName;
-        public int Age { get; } = age;
-        public PersonStatus Status { get; } = status;
-        public List<AddressRecord>? Addresses { get; } = addresses;
-    }
+        public string SerializeValue<TValue>(TValue value) => JsonSerializer.Serialize(value, JsonOptions);
 
-    private readonly struct PersonStruct(string name, string? middleName, PersonStatus status, List<AddressRecord>? addresses)
-    {
-        public string Name { get; } = name;
-        public string? MiddleName { get; } = middleName;
-        public PersonStatus Status { get; } = status;
-        public List<AddressRecord>? Addresses { get; } = addresses;
+        public string SerializeErrors(List<Error> errors) => JsonSerializer.Serialize(errors, JsonOptions);
     }
 }

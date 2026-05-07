@@ -701,16 +701,56 @@ ErrorOr<string> foo = await errorOrInt
 
 # Recording Outcomes
 
-When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a way to obtain a JSON representation of the current state in these scenarios.
+When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a format-agnostic way to obtain a string representation of the current state in these scenarios.
 
-Because `IErrorOr` inherits from `IRecordable`, `GetRecording()` is available directly on any `IErrorOr` reference — no cast required.
+Because `IErrorOr` inherits from `IRecordable`, `GetRecording(IRecordingSerializer)` is available directly on any `IErrorOr` reference — no cast required.
 
-`GetRecording()` always returns safely — when the state is a value it returns a JSON object; when the state is errors it returns a JSON array of those errors. The output is indented, enums are serialized as strings, and null properties are always included:
+## IRecordingSerializer
+
+`GetRecording` accepts any `IRecordingSerializer` implementation. The library calls `SerializeValue<TValue>(TValue value)` with the fully-typed value, so no boxing is visible to your implementation:
 
 ```cs
+public interface IRecordingSerializer
+{
+    string SerializeValue<TValue>(TValue value);
+    string SerializeErrors(List<Error> errors);
+}
+```
+
+## Using System.Text.Json
+
+Create a serializer that uses `System.Text.Json` by implementing `IRecordingSerializer`:
+
+```cs
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ErrorOr;
+
+public class SystemTextJsonRecordingSerializer : IRecordingSerializer
+{
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+    };
+
+    public string SerializeValue<TValue>(TValue value)
+        => JsonSerializer.Serialize(value, JsonOptions);
+
+    public string SerializeErrors(List<Error> errors)
+        => JsonSerializer.Serialize(errors, JsonOptions);
+}
+```
+
+Then pass an instance to `GetRecording`:
+
+```cs
+var serializer = new SystemTextJsonRecordingSerializer();
+
 void Log(IErrorOr result)
 {
-    Console.WriteLine(result.GetRecording());
+    Console.WriteLine(result.GetRecording(serializer));
 }
 
 // Value state:
@@ -732,35 +772,19 @@ void Log(IErrorOr result)
 // ]
 ```
 
-When you have a concrete `ErrorOr<TValue>` reference, `ToString()` produces the same JSON output as `GetRecording()`, so it works naturally in string interpolation or anywhere a string is expected:
+## Custom formats
+
+Any format is supported — implement `IRecordingSerializer` to produce plain text, XML, MessagePack, or anything else:
 
 ```cs
-ErrorOr<User> result = GetUser(id);
+public class PlainTextRecordingSerializer : IRecordingSerializer
+{
+    public string SerializeValue<TValue>(TValue value)
+        => value?.ToString() ?? string.Empty;
 
-// Explicit call
-Console.WriteLine(result.ToString());
-
-// Implicit — string interpolation calls ToString() automatically
-logger.LogInformation("Result: {Result}", result);
-Console.WriteLine($"Outcome: {result}");
-
-// Value state:
-// {
-//   "Name": "Alice",
-//   "MiddleName": null,
-//   "Age": 30
-// }
-
-// Error state:
-// [
-//   {
-//     "Code": "User.NotFound",
-//     "Description": "User was not found.",
-//     "Type": "NotFound",
-//     "NumericType": 3,
-//     "Metadata": null
-//   }
-// ]
+    public string SerializeErrors(List<Error> errors)
+        => string.Join(", ", errors.Select(e => $"{e.Code}: {e.Description}"));
+}
 ```
 
 # Error Types
