@@ -1,4 +1,4 @@
-namespace Tests;
+﻿namespace Tests;
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -22,7 +22,7 @@ public class ErrorOrRecordableTests
         IRecordable errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording();
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder());
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
@@ -42,7 +42,7 @@ public class ErrorOrRecordableTests
         IRecordable errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording();
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder());
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
@@ -62,7 +62,7 @@ public class ErrorOrRecordableTests
         IRecordable errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording();
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder());
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
@@ -81,7 +81,7 @@ public class ErrorOrRecordableTests
         IRecordable errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording();
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder());
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
@@ -96,7 +96,7 @@ public class ErrorOrRecordableTests
         IRecordable errorOr = (ErrorOr<PersonRecord>)error;
 
         // Act
-        var recording = errorOr.GetRecording();
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder());
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
@@ -160,7 +160,7 @@ public class ErrorOrRecordableTests
         ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording(compactOptions);
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder(compactOptions));
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, compactOptions));
@@ -190,7 +190,7 @@ public class ErrorOrRecordableTests
         ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording(ignoreNullOptions);
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder(ignoreNullOptions));
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, ignoreNullOptions));
@@ -222,7 +222,7 @@ public class ErrorOrRecordableTests
         ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording(camelCaseOptions);
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder(camelCaseOptions));
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, camelCaseOptions));
@@ -248,7 +248,7 @@ public class ErrorOrRecordableTests
         ErrorOr<PersonRecord> errorOr = error;
 
         // Act
-        var recording = errorOr.GetRecording(compactOptions);
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder(compactOptions));
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(new[] { error }, compactOptions));
@@ -277,8 +277,8 @@ public class ErrorOrRecordableTests
         ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var defaultRecording = errorOr.GetRecording();
-        var customRecording = errorOr.GetRecording(compactOptions);
+        var defaultRecording = errorOr.GetRecording(new SystemTextJsonRecorder());
+        var customRecording = errorOr.GetRecording(new SystemTextJsonRecorder(compactOptions));
 
         // Assert
         defaultRecording.Should().NotBe(customRecording);
@@ -464,7 +464,7 @@ public class ErrorOrRecordableTests
         IRecordable errorOr = ErrorOrFactory.From(person);
 
         // Act
-        var recording = errorOr.GetRecording(camelCaseOptions);
+        var recording = errorOr.GetRecording(new SystemTextJsonRecorder(camelCaseOptions));
 
         // Assert
         recording.Should().Be(JsonSerializer.Serialize(person, camelCaseOptions));
@@ -718,6 +718,22 @@ public class ErrorOrRecordableTests
 
         public string SerializeErrors(List<Error> errors)
             => $"errors:{string.Join(",", errors.Select(e => e.Code))}";
+    }
+
+    private sealed class SystemTextJsonRecorder(JsonSerializerOptions? options = null) : IRecordingSerializer
+    {
+        private static readonly JsonSerializerOptions DefaultOptions = new()
+        {
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() },
+            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        };
+
+        private readonly JsonSerializerOptions _options = options ?? DefaultOptions;
+
+        public string SerializeValue<TValue>(TValue value) => JsonSerializer.Serialize(value, _options);
+
+        public string SerializeErrors(List<Error> errors) => JsonSerializer.Serialize(errors, _options);
     }
 
     private readonly struct PersonStruct(string name, string? middleName, PersonStatus status, List<AddressRecord>? addresses)

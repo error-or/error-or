@@ -8,6 +8,25 @@ public class ErrorOrInstantiationTests
 {
     private record Person(string Name);
 
+    private sealed class SystemTextJsonRecorder : IRecordingSerializer
+    {
+        public string SerializeValue<TValue>(TValue value) =>
+            System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never,
+            });
+
+        public string SerializeErrors(List<Error> errors) =>
+            System.Text.Json.JsonSerializer.Serialize(errors, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never,
+            });
+    }
+
     [Fact]
     public void CreateFromValue_WhenAccessingValue_ShouldReturnValue()
     {
@@ -50,7 +69,7 @@ public class ErrorOrInstantiationTests
 #pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
         // Assert
-        errorOrValue.GetRecording().Should().Be(System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true }));
+        errorOrValue.GetRecording(new SystemTextJsonRecorder()).Should().Be(System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true }));
     }
 
     [Fact]
@@ -63,7 +82,7 @@ public class ErrorOrInstantiationTests
 #pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
         // Act
-        var recording = errorOrValue.GetRecording();
+        var recording = errorOrValue.GetRecording(new SystemTextJsonRecorder());
 
         // Assert
         recording.Should().Be(System.Text.Json.JsonSerializer.Serialize(new[] { error }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true, Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } }));

@@ -76,10 +76,4 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     [Obsolete("ErrorOrFactory.From<TValue>(errors) should be used instead.")]
     public static ErrorOr<TValue> From(List<Error> errors) => errors;
-
-    /// <summary>
-    /// Returns a JSON representation of the current <see cref="ErrorOr{TValue}"/> instance.
-    /// </summary>
-    /// <returns>A JSON string representation of the current <see cref="ErrorOr{TValue}"/> instance.</returns>
-    public override string ToString() => GetRecording();
 }
