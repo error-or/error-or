@@ -360,6 +360,88 @@ public class ErrorOrRecordableTests
     }
 
     [Fact]
+    public void GetRecording_WithFunc_ViaIErrorOr_WhenIsValue_ShouldReturnFuncResult()
+    {
+        // Arrange
+        var person = new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null);
+        IErrorOr errorOr = ErrorOrFactory.From(person);
+
+        // Act
+        var recording = errorOr.GetRecording(e => e.IsError ? "error" : "value");
+
+        // Assert
+        recording.Should().Be("value");
+    }
+
+    [Fact]
+    public void GetRecording_WithFunc_ViaIErrorOr_WhenIsError_ShouldReturnFuncResult()
+    {
+        // Arrange
+        var error = Error.Unexpected("Test.Error", "Oops.");
+        IErrorOr errorOr = (ErrorOr<PersonRecord>)error;
+
+        // Act
+        var recording = errorOr.GetRecording(e => string.Join(";", e.Errors!.Select(err => err.Code)));
+
+        // Assert
+        recording.Should().Be("Test.Error");
+    }
+
+    [Fact]
+    public void GetRecording_WithFunc_ViaIErrorOrTyped_WhenIsValue_ShouldReturnFuncResult()
+    {
+        // Arrange
+        var person = new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null);
+        IErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(person);
+
+        // Act
+        var recording = errorOr.GetRecording(e => $"Name={e.Value.Name}");
+
+        // Assert
+        recording.Should().Be("Name=Alice");
+    }
+
+    [Fact]
+    public void GetRecording_WithFunc_ViaIErrorOrTyped_WhenIsError_ShouldReturnFuncResult()
+    {
+        // Arrange
+        var error = Error.Unexpected("Test.Error", "Oops.");
+        IErrorOr<PersonRecord> errorOr = (ErrorOr<PersonRecord>)error;
+
+        // Act
+        var recording = errorOr.GetRecording(e => e.IsError ? e.Errors![0].Code : e.Value.Name);
+
+        // Assert
+        recording.Should().Be("Test.Error");
+    }
+
+    [Fact]
+    public void GetRecording_WithFunc_ViaIErrorOr_NullRecorder_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        IErrorOr errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
+
+        // Act
+        var act = () => errorOr.GetRecording((Func<IErrorOr, string>)null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("recorder");
+    }
+
+    [Fact]
+    public void GetRecording_WithFunc_ViaIErrorOrTyped_NullRecorder_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        IErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
+
+        // Act
+        var act = () => errorOr.GetRecording((Func<IErrorOr<PersonRecord>, string>)null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("recorder");
+    }
+
+    [Fact]
     public void GetRecording_WithInterfaceType_CustomOptions_ShouldReturnJson()
     {
         // Arrange
