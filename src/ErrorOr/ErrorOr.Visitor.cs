@@ -29,9 +29,4 @@ public readonly partial record struct ErrorOr<TValue>
     {
         return Accept(visitor);
     }
-
-    IErrorOr IErrorOr.Accept(IErrorOrVisitor visitor)
-    {
-        return Accept(visitor);
-    }
 }

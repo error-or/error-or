@@ -26,13 +26,12 @@ public class ErrorOrRecordableTests
             ["Developer", "Admin"]);
 
         IErrorOr errorOr = ErrorOrFactory.From(person);
-        var serializer = new SystemTextJsonErrorOrVisitor();
 
         // Act
-        errorOr.Accept(serializer);
+        var result = SerializeToJson(errorOr);
 
         // Assert
-        serializer.SerializationResult.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
+        result.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
     }
 
     [Fact]
@@ -41,13 +40,12 @@ public class ErrorOrRecordableTests
         // Arrange
         Error error = Error.Unexpected("Test.Error", "Oops.");
         IErrorOr errorOr = ErrorOrFactory.From<PersonRecord>(error);
-        var serializer = new SystemTextJsonErrorOrVisitor();
 
         // Act
-        errorOr.Accept(serializer);
+        var result = SerializeToJson(errorOr);
 
         // Assert
-        serializer.SerializationResult.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
+        result.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
     }
 
     [Fact]
@@ -63,13 +61,12 @@ public class ErrorOrRecordableTests
             null);
 
         IErrorOr errorOr = ErrorOrFactory.From(person);
-        var serializer = new SystemTextJsonErrorOrVisitor();
 
         // Act
-        errorOr.Accept(serializer);
+        var result = SerializeToJson(errorOr);
 
         // Assert
-        serializer.SerializationResult.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
+        result.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
     }
 
     [Fact]
@@ -78,13 +75,12 @@ public class ErrorOrRecordableTests
         // Arrange
         Error error = Error.Validation("Val.Error", "Invalid.");
         IErrorOr errorOr = ErrorOrFactory.From<PersonRecord>(error);
-        var serializer = new SystemTextJsonErrorOrVisitor();
 
         // Act
-        errorOr.Accept(serializer);
+        var result = SerializeToJson(errorOr);
 
         // Assert
-        serializer.SerializationResult.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
+        result.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
     }
 
     [Fact]
@@ -124,20 +120,29 @@ public class ErrorOrRecordableTests
         AddressRecord? Address,
         List<string>? Tags);
 
-    private sealed class SystemTextJsonErrorOrVisitor : BaseErrorOrVisitor
+    private sealed class SystemTextJsonErrorOrVisitor(JsonSerializerOptions options) : BaseErrorOrVisitor
     {
-        public string? SerializationResult { get; private set; }
+        public JsonSerializerOptions Options { get; } = options;
+
+        public string? SerializedOutput { get; private set; }
 
         public override ErrorOr<Success> VisitValue<TValue>(TValue value)
         {
-            SerializationResult = JsonSerializer.Serialize(value, JsonOptions);
+            SerializedOutput = JsonSerializer.Serialize(value, Options);
             return Result.Success;
         }
 
         public override ErrorOr<Success> VisitErrors(List<Error> errors)
         {
-            SerializationResult = JsonSerializer.Serialize(errors, JsonOptions);
+            SerializedOutput = JsonSerializer.Serialize(errors, Options);
             return Result.Success;
         }
+    }
+
+    private static string? SerializeToJson(IErrorOr errorOr)
+    {
+        var serializer = new SystemTextJsonErrorOrVisitor(JsonOptions);
+        errorOr.Accept(serializer);
+        return serializer.SerializedOutput;
     }
 }
