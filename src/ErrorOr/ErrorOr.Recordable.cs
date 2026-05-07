@@ -10,6 +10,6 @@ public readonly partial record struct ErrorOr<TValue>
             throw new ArgumentNullException(nameof(serializer));
         }
 
-        return IsError ? serializer.SerializeErrors(Errors!) : serializer.SerializeValue(Value);
+        return IsError ? serializer.SerializeErrors(Errors) : serializer.SerializeValue(Value);
     }
 }
