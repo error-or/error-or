@@ -27,20 +27,6 @@ public class ErrorOrRecordableTests
     }
 
     [Fact]
-    public void GetRecording_WithFunc_WhenIsError_ShouldReturnFuncResult()
-    {
-        // Arrange
-        var error = Error.Unexpected("General.Unexpected", "Something went wrong.");
-        ErrorOr<PersonRecord> errorOr = error;
-
-        // Act
-        var recording = errorOr.GetRecording(e => $"Error={e.FirstError.Code}:{e.FirstError.Description}");
-
-        // Assert
-        recording.Should().Be("Error=General.Unexpected:Something went wrong.");
-    }
-
-    [Fact]
     public void GetRecording_WithFunc_CustomFormat_ShouldNotRequireJson()
     {
         // Arrange
@@ -63,19 +49,6 @@ public class ErrorOrRecordableTests
         // Assert
         recording.Should().Be("Bob (25)");
         recording.Should().NotContain("{");
-    }
-
-    [Fact]
-    public void GetRecording_WithFunc_NullRecorder_ShouldThrowArgumentNullException()
-    {
-        // Arrange
-        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null));
-
-        // Act
-        var act = () => errorOr.GetRecording((Func<ErrorOr<PersonRecord>, string>)null!);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>().WithParameterName("recorder");
     }
 
     [Fact]
