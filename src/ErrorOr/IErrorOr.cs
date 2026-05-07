@@ -18,7 +18,7 @@ public interface IErrorOr<out TValue> : IErrorOr
 /// This interface is intended for use when the underlying type of the <see cref="ErrorOr"/> object is unknown.
 /// </remarks>
 [CollectionBuilder(typeof(CollectionExpression), nameof(CollectionExpression.CreateIErrorOr))]
-public interface IErrorOr : IRecordable
+public interface IErrorOr
 {
     /// <summary>
     /// Gets the list of errors.
@@ -41,4 +41,10 @@ public interface IErrorOr : IRecordable
     /// <returns>Enunerator of <see cref="Error"/> objects.</returns>
     /// <remarks>This method is only for the purpose of collection expression support.</remarks>
     IEnumerator<Error> GetEnumerator();
+
+    /// <summary>
+    /// Accepts the provided <paramref name="visitor"/> and invokes visit method appropriate to current state of <see cref="IErrorOr" />.
+    /// </summary>
+    /// <param name="visitor">An <see cref="IErrorOrVisitor"/> implementing visit methods for value and errors.</param>
+    void Accept(IErrorOrVisitor visitor);
 }
