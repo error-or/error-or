@@ -1,68 +1,91 @@
 ﻿namespace Tests;
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ErrorOr;
 using FluentAssertions;
 
 public class ErrorOrRecordableTests
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+    };
+
     [Fact]
-    public void GetRecording_WithSerializer_WhenIsValue_ShouldCallSerializeValue()
+    public void GetRecording_WithSerializer_WhenIsValue_ShouldReturnJson()
     {
         // Arrange
-        var person = new PersonRecord("Alice", null, 30, PersonStatus.Active, null, null);
+        var person = new PersonRecord(
+            "Alice",
+            null,
+            30,
+            PersonStatus.Active,
+            new AddressRecord("123 Main St", "Springfield", null),
+            ["Developer", "Admin"]);
+
         IRecordable errorOr = ErrorOrFactory.From(person);
-        var serializer = new PlainTextRecordingSerializer();
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
         var recording = errorOr.GetRecording(serializer);
 
         // Assert
-        recording.Should().Be($"value:{person.Name}:{person.Age}");
+        recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
     }
 
     [Fact]
-    public void GetRecording_WithSerializer_WhenIsError_ShouldCallSerializeErrors()
+    public void GetRecording_WithSerializer_WhenIsError_ShouldReturnJsonErrors()
     {
         // Arrange
         var error = Error.Unexpected("Test.Error", "Oops.");
         IRecordable errorOr = (ErrorOr<PersonRecord>)error;
-        var serializer = new PlainTextRecordingSerializer();
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
         var recording = errorOr.GetRecording(serializer);
 
         // Assert
-        recording.Should().Be("errors:Test.Error");
+        recording.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
     }
 
     [Fact]
-    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsValue_ShouldCallSerializeValue()
+    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsValue_ShouldReturnJson()
     {
         // Arrange
-        var person = new PersonRecord("Bob", null, 25, PersonStatus.Active, null, null);
+        var person = new PersonRecord(
+            "Bob",
+            null,
+            25,
+            PersonStatus.Active,
+            null,
+            null);
+
         IErrorOr errorOr = ErrorOrFactory.From(person);
-        var serializer = new PlainTextRecordingSerializer();
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
         var recording = errorOr.GetRecording(serializer);
 
         // Assert
-        recording.Should().Be($"value:{person.Name}:{person.Age}");
+        recording.Should().Be(JsonSerializer.Serialize(person, JsonOptions));
     }
 
     [Fact]
-    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsError_ShouldCallSerializeErrors()
+    public void GetRecording_WithSerializer_ViaIErrorOr_WhenIsError_ShouldReturnJsonErrors()
     {
         // Arrange
         var error = Error.Validation("Val.Error", "Invalid.");
         IErrorOr errorOr = (ErrorOr<PersonRecord>)error;
-        var serializer = new PlainTextRecordingSerializer();
+        var serializer = new SystemTextJsonRecordingSerializer();
 
         // Act
         var recording = errorOr.GetRecording(serializer);
 
         // Assert
-        recording.Should().Be("errors:Val.Error");
+        recording.Should().Be(JsonSerializer.Serialize(new[] { error }, JsonOptions));
     }
 
     [Fact]
@@ -95,19 +118,12 @@ public class ErrorOrRecordableTests
         AddressRecord? Address,
         List<string>? Tags);
 
-    private sealed class PlainTextRecordingSerializer : IRecordingSerializer
+    private sealed class SystemTextJsonRecordingSerializer : IRecordingSerializer
     {
         public string SerializeValue<TValue>(TValue value)
-        {
-            if (value is PersonRecord p)
-            {
-                return $"value:{p.Name}:{p.Age}";
-            }
-
-            return $"value:{value}";
-        }
+            => JsonSerializer.Serialize(value, JsonOptions);
 
         public string SerializeErrors(List<Error> errors)
-            => $"errors:{string.Join(",", errors.Select(e => e.Code))}";
+            => JsonSerializer.Serialize(errors, JsonOptions);
     }
 }
