@@ -106,6 +106,27 @@ public class ErrorOrRecordableTests
         act.Should().Throw<NullReferenceException>();
     }
 
+    [Fact]
+    public void GetRecording_WithSerializer_That_ShouldThrow_NotImplementedException()
+    {
+        // Arrange
+        ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord(
+            "Alice",
+            null,
+            30,
+            PersonStatus.Suspended,
+            null,
+            null));
+
+        var serializer = new ErrorThrowingRecordingSerializer();
+
+        // Act
+        var act = () => errorOr.GetRecording<string>(serializer);
+
+        // Assert
+        act.Should().Throw<NotImplementedException>();
+    }
+
     private enum PersonStatus
     {
         Active,
@@ -128,5 +149,12 @@ public class ErrorOrRecordableTests
         public string SerializeValue<TValue>(TValue value) => JsonSerializer.Serialize(value, JsonOptions);
 
         public string SerializeErrors(List<Error> errors) => JsonSerializer.Serialize(errors, JsonOptions);
+    }
+
+    private sealed class ErrorThrowingRecordingSerializer : IRecordingSerializer<string>
+    {
+        public string SerializeValue<TValue>(TValue value) => throw new NotImplementedException();
+
+        public string SerializeErrors(List<Error> errors) => throw new NotImplementedException();
     }
 }
