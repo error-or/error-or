@@ -88,7 +88,7 @@ public class ErrorOrRecordableTests
     }
 
     [Fact]
-    public void GetRecording_WithSerializer_NullSerializer_ShouldThrowArgumentNullException()
+    public void GetRecording_WithSerializer_NullSerializer_ShouldThrow_NullReferenceException()
     {
         // Arrange
         ErrorOr<PersonRecord> errorOr = ErrorOrFactory.From(new PersonRecord(
@@ -103,7 +103,7 @@ public class ErrorOrRecordableTests
         var act = () => errorOr.GetRecording<string>(null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithParameterName("serializer");
+        act.Should().Throw<NullReferenceException>();
     }
 
     private enum PersonStatus
