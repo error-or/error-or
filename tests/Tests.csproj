@@ -8,6 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ErrorOr.AspNetCore\**" />
+    <None Remove="ErrorOr.AspNetCore\**" />
+    <EmbeddedResource Remove="ErrorOr.AspNetCore\**" />
+    <Compile Remove="ErrorOr.AspNetCore.Integration\**" />
+    <None Remove="ErrorOr.AspNetCore.Integration\**" />
+    <EmbeddedResource Remove="ErrorOr.AspNetCore.Integration\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="fluentassertions" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
