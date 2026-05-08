@@ -100,7 +100,7 @@ public class ErrorOrRecordableTests
             null));
 
         // Act
-        var act = () => errorOr.GetRecording(null!);
+        var act = () => errorOr.GetRecording<string>(null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>().WithParameterName("serializer");
@@ -123,7 +123,7 @@ public class ErrorOrRecordableTests
         AddressRecord? Address,
         List<string>? Tags);
 
-    private sealed class SystemTextJsonRecordingSerializer : IRecordingSerializer
+    private sealed class SystemTextJsonRecordingSerializer : IRecordingSerializer<string>
     {
         public string SerializeValue<TValue>(TValue value) => JsonSerializer.Serialize(value, JsonOptions);
 

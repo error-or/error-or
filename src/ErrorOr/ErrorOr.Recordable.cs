@@ -3,7 +3,7 @@
 public readonly partial record struct ErrorOr<TValue>
 {
     /// <inheritdoc/>
-    public string GetRecording(IRecordingSerializer serializer)
+    public TOutput GetRecording<TOutput>(IRecordingSerializer<TOutput> serializer)
     {
         if (serializer is null)
         {

@@ -1,7 +1,7 @@
 ﻿namespace ErrorOr;
 
 /// <summary>
-/// Interface for producing a loggable string representation of an <see cref="ErrorOr{TValue}"/> value
+/// Interface for producing a loggable representation of an <see cref="ErrorOr{TValue}"/> value
 /// without knowing its concrete type.
 /// </summary>
 /// <remarks>
@@ -11,15 +11,16 @@
 public interface IRecordable
 {
     /// <summary>
-    /// Returns a string representation of the current state using the provided <paramref name="serializer"/>.
+    /// Returns a representation of the current state using the provided <paramref name="serializer"/>.
     /// </summary>
-    /// <param name="serializer">An <see cref="IRecordingSerializer"/> that produces the string representation.</param>
+    /// <typeparam name="TOutput">The type of the serialized output (e.g. <see cref="string"/>, <c>byte[]</c>).</typeparam>
+    /// <param name="serializer">An <see cref="IRecordingSerializer{TOutput}"/> that produces the representation.</param>
     /// <returns>
     /// When <see cref="IErrorOr.IsError"/> is <c>false</c>, returns the result of
-    /// <see cref="IRecordingSerializer.SerializeValue{TValue}"/> called with the success value.
+    /// <see cref="IRecordingSerializer{TOutput}.SerializeValue{TValue}"/> called with the success value.
     /// When <see cref="IErrorOr.IsError"/> is <c>true</c>, returns the result of
-    /// <see cref="IRecordingSerializer.SerializeErrors"/> called with the error list.
+    /// <see cref="IRecordingSerializer{TOutput}.SerializeErrors"/> called with the error list.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="serializer"/> is <see langword="null"/>.</exception>
-    string GetRecording(IRecordingSerializer serializer);
+    TOutput GetRecording<TOutput>(IRecordingSerializer<TOutput> serializer);
 }
