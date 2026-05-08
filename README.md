@@ -701,32 +701,32 @@ ErrorOr<string> foo = await errorOrInt
 
 # Recording Outcomes
 
-When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a format-agnostic way to obtain a string representation of the current state in these scenarios.
+When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a format-agnostic way to obtain a representation of the current state in these scenarios.
 
-Because `IErrorOr` inherits from `IRecordable`, `GetRecording(IRecordingSerializer)` is available directly on any `IErrorOr` reference — no cast required.
+Because `IErrorOr` inherits from `IRecordable`, `GetRecording(IRecordingSerializer<TOutput>)` is available directly on any `IErrorOr` reference — no cast required.
 
-## IRecordingSerializer
+## IRecordingSerializer&lt;TOutput&gt;
 
-`GetRecording` accepts any `IRecordingSerializer` implementation. The library calls `SerializeValue<TValue>(TValue value)` with the fully-typed value, so no boxing is visible to your implementation:
+`GetRecording<TOutput>` accepts any `IRecordingSerializer<TOutput>` implementation. The `TOutput` type parameter determines what `GetRecording` returns — a `string`, a `byte[]`, or any other type. The library calls `SerializeValue<TValue>(TValue value)` with the fully-typed value, so no boxing is visible to your implementation:
 
 ```cs
-public interface IRecordingSerializer
+public interface IRecordingSerializer<TOutput>
 {
-    string SerializeValue<TValue>(TValue value);
-    string SerializeErrors(List<Error> errors);
+    TOutput SerializeValue<TValue>(TValue value);
+    TOutput SerializeErrors(List<Error> errors);
 }
 ```
 
 ## Using System.Text.Json
 
-Create a serializer that uses `System.Text.Json` by implementing `IRecordingSerializer`:
+Create a serializer that uses `System.Text.Json` by implementing `IRecordingSerializer<string>`:
 
 ```cs
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ErrorOr;
 
-public class SystemTextJsonRecordingSerializer : IRecordingSerializer
+public class SystemTextJsonRecordingSerializer : IRecordingSerializer<string>
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -774,16 +774,27 @@ void Log(IErrorOr result)
 
 ## Custom formats
 
-Any format is supported — implement `IRecordingSerializer` to produce plain text, XML, MessagePack, or anything else:
+Any output type is supported — implement `IRecordingSerializer<TOutput>` to produce plain text, binary payloads, or anything else:
 
 ```cs
-public class PlainTextRecordingSerializer : IRecordingSerializer
+// Plain text — returns string
+public class PlainTextRecordingSerializer : IRecordingSerializer<string>
 {
     public string SerializeValue<TValue>(TValue value)
         => value?.ToString() ?? string.Empty;
 
     public string SerializeErrors(List<Error> errors)
         => string.Join(", ", errors.Select(e => $"{e.Code}: {e.Description}"));
+}
+
+// Binary — returns byte[] (e.g. for Protobuf, MessagePack, AVRO)
+public class ProtobufRecordingSerializer : IRecordingSerializer<byte[]>
+{
+    public byte[] SerializeValue<TValue>(TValue value)
+        => ProtoBuf.Serializer.SerializeWithLengthPrefix<TValue>(value);
+
+    public byte[] SerializeErrors(List<Error> errors)
+        => ProtoBuf.Serializer.SerializeWithLengthPrefix(errors);
 }
 ```
 
