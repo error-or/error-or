@@ -27,7 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.HashCode" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
-    <PackageReference Include="System.Text.Json" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
     <PackageReference Include="Nullable">
         <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
