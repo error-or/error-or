@@ -17,7 +17,7 @@ permissions:
 jobs:
   test:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
@@ -30,7 +30,7 @@ jobs:
   publish:
     name: Pack and publish
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     environment: production
     permissions:
       id-token: write
