@@ -155,14 +155,36 @@ All notable changes to this project are documented in this file.
 
 - [#159](https://github.com/amantinband/error-or/pull/159) Added `IsSuccess` property to `ErrorOr`
 
-- [#158](https://github.com/amantinband/error-or/pull/158) Added JSON Serialization support. The `IRecordable` interface provides a way to obtain a JSON representation of the current state.
+- [#158](https://github.com/amantinband/error-or/pull/158) Added support for serialization via `IErrorOr` interface without direct access to `Value` property. The `IRecordable` base interface provides a way to obtain a serialized representation of the current state.
 
     ```cs
     void Log(IErrorOr result)
     {
-        Console.WriteLine(result.GetRecording());
-        // Or explicit call
-        Console.WriteLine(result.ToString());
+        Console.WriteLine(result.GetRecording(serializer));
+    }
+    ```
+
+    `IRecordingSerializer<TOutput>` interface can be implemented to provide concrete serialization strategy, for exaple JSON serialization:
+
+    ```cs
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using ErrorOr;
+
+    public class SystemTextJsonRecordingSerializer : IRecordingSerializer<string>
+    {
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() },
+            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        };
+
+        public string SerializeValue<TValue>(TValue value)
+            => JsonSerializer.Serialize(value, JsonOptions);
+
+        public string SerializeErrors(List<Error> errors)
+            => JsonSerializer.Serialize(errors, JsonOptions);
     }
     ```
 
