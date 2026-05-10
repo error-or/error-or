@@ -35,6 +35,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
@@ -42,7 +45,6 @@ jobs:
           dotnet-version: 10.0.x
       - name: Resolve version
         id: version
-        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             VERSION="${{ inputs.version }}"
