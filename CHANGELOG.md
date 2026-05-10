@@ -148,7 +148,7 @@ All notable changes to this project are documented in this file.
 
 - [#149](https://github.com/amantinband/error-or/pull/149) Added `Else`/`ElseAsync` overloads returning `ErrorOr`
 
-- [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnshure` and `ThenEnshureAsync` methods.
+- [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnsure` and `ThenEnsureAsync` methods.
 
     They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
     If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
