@@ -42,6 +42,7 @@ jobs:
           dotnet-version: 10.0.x
       - name: Resolve version
         id: version
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             VERSION="${{ inputs.version }}"
