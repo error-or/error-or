@@ -63,5 +63,7 @@ jobs:
         id: nuget-login
         with:
           user: ${{ secrets.NUGET_USER }}
+      - name: Show artifacts
+        run: ls -la artifacts
       - name: Publish to NuGet
-        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "./artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
