@@ -747,6 +747,19 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void ImplicitCastNullObject_WhenAccessingValue_ShouldReturnNull()
+    {
+        // Arrange
+        ErrorOr<Person?> result = CreatePersonOrNull(
+            firstName: null,
+            lastName: null);
+
+        // Act & Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().Be(null);
+    }
+
+    [Fact]
     public void ImplicitCastNullValue_WhenAccessingErrors_ShouldReturnUnexpected()
     {
         // Arrange
@@ -901,5 +914,31 @@ public class ErrorOrInstantiationTests
 
         // Assert
         firstError.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    private static ErrorOr<Person?> CreatePersonOrNull(string? firstName, string? lastName)
+    {
+        if (string.IsNullOrWhiteSpace(firstName))
+        {
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                return (Person?)null;
+            }
+            else
+            {
+                return Error.NotFound("Person.FirstNameNotFound", "First name is required.");
+            }
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                return Error.NotFound("Person.LastNameNotFound", "Last name is required.");
+            }
+            else
+            {
+                return new Person($"{firstName} {lastName}");
+            }
+        }
     }
 }
