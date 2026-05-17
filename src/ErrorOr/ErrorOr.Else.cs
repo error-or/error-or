@@ -7,7 +7,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public ErrorOr<TValue> Else(Func<List<Error>, Error> onError)
+    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, Error> onError)
     {
         if (IsSuccess)
         {
@@ -22,7 +22,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public ErrorOr<TValue> Else(Func<List<Error>, List<Error>> onError)
+    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, List<Error>> onError)
     {
         if (IsSuccess)
         {
@@ -52,7 +52,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public ErrorOr<TValue> Else(Func<List<Error>, TValue> onError)
+    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, TValue> onError)
     {
         if (IsSuccess)
         {
@@ -67,7 +67,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public ErrorOr<TValue> Else(Func<List<Error>, ErrorOr<TValue>> onError)
+    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, ErrorOr<TValue>> onError)
     {
         if (IsSuccess)
         {
@@ -97,7 +97,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="action">The action to execute if the state is error.</param>
     /// <returns>The original <see cref="ErrorOr"/> instance.</returns>
-    public ErrorOr<TValue> ElseDo(Action<List<Error>> action)
+    public ErrorOr<TValue> ElseDo(Action<ReadOnlyCollection<Error>> action)
     {
         if (IsSuccess)
         {
@@ -114,7 +114,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="action">The action to execute if the state is error.</param>
     /// <returns>The original <see cref="ErrorOr"/> instance.</returns>
-    public async Task<ErrorOr<TValue>> ElseDoAsync(Func<List<Error>, Task> action)
+    public async Task<ErrorOr<TValue>> ElseDoAsync(Func<ReadOnlyCollection<Error>, Task> action)
     {
         if (IsSuccess)
         {
@@ -131,7 +131,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public async Task<ErrorOr<TValue>> ElseAsync(Func<List<Error>, Task<TValue>> onError)
+    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<TValue>> onError)
     {
         if (IsSuccess)
         {
@@ -146,7 +146,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public async Task<ErrorOr<TValue>> ElseAsync(Func<List<Error>, Task<ErrorOr<TValue>>> onError)
+    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<ErrorOr<TValue>>> onError)
     {
         if (IsSuccess)
         {
@@ -161,7 +161,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public async Task<ErrorOr<TValue>> ElseAsync(Func<List<Error>, Task<Error>> onError)
+    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<Error>> onError)
     {
         if (IsSuccess)
         {
@@ -176,7 +176,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public async Task<ErrorOr<TValue>> ElseAsync(Func<List<Error>, Task<List<Error>>> onError)
+    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<List<Error>>> onError)
     {
         if (IsSuccess)
         {

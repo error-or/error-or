@@ -11,13 +11,13 @@ namespace ErrorOr;
 public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 {
     private readonly TValue? _value = default;
-    private readonly List<Error>? _errors = null;
+    private readonly ReadOnlyCollection<Error>? _errors = null;
 
     private ErrorOr(TValue value) => _value = value;
 
-    private ErrorOr(Error error) => _errors = [error];
+    private ErrorOr(Error error) => _errors = new ReadOnlyCollection<Error>([error]);
 
-    private ErrorOr(List<Error> errors) => _errors = errors?.Count == 0 ? null : errors;
+    private ErrorOr(ReadOnlyCollection<Error> errors) => _errors = errors;
 
     /// <summary>
     /// Gets a value indicating whether the state is error.
@@ -40,12 +40,12 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <summary>
     /// Gets the list of errors. If the state is not error, the list will contain a single error representing the state.
     /// </summary>
-    public List<Error> Errors => IsError ? _errors : KnownErrors.CachedNoErrorsList;
+    public ReadOnlyCollection<Error> Errors => IsError ? _errors : KnownErrors.CachedNoErrorsList;
 
     /// <summary>
     /// Gets the list of errors. If the state is not error, the list will be empty.
     /// </summary>
-    public List<Error> ErrorsOrEmptyList => IsError ? _errors : KnownErrors.CachedEmptyErrorsList;
+    public ReadOnlyCollection<Error> ErrorsOrEmptyList => IsError ? _errors : KnownErrors.CachedEmptyErrorsList;
 
     /// <summary>
     /// Gets the value.
@@ -70,10 +70,4 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 
     /// <inheritdoc/>
     public IEnumerator<Error> GetEnumerator() => _errors!.GetEnumerator();
-
-    /// <summary>
-    /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
-    /// </summary>
-    [Obsolete("ErrorOrFactory.From<TValue>(errors) should be used instead.")]
-    public static ErrorOr<TValue> From(List<Error> errors) => errors;
 }

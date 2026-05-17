@@ -50,45 +50,23 @@ public static class ErrorOrFactory
     }
 
     /// <summary>
-    /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
+    /// Creates an <see cref="ErrorOr{TValue}"/> from a read-only span of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    /// <param name="errors">List of errors.</param>
-    /// <returns>An instance of <see cref="ErrorOr{TValue}"/> containing provided list of errors.</returns>
-    public static ErrorOr<TValue> From<TValue>(List<Error> errors)
+    /// <param name="errors">Read-only span of errors.</param>
+    /// <returns>An instance of <see cref="ErrorOr{TValue}"/> containing provided read-only span of errors.</returns>
+    public static ErrorOr<TValue> From<TValue>(ReadOnlySpan<Error> errors)
     {
-        return errors;
+        return errors.ToArray();
     }
 
     /// <summary>
-    /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from a list of errors.
+    /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from a read-only span of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    /// <param name="errors">List of errors.</param>
-    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided list of errors.</returns>
-    public static Task<ErrorOr<TValue>> FromAsync<TValue>(List<Error> errors)
-    {
-        return Task.FromResult(From<TValue>(errors));
-    }
-
-    /// <summary>
-    /// Creates an <see cref="ErrorOr{TValue}"/> from an enumeration of errors.
-    /// </summary>
-    /// <typeparam name="TValue">The type of the value.</typeparam>
-    /// <param name="errors">Enumeration of errors.</param>
-    /// <returns>An instance of <see cref="ErrorOr{TValue}"/> containing provided enumeration of errors.</returns>
-    public static ErrorOr<TValue> From<TValue>(IEnumerable<Error> errors)
-    {
-        return errors.ToList();
-    }
-
-    /// <summary>
-    /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from an enumeration of errors.
-    /// </summary>
-    /// <typeparam name="TValue">The type of the value.</typeparam>
-    /// <param name="errors">Enumeration of errors.</param>
-    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided enumeration of errors.</returns>
-    public static Task<ErrorOr<TValue>> FromAsync<TValue>(IEnumerable<Error> errors)
+    /// <param name="errors">Read-only span of errors.</param>
+    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided read-only span of errors.</returns>
+    public static Task<ErrorOr<TValue>> FromAsync<TValue>(ReadOnlySpan<Error> errors)
     {
         return Task.FromResult(From<TValue>(errors));
     }

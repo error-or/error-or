@@ -13,7 +13,7 @@ public static partial class ErrorOrExtensions
     /// <param name="onValue">The function to execute if the state is a value.</param>
     /// <param name="onError">The function to execute if the state is an error.</param>
     /// <returns>The result of the executed function.</returns>
-    public static async Task<TNextValue> Match<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, TNextValue> onValue, Func<List<Error>, TNextValue> onError)
+    public static async Task<TNextValue> Match<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, TNextValue> onValue, Func<ReadOnlyCollection<Error>, TNextValue> onError)
     {
         var result = await errorOr.ConfigureAwait(false);
 
@@ -31,7 +31,7 @@ public static partial class ErrorOrExtensions
     /// <param name="onValue">The function to execute if the state is a value.</param>
     /// <param name="onError">The function to execute if the state is an error.</param>
     /// <returns>The result of the executed function.</returns>
-    public static async Task<TNextValue> MatchAsync<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, Task<TNextValue>> onValue, Func<List<Error>, Task<TNextValue>> onError)
+    public static async Task<TNextValue> MatchAsync<TValue, TNextValue>(this Task<ErrorOr<TValue>> errorOr, Func<TValue, Task<TNextValue>> onValue, Func<ReadOnlyCollection<Error>, Task<TNextValue>> onError)
     {
         var result = await errorOr.ConfigureAwait(false);
 

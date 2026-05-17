@@ -14,7 +14,7 @@ public static class CollectionExpression
     /// <remarks>Enables support for collection expressions.</remarks>
     public static ErrorOr<TValue> CreateErrorOr<TValue>(ReadOnlySpan<Error> errors)
     {
-        return errors.ToArray();
+        return errors;
     }
 
     /// <summary>
