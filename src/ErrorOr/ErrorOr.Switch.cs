@@ -9,7 +9,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onValue">The action to execute if the state is a value.</param>
     /// <param name="onError">The action to execute if the state is an error.</param>
-    public void Switch(Action<TValue> onValue, Action<List<Error>> onError)
+    public void Switch(Action<TValue> onValue, Action<ReadOnlyCollection<Error>> onError)
     {
         if (IsError)
         {
@@ -28,7 +28,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// <param name="onValue">The asynchronous action to execute if the state is a value.</param>
     /// <param name="onError">The asynchronous action to execute if the state is an error.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task SwitchAsync(Func<TValue, Task> onValue, Func<List<Error>, Task> onError)
+    public async Task SwitchAsync(Func<TValue, Task> onValue, Func<ReadOnlyCollection<Error>, Task> onError)
     {
         if (IsError)
         {

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using ErrorOr;
 using FluentAssertions;
@@ -148,13 +148,13 @@ public class ErrorOrRecordableTests
     {
         public string SerializeValue<TValue>(TValue value) => JsonSerializer.Serialize(value, JsonOptions);
 
-        public string SerializeErrors(List<Error> errors) => JsonSerializer.Serialize(errors, JsonOptions);
+        public string SerializeErrors(ReadOnlyCollection<Error> errors) => JsonSerializer.Serialize(errors, JsonOptions);
     }
 
     private sealed class ErrorThrowingRecordingSerializer : IRecordingSerializer<string>
     {
         public string SerializeValue<TValue>(TValue value) => throw new NotImplementedException();
 
-        public string SerializeErrors(List<Error> errors) => throw new NotImplementedException();
+        public string SerializeErrors(ReadOnlyCollection<Error> errors) => throw new NotImplementedException();
     }
 }
