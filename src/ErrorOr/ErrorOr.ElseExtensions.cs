@@ -107,7 +107,7 @@ public static partial class ErrorOrExtensions
     /// <param name="errorOr">The <see cref="ErrorOr"/> instance.</param>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original value.</returns>
-    public static async Task<ErrorOr<TValue>> Else<TValue>(this Task<ErrorOr<TValue>> errorOr, Func<ReadOnlyCollection<Error>, List<Error>> onError)
+    public static async Task<ErrorOr<TValue>> Else<TValue>(this Task<ErrorOr<TValue>> errorOr, Func<ReadOnlyCollection<Error>, ReadOnlyCollection<Error>> onError)
     {
         var result = await errorOr.ConfigureAwait(false);
 
@@ -149,7 +149,7 @@ public static partial class ErrorOrExtensions
     /// <param name="errorOr">The <see cref="ErrorOr"/> instance.</param>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original value.</returns>
-    public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(this Task<ErrorOr<TValue>> errorOr, Func<ReadOnlyCollection<Error>, Task<List<Error>>> onError)
+    public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(this Task<ErrorOr<TValue>> errorOr, Func<ReadOnlyCollection<Error>, Task<ReadOnlyCollection<Error>>> onError)
     {
         var result = await errorOr.ConfigureAwait(false);
 

@@ -22,7 +22,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, List<Error>> onError)
+    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, ReadOnlyCollection<Error>> onError)
     {
         if (IsSuccess)
         {
@@ -176,7 +176,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     /// </summary>
     /// <param name="onError">The function to execute if the state is error.</param>
     /// <returns>The result from calling <paramref name="onError"/> if state is error; otherwise the original <see cref="Value"/>.</returns>
-    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<List<Error>>> onError)
+    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<ReadOnlyCollection<Error>>> onError)
     {
         if (IsSuccess)
         {
