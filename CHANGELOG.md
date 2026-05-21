@@ -87,7 +87,7 @@ Consequently all `Match`, `Switch` and `Else` methods and extension methods that
 
 ```diff
 -    public ErrorOr<TValue> Else(Func<List<Error>, List<Error>> onError)
-+    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, List<Error>> onError)
++    public ErrorOr<TValue> Else(Func<ReadOnlyCollection<Error>, ReadOnlyCollection<Error>> onError)
 ```
 
 ```diff
@@ -127,7 +127,7 @@ Consequently all `Match`, `Switch` and `Else` methods and extension methods that
 
 ```diff
 -    public async Task<ErrorOr<TValue>> ElseAsync(Func<List<Error>, Task<List<Error>>> onError)
-+    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<List<Error>>> onError)
++    public async Task<ErrorOr<TValue>> ElseAsync(Func<ReadOnlyCollection<Error>, Task<ReadOnlyCollection<Error>>> onError)
 ```
 
 ```diff
@@ -145,38 +145,45 @@ Consequently all `Match`, `Switch` and `Else` methods and extension methods that
 ```
 
 ```diff
-     public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(
-         this Task<ErrorOr<TValue>> errorOr,
--        Func<List<Error>, Task<TValue>> onError)
-+        Func<ReadOnlyCollection<Error>, Task<TValue>> onError)
+    public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+-       Func<List<Error>, Task<TValue>> onError)
++       Func<ReadOnlyCollection<Error>, Task<TValue>> onError)
 ```
 
 ```diff
-     public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(
-         this Task<ErrorOr<TValue>> errorOr,
--        Func<List<Error>, Task<ErrorOr<TValue>>> onError)
-+        Func<ReadOnlyCollection<Error>, Task<ErrorOr<TValue>>> onError)
+    public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+-       Func<List<Error>, Task<ErrorOr<TValue>>> onError)
++       Func<ReadOnlyCollection<Error>, Task<ErrorOr<TValue>>> onError)
 ```
 
 ```diff
-     public static async Task<ErrorOr<TValue>> Else<TValue>(
-         this Task<ErrorOr<TValue>> errorOr,
--        Func<List<Error>, Error> onError)
-+        Func<ReadOnlyCollection<Error>, Error> onError)
+    public static async Task<ErrorOr<TValue>> Else<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+-       Func<List<Error>, Error> onError)
++       Func<ReadOnlyCollection<Error>, Error> onError)
 ```
 
 ```diff
-     public static async Task<ErrorOr<TValue>> Else<TValue>(
-         this Task<ErrorOr<TValue>> errorOr,
--        Func<List<Error>, List<Error>> onError)
-+        Func<ReadOnlyCollection<Error>, List<Error>> onError)
+    public static async Task<ErrorOr<TValue>> Else<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+-       Func<List<Error>, List<Error>> onError)
++       Func<ReadOnlyCollection<Error>, ReadOnlyCollection<Error>> onError)
 ```
 
 ```diff
-     public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(
-         this Task<ErrorOr<TValue>> errorOr,
--        Func<List<Error>, Task<Error>> onError)
-+        Func<ReadOnlyCollection<Error>, Task<Error>> onError)
+    public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+-       Func<List<Error>, Task<Error>> onError)
++       Func<ReadOnlyCollection<Error>, Task<Error>> onError)
+```
+
+```diff
+    public static async Task<ErrorOr<TValue>> ElseAsync<TValue>(
+        this Task<ErrorOr<TValue>> errorOr,
+-       Func<List<Error>, Task<List<Error>>> onError)
++       Func<ReadOnlyCollection<Error>, Task<ReadOnlyCollection<Error>>> onError)
 ```
 
 ```diff
