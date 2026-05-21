@@ -13,12 +13,17 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
     public static implicit operator ErrorOr<TValue>(Error error) => new(error);
 
     /// <summary>
-    /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
+    /// Creates an <see cref="ErrorOr{TValue}"/> from a read-only list of errors.
     /// </summary>
-    public static implicit operator ErrorOr<TValue>(List<Error> errors) => errors?.Count > 0 ? new(errors) : new(KnownErrors.CachedInvalidInitialErrorsList);
+    public static implicit operator ErrorOr<TValue>(ReadOnlyCollection<Error> errors) => errors?.Count > 0 ? new(errors) : new(KnownErrors.CachedInvalidInitialErrorsList);
+
+    /// <summary>
+    /// Creates an <see cref="ErrorOr{TValue}"/> from a read-only span of errors.
+    /// </summary>
+    public static implicit operator ErrorOr<TValue>(ReadOnlySpan<Error> errors) => errors.Length > 0 ? new(new ReadOnlyCollection<Error>([.. errors])) : new(KnownErrors.CachedInvalidInitialErrorsList);
 
     /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
     /// </summary>
-    public static implicit operator ErrorOr<TValue>(Error[] errors) => errors?.Length > 0 ? new([.. errors]) : new(KnownErrors.CachedInvalidInitialErrorsList);
+    public static implicit operator ErrorOr<TValue>(List<Error> errors) => errors?.Count > 0 ? new(new ReadOnlyCollection<Error>([.. errors])) : new(KnownErrors.CachedInvalidInitialErrorsList);
 }

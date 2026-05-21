@@ -1,4 +1,5 @@
 using ErrorOr;
+
 using FluentAssertions;
 
 namespace Tests;
@@ -234,7 +235,7 @@ public class ElseAsyncTests
         ErrorOr<string> result = await errorOrString
             .ThenAsync(Convert.ToIntAsync)
             .ThenAsync(Convert.ToStringAsync)
-            .ElseAsync(errors => Task.FromResult(new List<Error> { Error.Unexpected() }));
+            .ElseAsync(errors => Task.FromResult(new ReadOnlyCollection<Error>([Error.Unexpected()])));
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -251,7 +252,7 @@ public class ElseAsyncTests
         ErrorOr<string> result = await errorOrString
             .ThenAsync(Convert.ToIntAsync)
             .ThenAsync(Convert.ToStringAsync)
-            .ElseAsync(errors => Task.FromResult(new List<Error> { Error.Unexpected() }));
+            .ElseAsync(errors => Task.FromResult(new ReadOnlyCollection<Error>([Error.Unexpected()])));
 
         // Assert
         result.IsError.Should().BeFalse();

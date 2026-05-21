@@ -234,7 +234,7 @@ ErrorOr<string> foo = await "5".ToErrorOr()
 
 ## Using implicit conversion
 
-There are implicit converters from `TResult`, `Error`, `List<Error>` to `ErrorOr<TResult>`
+There are implicit converters from `TResult`, `Error`, `ReadOnlyCollection<Error>`, `List<Error>`, Error[] to `ErrorOr<TResult>`
 
 ```cs
 ErrorOr<int> result = 5;
@@ -421,11 +421,11 @@ ErrorOr<int> result = User.Create();
 
 if (result.IsError)
 {
-    result.ErrorsOrEmptyList // List<Error> { /* one or more errors */  }
+    result.ErrorsOrEmptyList // ReadOnlyCollection<Error> { /* one or more errors */  }
     return;
 }
 
-result.ErrorsOrEmptyList // List<Error> { }
+result.ErrorsOrEmptyList // ReadOnlyCollection<Error> { }
 ```
 
 # Methods
@@ -713,7 +713,7 @@ Because `IErrorOr` inherits from `IRecordable`, `GetRecording(IRecordingSerializ
 public interface IRecordingSerializer<TOutput>
 {
     TOutput SerializeValue<TValue>(TValue value);
-    TOutput SerializeErrors(List<Error> errors);
+    TOutput SerializeErrors(ReadOnlyCollection<Error> errors);
 }
 ```
 
@@ -738,7 +738,7 @@ public class SystemTextJsonRecordingSerializer : IRecordingSerializer<string>
     public string SerializeValue<TValue>(TValue value)
         => JsonSerializer.Serialize(value, JsonOptions);
 
-    public string SerializeErrors(List<Error> errors)
+    public string SerializeErrors(ReadOnlyCollection<Error> errors)
         => JsonSerializer.Serialize(errors, JsonOptions);
 }
 ```
@@ -783,7 +783,7 @@ public class PlainTextRecordingSerializer : IRecordingSerializer<string>
     public string SerializeValue<TValue>(TValue value)
         => value?.ToString() ?? string.Empty;
 
-    public string SerializeErrors(List<Error> errors)
+    public string SerializeErrors(ReadOnlyCollection<Error> errors)
         => string.Join(", ", errors.Select(e => $"{e.Code}: {e.Description}"));
 }
 
@@ -793,7 +793,7 @@ public class ProtobufRecordingSerializer : IRecordingSerializer<byte[]>
     public byte[] SerializeValue<TValue>(TValue value)
         => ProtoBuf.Serializer.SerializeWithLengthPrefix<TValue>(value);
 
-    public byte[] SerializeErrors(List<Error> errors)
+    public byte[] SerializeErrors(ReadOnlyCollection<Error> errors)
         => ProtoBuf.Serializer.SerializeWithLengthPrefix(errors);
 }
 ```
