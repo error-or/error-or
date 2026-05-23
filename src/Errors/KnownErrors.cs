@@ -18,5 +18,10 @@ internal static class KnownErrors
 
     public static ReadOnlyCollection<Error> CachedInvalidInitialErrorsList { get; } = new ReadOnlyCollection<Error>([EmptyInitialErrors]);
 
+#if NETSTANDARD
     public static ReadOnlyCollection<Error> CachedEmptyErrorsList { get; } = new ReadOnlyCollection<Error>([]);
+#else
+    public static ReadOnlyCollection<Error> CachedEmptyErrorsList { get; } = ReadOnlyCollection<Error>.Empty;
+#endif
+
 }
