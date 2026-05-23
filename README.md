@@ -234,7 +234,7 @@ ErrorOr<string> foo = await "5".ToErrorOr()
 
 ## Using implicit conversion
 
-There are implicit converters from `TResult`, `Error`, `ReadOnlyCollection<Error>`, `List<Error>`, Error[] to `ErrorOr<TResult>`
+There are implicit converters from `TResult`, `Error`, `ReadOnlyCollection<Error>`, `List<Error>`, `Error[]` to `ErrorOr<TResult>`
 
 ```cs
 ErrorOr<int> result = 5;
