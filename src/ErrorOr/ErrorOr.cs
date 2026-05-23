@@ -15,7 +15,7 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 
     private ErrorOr(TValue value) => _value = value;
 
-    private ErrorOr(Error error) => _errors = new ReadOnlyCollection<Error>([error]);
+    private ErrorOr(Error error) => _errors = Array.AsReadOnly([error]);
 
     private ErrorOr(ReadOnlyCollection<Error> errors) => _errors = errors;
 

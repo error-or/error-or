@@ -54,7 +54,7 @@ public static partial class ErrorOrExtensions
     /// Creates an <see cref="ErrorOr{TValue}"/> instance with the given enumeration of errors.
     /// </summary>
     /// <param name="errors">The enumeration of errors to create the <see cref="ErrorOr{TValue}"/> instance with.</param>
-    public static ErrorOr<TValue> ToErrorOr<TValue>(this IEnumerable<Error> errors) => errors.ToList();
+    public static ErrorOr<TValue> ToErrorOr<TValue>(this IEnumerable<Error> errors) => errors.ToArray();
 
     /// <summary>
     /// Creates an awaitable <see cref="ErrorOr{TValue}"/> instance with the given awaitable array of errors.
@@ -69,6 +69,6 @@ public static partial class ErrorOrExtensions
     public static async Task<ErrorOr<TValue>> ToErrorOrAsync<TValue>(this Task<IEnumerable<Error>> errors)
     {
         var errorEnumeration = await errors.ConfigureAwait(false);
-        return errorEnumeration.ToList();
+        return errorEnumeration.ToArray();
     }
 }
