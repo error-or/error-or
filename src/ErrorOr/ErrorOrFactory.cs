@@ -43,7 +43,7 @@ public static class ErrorOrFactory
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="errors">Read-only span of errors.</param>
     /// <returns>An instance of <see cref="ErrorOr{TValue}"/> containing provided read-only span of errors.</returns>
-    public static ErrorOr<TValue> From<TValue>(ReadOnlySpan<Error> errors) => errors.ToArray();
+    public static ErrorOr<TValue> From<TValue>(ReadOnlySpan<Error> errors) => errors;
 
     /// <summary>
     /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from a read-only span of errors.
