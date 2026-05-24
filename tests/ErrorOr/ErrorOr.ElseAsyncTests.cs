@@ -258,4 +258,63 @@ public class ElseAsyncTests
         result.IsError.Should().BeFalse();
         result.Value.Should().Be(errorOrString.Value);
     }
+
+    [Fact]
+    public async Task CallingElseAsyncWithErrorsFuncReturningList_WhenIsError_ShouldReturnElseErrors()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        static Task ProcessErrorsAsync(ReadOnlyCollection<Error> errors)
+        {
+            // Simulate some asynchronous work with the errors
+            return Task.FromResult(errors);
+        }
+
+        // Act
+        ErrorOr<string> result = await errorOrString
+            .ElseAsync(async errors =>
+            {
+                List<Error> errorList = [Error.Unexpected()];
+                await ProcessErrorsAsync(errors);
+                foreach (var error in errors)
+                {
+                    errorList.Add(error);
+                }
+
+                return errorList;
+            });
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
+        result.Errors.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task CallingElseAsyncWithErrorsFuncReturningArray_WhenIsError_ShouldReturnElseErrors()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        static Task ProcessErrorsAsync(ReadOnlyCollection<Error> errors)
+        {
+            // Simulate some asynchronous work with the errors
+            return Task.FromResult(errors);
+        }
+
+        // Act
+        ErrorOr<string> result = await errorOrString
+            .ElseAsync(async errors =>
+            {
+                Error[] errorArray = [Error.Unexpected(), .. errors];
+                await ProcessErrorsAsync(errors);
+                return errorArray;
+            });
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
+        result.Errors.Should().HaveCount(2);
+    }
 }
