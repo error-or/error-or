@@ -108,7 +108,7 @@ public class ElseTests
     }
 
     [Fact]
-    public void CallingElseWithErrorsFunc_WhenIsError_ShouldReturnElseError()
+    public void CallingElseWithErrorFunc_WhenIsError_ShouldReturnElseError()
     {
         // Arrange
         ErrorOr<string> errorOrString = Error.NotFound();
@@ -125,7 +125,7 @@ public class ElseTests
     }
 
     [Fact]
-    public void CallingElseWithErrorsFunc_WhenIsSuccess_ShouldNotReturnElseError()
+    public void CallingElseWithErrorFunc_WhenIsSuccess_ShouldNotReturnElseError()
     {
         // Arrange
         ErrorOr<string> errorOrString = "5";
@@ -283,7 +283,7 @@ public class ElseTests
     }
 
     [Fact]
-    public async Task CallingElseWithErrorFuncAfterThenAsync_WhenIsError_ShouldReturnElseErrors()
+    public async Task CallingElseWithErrorsFuncAfterThenAsync_WhenIsError_ShouldReturnElseErrors()
     {
         // Arrange
         ErrorOr<string> errorOrString = Error.NotFound();
