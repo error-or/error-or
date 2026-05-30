@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## [2.1.1] - to be released
+## [2.1.1] - 2026-05-15
 
 ### Added
 
@@ -105,24 +105,90 @@ All notable changes to this project are documented in this file.
     ErrorOr<int> result = [Error.Validation(), Error.Validation()];
     ```
 
+- [#134](https://github.com/error-or/error-or/pull/134) Added `FromAsync` and missing `ToErrorOrAsync` methods
+
+    Added support for `FromAsync` methods.
+
+    ```cs
+    public async Tak<ErrorOr<int>> GetValueAsync()
+    {
+        return await ErrorOrFactory.FromAsync(5);
+    }
+    ```
+
+    ```cs
+    public async Tak<ErrorOr<int>> SingleErrorToErrorOrAsync()
+    {
+        return await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+    }
+    ```
+
+    ```cs
+    public async Tak<ErrorOr<int>> MultipleErrorsToErrorOrAsync()
+    {
+        return await ErrorOrFactory.FromAsync([
+            Error.Validation(description: "Invalid Name"),
+            Error.Validation(description: "Invalid Last Name")
+        ]);
+    }
+    ```
+
+    Added support for `ToErrorOrAsync` methods from errors:
+
+    ```cs
+    Task<Error> errorTask = Task.FromResult(Error.Validation());
+    ErrorOr<int> result = errorTask.ToErrorOrAsync<int>();
+    ```
+
+    ```cs
+    List<Error> errors = [Error.Unauthorized(), Error.Validation()];
+    Task<List<Error>> errorsTask = Task.FromResult(errors);
+    ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
+    ```
+
 - [#149](https://github.com/amantinband/error-or/pull/149) Added `Else`/`ElseAsync` overloads returning `ErrorOr`
 
-- [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnshure` and `ThenEnshureAsync` methods.
-  They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
-  If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
+- [#152](https://github.com/amantinband/error-or/pull/152) Added `ThenEnsure` and `ThenEnsureAsync` methods.
+
+    They are similar to `ThenDo` and `ThenDoAsync`, but they receive a function that can return errors.
+    If no errors are returned, the original value is preserved and the ensure function's success value is ignored.
 
 - [#159](https://github.com/amantinband/error-or/pull/159) Added `IsSuccess` property to `ErrorOr`
 
-- [#158](https://github.com/amantinband/error-or/pull/158) Added JSON Serialization support. The `IRecordable` interface provides a way to obtain a JSON representation of the current state.
+- [#158](https://github.com/amantinband/error-or/pull/158) Added support for serialization via `IErrorOr` interface without direct access to `Value` property. The `IRecordable` base interface provides a way to obtain a serialized representation of the current state.
 
     ```cs
     void Log(IErrorOr result)
     {
-        Console.WriteLine(result.GetRecording());
-        // Or explicit call
-        Console.WriteLine(result.ToString());
+        Console.WriteLine(result.GetRecording(serializer));
     }
     ```
+
+    `IRecordingSerializer<TOutput>` interface can be implemented to provide concrete serialization strategy, for exaple JSON serialization:
+
+    ```cs
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using ErrorOr;
+
+    public class SystemTextJsonRecordingSerializer : IRecordingSerializer<string>
+    {
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() },
+            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+        };
+
+        public string SerializeValue<TValue>(TValue value)
+            => JsonSerializer.Serialize(value, JsonOptions);
+
+        public string SerializeErrors(List<Error> errors)
+            => JsonSerializer.Serialize(errors, JsonOptions);
+    }
+    ```
+
+- [#179](https://github.com/error-or/error-or/pull/179) Support for .NET 10 was added
 
 ### Fixed
 
@@ -130,17 +196,11 @@ All notable changes to this project are documented in this file.
 
     New dependency was introduced to [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) and development dependency was introduced to [Nullable](https://www.nuget.org/packages/Nullable)
 
-- [#150](https://github.com/amantinband/error-or/pull/150) `EmptyErrors.Instance` returns new `List<Error>` instance on each call
-
-    This allows to avoid mutating empty list
-
 - [#178](https://github.com/amantinband/error-or/pull/178) Initializing `ErrorOr<T>` with empty or null error collection results with unexpected error.
 
 ### Optimized
 
 - [#98](https://github.com/amantinband/error-or/issues/98), [#99](https://github.com/amantinband/error-or/pull/99) Memory consumption optimized by moving static empty errors lists from generic struct into non-generic class
-
-- [#128](https://github.com/error-or/error-or/pull/128) Removed unneccessary null check from `ErrorOr(List<Error>)` constructor
 
 ### Refactored
 

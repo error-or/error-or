@@ -6,7 +6,7 @@ namespace ErrorOr;
 public static class ErrorOrFactory
 {
     /// <summary>
-    /// Creates a new instance of <see cref="ErrorOr{TValue}"/> with a value.
+    /// Creates a new instance of <see cref="ErrorOr{TValue}"/> from a value.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="value">The value to wrap.</param>
@@ -14,6 +14,17 @@ public static class ErrorOrFactory
     public static ErrorOr<TValue> From<TValue>(TValue value)
     {
         return value;
+    }
+
+    /// <summary>
+    /// Creates a new awaitable instance of <see cref="ErrorOr{TValue}"/> from value.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="value">The value to wrap.</param>
+    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided value.</returns>
+    public static Task<ErrorOr<TValue>> FromAsync<TValue>(TValue value)
+    {
+        return Task.FromResult(From(value));
     }
 
     /// <summary>
@@ -28,6 +39,17 @@ public static class ErrorOrFactory
     }
 
     /// <summary>
+    /// Creates a new awaitable instance of <see cref="ErrorOr{TValue}"/> from single error.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="error">Single error instance to wrap.</param>
+    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing the provided error.</returns>
+    public static Task<ErrorOr<TValue>> FromAsync<TValue>(Error error)
+    {
+        return Task.FromResult(From<TValue>(error));
+    }
+
+    /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from a list of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
@@ -39,6 +61,17 @@ public static class ErrorOrFactory
     }
 
     /// <summary>
+    /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from a list of errors.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="errors">List of errors.</param>
+    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided list of errors.</returns>
+    public static Task<ErrorOr<TValue>> FromAsync<TValue>(List<Error> errors)
+    {
+        return Task.FromResult(From<TValue>(errors));
+    }
+
+    /// <summary>
     /// Creates an <see cref="ErrorOr{TValue}"/> from an enumeration of errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
@@ -47,5 +80,16 @@ public static class ErrorOrFactory
     public static ErrorOr<TValue> From<TValue>(IEnumerable<Error> errors)
     {
         return errors.ToList();
+    }
+
+    /// <summary>
+    /// Creates an awaitable instance of<see cref="ErrorOr{TValue}"/> from an enumeration of errors.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="errors">Enumeration of errors.</param>
+    /// <returns>An awaitable instance of <see cref="ErrorOr{TValue}"/> containing provided enumeration of errors.</returns>
+    public static Task<ErrorOr<TValue>> FromAsync<TValue>(IEnumerable<Error> errors)
+    {
+        return Task.FromResult(From<TValue>(errors));
     }
 }

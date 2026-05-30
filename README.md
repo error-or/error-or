@@ -8,6 +8,7 @@
 
 [![GitHub contributors](https://img.shields.io/github/contributors/amantinband/error-or)](https://GitHub.com/amantinband/error-or/graphs/contributors/) [![GitHub Stars](https://img.shields.io/github/stars/amantinband/error-or.svg)](https://github.com/amantinband/error-or/stargazers) [![GitHub license](https://img.shields.io/github/license/amantinband/error-or)](https://github.com/amantinband/error-or/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/amantinband/error-or/branch/main/graph/badge.svg?token=DR2EBIWK7B)](https://codecov.io/gh/amantinband/error-or)
+
 ---
 
 ### A simple, fluent discriminated union of an error or a result
@@ -18,51 +19,51 @@
 
 - [Give it a star ⭐!](#give-it-a-star-)
 - [Getting Started 🏃](#getting-started-)
-  - [Replace throwing exceptions with `ErrorOr<T>`](#replace-throwing-exceptions-with-errorort)
-  - [Support For Multiple Errors](#support-for-multiple-errors)
-  - [Various Functional Methods and Extension Methods](#various-functional-methods-and-extension-methods)
-    - [Real world example](#real-world-example)
-    - [Simple Example with intermediate steps](#simple-example-with-intermediate-steps)
-      - [No Failure](#no-failure)
-      - [Failure](#failure)
+    - [Replace throwing exceptions with `ErrorOr<T>`](#replace-throwing-exceptions-with-errorort)
+    - [Support For Multiple Errors](#support-for-multiple-errors)
+    - [Various Functional Methods and Extension Methods](#various-functional-methods-and-extension-methods)
+        - [Real world example](#real-world-example)
+        - [Simple Example with intermediate steps](#simple-example-with-intermediate-steps)
+            - [No Failure](#no-failure)
+            - [Failure](#failure)
 - [Creating an `ErrorOr` instance](#creating-an-erroror-instance)
-  - [Using implicit conversion](#using-implicit-conversion)
-  - [Using The `ErrorOrFactory`](#using-the-errororfactory)
-  - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
+    - [Using implicit conversion](#using-implicit-conversion)
+    - [Using The `ErrorOrFactory`](#using-the-errororfactory)
+    - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
 - [Properties](#properties)
-  - [`IsError`](#iserror)
-  - [`IsSuccess`](#issuccess)
-  - [`Value`](#value)
-  - [`Errors`](#errors)
-  - [`FirstError`](#firsterror)
-  - [`ErrorsOrEmptyList`](#errorsoremptylist)
+    - [`IsError`](#iserror)
+    - [`IsSuccess`](#issuccess)
+    - [`Value`](#value)
+    - [`Errors`](#errors)
+    - [`FirstError`](#firsterror)
+    - [`ErrorsOrEmptyList`](#errorsoremptylist)
 - [Methods](#methods)
-  - [`Match`](#match)
-    - [`Match`](#match-1)
-    - [`MatchAsync`](#matchasync)
-    - [`MatchFirst`](#matchfirst)
-    - [`MatchFirstAsync`](#matchfirstasync)
-  - [`Switch`](#switch)
-    - [`Switch`](#switch-1)
-    - [`SwitchAsync`](#switchasync)
-    - [`SwitchFirst`](#switchfirst)
-    - [`SwitchFirstAsync`](#switchfirstasync)
-  - [`Then`](#then)
-    - [`Then`](#then-1)
-    - [`ThenAsync`](#thenasync)
-    - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
-    - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
-    - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
-  - [`FailIf`](#failif)
-  - [`Else`](#else)
-    - [`Else`](#else-1)
-    - [`ElseAsync`](#elseasync)
-    - [`ElseDo` and `ElseDoAsync`](#elsedo-and-elsedoasync)
+    - [`Match`](#match)
+        - [`Match`](#match-1)
+        - [`MatchAsync`](#matchasync)
+        - [`MatchFirst`](#matchfirst)
+        - [`MatchFirstAsync`](#matchfirstasync)
+    - [`Switch`](#switch)
+        - [`Switch`](#switch-1)
+        - [`SwitchAsync`](#switchasync)
+        - [`SwitchFirst`](#switchfirst)
+        - [`SwitchFirstAsync`](#switchfirstasync)
+    - [`Then`](#then)
+        - [`Then`](#then-1)
+        - [`ThenAsync`](#thenasync)
+        - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
+        - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
+        - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
+    - [`FailIf`](#failif)
+    - [`Else`](#else)
+        - [`Else`](#else-1)
+        - [`ElseAsync`](#elseasync)
+        - [`ElseDo` and `ElseDoAsync`](#elsedo-and-elsedoasync)
 - [Mixing Features (`Then`, `FailIf`, `Else`, `Switch`, `Match`)](#mixing-features-then-failif-else-switch-match)
 - [Recording Outcomes](#recording-outcomes)
 - [Error Types](#error-types)
-  - [Built in error types](#built-in-error-types)
-  - [Custom error types](#custom-error-types)
+    - [Built in error types](#built-in-error-types)
+    - [Custom error types](#custom-error-types)
 - [Built in result types (`Result.Success`, ..)](#built-in-result-types-resultsuccess-)
 - [Organizing Errors](#organizing-errors)
 - [Mediator + FluentValidation + `ErrorOr` 🤝](#mediator--fluentvalidation--erroror-)
@@ -274,6 +275,12 @@ ErrorOr<int> result = ErrorOrFactory.From<int>([Error.Validation(), Error.Valida
 ```
 
 ```cs
+ErrorOr<int> result = await ErrorOrFactory.FromAsync(5);
+ErrorOr<int> result = await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+ErrorOr<int> result = await ErrorOrFactory.FromAsync<int>([Error.Validation(), Error.Validation()]);
+```
+
+```cs
 public ErrorOr<int> GetValue()
 {
     return ErrorOrFactory.From(5);
@@ -297,6 +304,30 @@ public ErrorOr<int> MultipleErrorsToErrorOr()
 }
 ```
 
+```cs
+public async Tak<ErrorOr<int>> GetValueAsync()
+{
+    return await ErrorOrFactory.FromAsync(5);
+}
+```
+
+```cs
+public async Tak<ErrorOr<int>> SingleErrorToErrorOrAsync()
+{
+    return await ErrorOrFactory.FromAsync<int>(Error.Unexpected());
+}
+```
+
+```cs
+public async Tak<ErrorOr<int>> MultipleErrorsToErrorOrAsync()
+{
+    return await ErrorOrFactory.FromAsync([
+        Error.Validation(description: "Invalid Name"),
+        Error.Validation(description: "Invalid Last Name")
+    ]);
+}
+```
+
 ## Using The `ToErrorOr` Extension Method
 
 ### Values
@@ -310,7 +341,18 @@ ErrorOr<int> result = await Task.FromResult(5).ToErrorOrAsync();
 
 ```cs
 ErrorOr<int> result = Error.Unexpected().ToErrorOr<int>();
-ErrorOr<int> result = new[] { Error.Validation(), Error.Validation() }.ToErrorOr<int>();
+ErrorOr<int> result = new[] { Error.Unauthorized(), Error.Validation() }.ToErrorOr<int>();
+```
+
+```cs
+Task<Error> errorTask = Task.FromResult(Error.Validation());
+ErrorOr<int> result = errorTask.ToErrorOrAsync<int>();
+```
+
+```cs
+List<Error> errors = [Error.Unauthorized(), Error.Validation()];
+Task<List<Error>> errorsTask = Task.FromResult(errors);
+ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
 ```
 
 # Properties
@@ -659,16 +701,56 @@ ErrorOr<string> foo = await errorOrInt
 
 # Recording Outcomes
 
-When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a way to obtain a JSON representation of the current state in these scenarios.
+When working in cross-cutting concerns such as logging, auditing, or middleware pipelines, you may hold a reference to `IErrorOr` without knowing the concrete `TValue` type. The `IRecordable` interface provides a format-agnostic way to obtain a representation of the current state in these scenarios.
 
-Because `IErrorOr` inherits from `IRecordable`, `GetRecording()` is available directly on any `IErrorOr` reference — no cast required.
+Because `IErrorOr` inherits from `IRecordable`, `GetRecording(IRecordingSerializer<TOutput>)` is available directly on any `IErrorOr` reference — no cast required.
 
-`GetRecording()` always returns safely — when the state is a value it returns a JSON object; when the state is errors it returns a JSON array of those errors. The output is indented, enums are serialized as strings, and null properties are always included:
+## IRecordingSerializer&lt;TOutput&gt;
+
+`GetRecording<TOutput>` accepts any `IRecordingSerializer<TOutput>` implementation. The `TOutput` type parameter determines what `GetRecording` returns — a `string`, a `byte[]`, or any other type. The library calls `SerializeValue<TValue>(TValue value)` with the fully-typed value, so no boxing is visible to your implementation:
 
 ```cs
+public interface IRecordingSerializer<TOutput>
+{
+    TOutput SerializeValue<TValue>(TValue value);
+    TOutput SerializeErrors(List<Error> errors);
+}
+```
+
+## Using System.Text.Json
+
+Create a serializer that uses `System.Text.Json` by implementing `IRecordingSerializer<string>`:
+
+```cs
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ErrorOr;
+
+public class SystemTextJsonRecordingSerializer : IRecordingSerializer<string>
+{
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+    };
+
+    public string SerializeValue<TValue>(TValue value)
+        => JsonSerializer.Serialize(value, JsonOptions);
+
+    public string SerializeErrors(List<Error> errors)
+        => JsonSerializer.Serialize(errors, JsonOptions);
+}
+```
+
+Then pass an instance to `GetRecording`:
+
+```cs
+var serializer = new SystemTextJsonRecordingSerializer();
+
 void Log(IErrorOr result)
 {
-    Console.WriteLine(result.GetRecording());
+    Console.WriteLine(result.GetRecording(serializer));
 }
 
 // Value state:
@@ -690,35 +772,30 @@ void Log(IErrorOr result)
 // ]
 ```
 
-When you have a concrete `ErrorOr<TValue>` reference, `ToString()` produces the same JSON output as `GetRecording()`, so it works naturally in string interpolation or anywhere a string is expected:
+## Custom formats
+
+Any output type is supported — implement `IRecordingSerializer<TOutput>` to produce plain text, binary payloads, or anything else:
 
 ```cs
-ErrorOr<User> result = GetUser(id);
+// Plain text — returns string
+public class PlainTextRecordingSerializer : IRecordingSerializer<string>
+{
+    public string SerializeValue<TValue>(TValue value)
+        => value?.ToString() ?? string.Empty;
 
-// Explicit call
-Console.WriteLine(result.ToString());
+    public string SerializeErrors(List<Error> errors)
+        => string.Join(", ", errors.Select(e => $"{e.Code}: {e.Description}"));
+}
 
-// Implicit — string interpolation calls ToString() automatically
-logger.LogInformation("Result: {Result}", result);
-Console.WriteLine($"Outcome: {result}");
+// Binary — returns byte[] (e.g. for Protobuf, MessagePack, AVRO)
+public class ProtobufRecordingSerializer : IRecordingSerializer<byte[]>
+{
+    public byte[] SerializeValue<TValue>(TValue value)
+        => ProtoBuf.Serializer.SerializeWithLengthPrefix<TValue>(value);
 
-// Value state:
-// {
-//   "Name": "Alice",
-//   "MiddleName": null,
-//   "Age": 30
-// }
-
-// Error state:
-// [
-//   {
-//     "Code": "User.NotFound",
-//     "Description": "User was not found.",
-//     "Type": "NotFound",
-//     "NumericType": 3,
-//     "Metadata": null
-//   }
-// ]
+    public byte[] SerializeErrors(List<Error> errors)
+        => ProtoBuf.Serializer.SerializeWithLengthPrefix(errors);
+}
 ```
 
 # Error Types

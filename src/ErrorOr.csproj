@@ -18,10 +18,12 @@
     <RepositoryUrl>https://github.com/error-or/error-or</RepositoryUrl>
     <PackageOutputPath>../artifacts/</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../assets/icon-square.png" Pack="true" Visible="false" PackagePath="" />
     <None Include="../README.md" Pack="true" PackagePath="" />
+    <None Include="../CHANGELOG.md" Pack="true" PackagePath="" />
     <None Include="Stylecop.json" />
     <AdditionalFiles Include="Stylecop.json" />
   </ItemGroup>
@@ -32,7 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.HashCode" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
-    <PackageReference Include="System.Text.Json" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
     <PackageReference Include="Nullable">
         <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

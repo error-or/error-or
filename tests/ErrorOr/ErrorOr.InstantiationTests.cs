@@ -39,37 +39,6 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    public void CreateFromValue_WhenAccessingValue_ViaIRecordable_ShouldReturnJson()
-    {
-        // Arrange
-        IEnumerable<string> value = ["value"];
-
-        // Act
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IRecordable errorOrValue = ErrorOrFactory.From(value);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
-
-        // Assert
-        errorOrValue.GetRecording().Should().Be(System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true }));
-    }
-
-    [Fact]
-    public void CreateFromError_WhenAccessingValue_ViaIRecordable_ShouldReturnJsonErrors()
-    {
-        // Arrange
-        var error = Error.Unexpected();
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IRecordable errorOrValue = (ErrorOr<string>)error;
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
-
-        // Act
-        var recording = errorOrValue.GetRecording();
-
-        // Assert
-        recording.Should().Be(System.Text.Json.JsonSerializer.Serialize(new[] { error }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, IncludeFields = true, Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } }));
-    }
-
-    [Fact]
     public void CreateFromValue_WhenAccessingErrors_ShouldReturnUnexpectedError()
     {
         // Arrange
@@ -112,6 +81,20 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncValue_WhenAccessingValue_ShouldReturnValue()
+    {
+        // Arrange
+        IEnumerable<string> value = ["value"];
+
+        // Act
+        ErrorOr<IEnumerable<string>> errorOrPerson = await ErrorOrFactory.FromAsync(value);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeFalse();
+        errorOrPerson.Value.Should().BeSameAs(value);
+    }
+
+    [Fact]
     public void CreateFromErrorList_UsingFactory_WhenAccessingErrors_ShouldReturnErrorList()
     {
         // Arrange
@@ -119,6 +102,20 @@ public class ErrorOrInstantiationTests
 
         // Act
         ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>([error]);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+        errorOrPerson.Errors.Should().ContainSingle().Which.Should().Be(error);
+    }
+
+    [Fact]
+    public async Task CreateFromAsyncErrorList_UsingFactory_WhenAccessingErrors_ShouldReturnErrorList()
+    {
+        // Arrange
+        var error = Error.Validation("User.Name", "Name is too short");
+
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>([error]);
 
         // Assert
         errorOrPerson.IsError.Should().BeTrue();
@@ -204,6 +201,16 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public async Task CreateFromAsyncSingleError_UsingFactory_ShouldBeError()
+    {
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>(Error.Validation("User.Name", "Name is too short"));
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
     public void CreateFromArrayOfErrors_UsingFactory_ShouldBeError()
     {
         // Arrange
@@ -214,6 +221,22 @@ public class ErrorOrInstantiationTests
 
         // Act
         ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>(errors);
+
+        // Assert
+        errorOrPerson.IsError.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CreateFromAsyncArrayOfErrors_UsingFactory_ShouldBeError()
+    {
+        // Arrange
+        Error[] errors = [
+            Error.Validation("User.Name", "Name is too short"),
+            Error.Forbidden("User.Forbidden", "You are not allowed to create user")
+        ];
+
+        // Act
+        ErrorOr<Person> errorOrPerson = await ErrorOrFactory.FromAsync<Person>(errors);
 
         // Assert
         errorOrPerson.IsError.Should().BeTrue();
@@ -724,6 +747,19 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
+    public void ImplicitCastNullObject_WhenAccessingValue_ShouldReturnNull()
+    {
+        // Arrange
+        ErrorOr<Person?> result = CreatePersonOrNull(
+            firstName: null,
+            lastName: null);
+
+        // Act & Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().Be(null);
+    }
+
+    [Fact]
     public void ImplicitCastNullValue_WhenAccessingErrors_ShouldReturnUnexpected()
     {
         // Arrange
@@ -878,5 +914,31 @@ public class ErrorOrInstantiationTests
 
         // Assert
         firstError.Type.Should().Be(ErrorType.Unexpected);
+    }
+
+    private static ErrorOr<Person?> CreatePersonOrNull(string? firstName, string? lastName)
+    {
+        if (string.IsNullOrWhiteSpace(firstName))
+        {
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                return (Person?)null;
+            }
+            else
+            {
+                return Error.NotFound("Person.FirstNameNotFound", "First name is required.");
+            }
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                return Error.NotFound("Person.LastNameNotFound", "Last name is required.");
+            }
+            else
+            {
+                return new Person($"{firstName} {lastName}");
+            }
+        }
     }
 }

@@ -17,14 +17,12 @@ permissions:
 jobs:
   test:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
       - run: dotnet restore
       - run: dotnet build -c Release --no-restore
       - run: dotnet test -c Release --no-restore --verbosity normal
@@ -32,18 +30,19 @@ jobs:
   publish:
     name: Pack and publish
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     environment: production
     permissions:
       id-token: write
       contents: read
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
       - name: Resolve version
         id: version
         run: |
@@ -67,4 +66,4 @@ jobs:
         with:
           user: ${{ secrets.NUGET_USER }}
       - name: Publish to NuGet
-        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "artifacts/ErrorOr.${{ steps.version.outputs.version }}.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
