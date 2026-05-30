@@ -57,7 +57,9 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Resolved version: $VERSION"
       - name: Pack
-        run: dotnet pack src/ErrorOr.csproj -c Release -p:Version=${{ steps.version.outputs.version }} -o artifacts
+        run: |
+          dotnet pack src/ErrorOr.csproj -c Release -p:Version=${{ steps.version.outputs.version }} -o artifacts
+          dotnet pack src/ErrorOr.AspNetCore/ErrorOr.AspNetCore.csproj -c Release -p:Version=${{ steps.version.outputs.version }} -o artifacts
       - name: NuGet login (OIDC -> short-lived API key)
         uses: NuGet/login@v1
         id: nuget-login
