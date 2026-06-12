@@ -9,7 +9,7 @@
         <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     </ItemGroup>
     <ItemGroup Label="Tests">
-        <PackageVersion Include="System.Text.Json" Version="10.0.8" />
+        <PackageVersion Include="System.Text.Json" Version="10.0.9" />
         <PackageVersion Include="fluentassertions" Version="8.10.0" />
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
         <PackageVersion Include="xunit" Version="2.9.3" />
