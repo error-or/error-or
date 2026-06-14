@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- [#XXX](https://github.com/error-or/error-or/pull/XXX) Fixed `NullReferenceException` thrown by `ErrorOr<TValue>.GetHashCode()` when the instance is in a success state with a `null` value (including `default(ErrorOr<TValue>)` for reference types). The hash code is now computed via `EqualityComparer<TValue>.Default`, consistent with how `Equals` already handles `null`.
+
 ## [2.1.1] - 2026-05-15
 
 ### Added

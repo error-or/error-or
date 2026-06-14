@@ -143,6 +143,28 @@ public sealed class ErrorOrEqualityTests
     }
 
     [Fact]
+    public void GetHashCode_WhenValueIsNull_ShouldNotThrow()
+    {
+        ErrorOr<Person?> errorOrPerson = (Person?)null;
+
+        var act = () => errorOrPerson.GetHashCode();
+
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void GetHashCode_WhenBothValuesAreNull_ShouldReturnSameHashCode()
+    {
+        ErrorOr<Person?> errorOrPerson1 = (Person?)null;
+        ErrorOr<Person?> errorOrPerson2 = (Person?)null;
+
+        var hashCode1 = errorOrPerson1.GetHashCode();
+        var hashCode2 = errorOrPerson2.GetHashCode();
+
+        hashCode1.Should().Be(hashCode2);
+    }
+
+    [Fact]
     public void GetHashCode_WhenTwoInstancesHaveEqualErrors_ShouldReturnSameHashCode()
     {
         var errors1 = new[]
