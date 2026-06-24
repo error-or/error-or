@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using FluentAssertions;
 
 namespace Tests;

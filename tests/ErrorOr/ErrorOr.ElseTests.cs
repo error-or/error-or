@@ -1,4 +1,5 @@
 using ErrorOr;
+
 using FluentAssertions;
 
 namespace Tests;
@@ -108,7 +109,7 @@ public class ElseTests
     }
 
     [Fact]
-    public void CallingElseWithErrorsFunc_WhenIsError_ShouldReturnElseError()
+    public void CallingElseWithErrorFunc_WhenIsError_ShouldReturnElseError()
     {
         // Arrange
         ErrorOr<string> errorOrString = Error.NotFound();
@@ -125,7 +126,7 @@ public class ElseTests
     }
 
     [Fact]
-    public void CallingElseWithErrorsFunc_WhenIsSuccess_ShouldNotReturnElseError()
+    public void CallingElseWithErrorFunc_WhenIsSuccess_ShouldNotReturnElseError()
     {
         // Arrange
         ErrorOr<string> errorOrString = "5";
@@ -173,6 +174,51 @@ public class ElseTests
         // Assert
         result.IsError.Should().BeFalse();
         result.Value.Should().Be(errorOrString.Value);
+    }
+
+    [Fact]
+    public void CallingElseWithErrorsFuncReturningList_WhenIsError_ShouldReturnElseErrors()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> result = errorOrString
+            .Else(errors =>
+            {
+                List<Error> errorList = [Error.Unexpected()];
+                foreach (var error in errors)
+                {
+                    errorList.Add(error);
+                }
+
+                return errorList;
+            });
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
+        result.Errors.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public void CallingElseWithErrorsFuncReturningArray_WhenIsError_ShouldReturnElseErrors()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        // Act
+        ErrorOr<string> result = errorOrString
+            .Else(errors =>
+            {
+                Error[] errorArray = [Error.Unexpected(), .. errors];
+                return errorArray;
+            });
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
+        result.Errors.Should().HaveCount(2);
     }
 
     [Fact]
@@ -283,7 +329,7 @@ public class ElseTests
     }
 
     [Fact]
-    public async Task CallingElseWithErrorFuncAfterThenAsync_WhenIsError_ShouldReturnElseErrors()
+    public async Task CallingElseWithErrorsFuncAfterThenAsync_WhenIsError_ShouldReturnElseErrors()
     {
         // Arrange
         ErrorOr<string> errorOrString = Error.NotFound();

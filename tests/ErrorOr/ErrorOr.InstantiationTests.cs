@@ -46,7 +46,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        List<Error> errors = errorOrPerson.Errors;
+        ReadOnlyCollection<Error> errors = errorOrPerson.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -60,7 +60,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<IEnumerable<string>> errorOrPerson = ErrorOrFactory.From(value);
 
         // Act
-        List<Error> errors = errorOrPerson.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrPerson.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().BeEmpty();
@@ -123,19 +123,6 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    [Obsolete]
-    public void CreateFromErrorList_WhenAccessingErrors_ShouldReturnErrorList()
-    {
-        // Arrange
-        List<Error> errors = [Error.Validation("User.Name", "Name is too short")];
-        ErrorOr<Person> errorOrPerson = ErrorOr<Person>.From(errors);
-
-        // Act & Assert
-        errorOrPerson.IsError.Should().BeTrue();
-        errorOrPerson.Errors.Should().ContainSingle().Which.Should().Be(errors.Single());
-    }
-
-    [Fact]
     public void CreateFromErrorList_UsingFactory_WhenAccessingErrorsOrEmptyList_ShouldReturnErrorList()
     {
         // Arrange
@@ -150,38 +137,10 @@ public class ErrorOrInstantiationTests
     }
 
     [Fact]
-    [Obsolete]
-    public void CreateFromErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnErrorList()
-    {
-        // Arrange
-        List<Error> errors = [Error.Validation("User.Name", "Name is too short")];
-        ErrorOr<Person> errorOrPerson = ErrorOr<Person>.From(errors);
-
-        // Act & Assert
-        errorOrPerson.IsError.Should().BeTrue();
-        errorOrPerson.ErrorsOrEmptyList.Should().ContainSingle().Which.Should().Be(errors.Single());
-    }
-
-    [Fact]
     public void CreateFromErrorList_UsingFactory_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
         ErrorOr<Person> errorOrPerson = ErrorOrFactory.From<Person>([Error.Validation("User.Name", "Name is too short")]);
-
-        // Act
-        Person value = errorOrPerson.Value;
-
-        // Assert
-        value.Should().Be(default);
-    }
-
-    [Fact]
-    [Obsolete]
-    public void CreateFromErrorList_WhenAccessingValue_ShouldReturnDefault()
-    {
-        // Arrange
-        List<Error> errors = [Error.Validation("User.Name", "Name is too short")];
-        ErrorOr<Person> errorOrPerson = ErrorOr<Person>.From(errors);
 
         // Act
         Person value = errorOrPerson.Value;
@@ -262,7 +221,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<Person> errorOrPerson = new Person("Amichai");
 
         // Act
-        List<Error> errors = errorOrPerson.Errors;
+        ReadOnlyCollection<Error> errors = errorOrPerson.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -479,7 +438,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = new ErrorOr<int>();
 
         // Act
-        List<Error> errors = errorOrInt.Errors;
+        ReadOnlyCollection<Error> errors = errorOrInt.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -492,7 +451,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = new ErrorOr<int>();
 
         // Act
-        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().BeEmpty();
@@ -530,7 +489,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = default;
 
         // Act
-        List<Error> errors = errorOrInt.Errors;
+        ReadOnlyCollection<Error> errors = errorOrInt.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -543,7 +502,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = default;
 
         // Act
-        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().BeEmpty();
@@ -644,7 +603,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = new List<Error>();
 
         // Act
-        List<Error> errors = errorOrInt.Errors;
+        ReadOnlyCollection<Error> errors = errorOrInt.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -657,7 +616,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = new List<Error>();
 
         // Act
-        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -703,7 +662,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = Array.Empty<Error>();
 
         // Act
-        List<Error> errors = errorOrInt.Errors;
+        ReadOnlyCollection<Error> errors = errorOrInt.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -716,7 +675,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = Array.Empty<Error>();
 
         // Act
-        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -766,7 +725,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int?> errorOrInt = default(int?);
 
         // Act
-        List<Error> errors = errorOrInt.Errors;
+        ReadOnlyCollection<Error> errors = errorOrInt.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -779,7 +738,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int?> errorOrInt = default(int?);
 
         // Act
-        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().BeEmpty();
@@ -802,7 +761,7 @@ public class ErrorOrInstantiationTests
     public void ImplicitCastNullErrorList_ShouldBeError()
     {
         // Arrange
-        ErrorOr<int> errorOrInt = default(List<Error>)!;
+        ErrorOr<int> errorOrInt = default(ReadOnlyCollection<Error>)!;
 
         // Act & Assert
         errorOrInt.IsError.Should().BeTrue();
@@ -812,7 +771,7 @@ public class ErrorOrInstantiationTests
     public void ImplicitCastNullErrorList_WhenAccessingValue_ShouldReturnDefault()
     {
         // Arrange
-        ErrorOr<int> errorOrInt = default(List<Error>)!;
+        ErrorOr<int> errorOrInt = default(ReadOnlyCollection<Error>)!;
 
         // Act & Assert
         errorOrInt.Value.Should().Be(default);
@@ -822,10 +781,10 @@ public class ErrorOrInstantiationTests
     public void ImplicitCastNullErrorList_WhenAccessingErrors_ShouldReturnUnexpected()
     {
         // Arrange
-        ErrorOr<int> errorOrInt = default(List<Error>)!;
+        ErrorOr<int> errorOrInt = default(ReadOnlyCollection<Error>)!;
 
         // Act
-        List<Error> errors = errorOrInt.Errors;
+        ReadOnlyCollection<Error> errors = errorOrInt.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -835,10 +794,10 @@ public class ErrorOrInstantiationTests
     public void ImplicitCastNullErrorList_WhenAccessingErrorsOrEmptyList_ShouldReturnUnexpected()
     {
         // Arrange
-        ErrorOr<int> errorOrInt = default(List<Error>)!;
+        ErrorOr<int> errorOrInt = default(ReadOnlyCollection<Error>)!;
 
         // Act
-        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -848,7 +807,7 @@ public class ErrorOrInstantiationTests
     public void ImplicitCastNullErrorList_WhenAccessingFirstError_ShouldReturnUnexpected()
     {
         // Arrange
-        ErrorOr<int> errorOrInt = default(List<Error>)!;
+        ErrorOr<int> errorOrInt = default(ReadOnlyCollection<Error>)!;
 
         // Act
         Error firstError = errorOrInt.FirstError;
@@ -884,7 +843,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = default(Error[])!;
 
         // Act
-        List<Error> errors = errorOrInt.Errors;
+        ReadOnlyCollection<Error> errors = errorOrInt.Errors;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);
@@ -897,7 +856,7 @@ public class ErrorOrInstantiationTests
         ErrorOr<int> errorOrInt = default(Error[])!;
 
         // Act
-        List<Error> errors = errorOrInt.ErrorsOrEmptyList;
+        ReadOnlyCollection<Error> errors = errorOrInt.ErrorsOrEmptyList;
 
         // Assert
         errors.Should().ContainSingle().Which.Type.Should().Be(ErrorType.Unexpected);

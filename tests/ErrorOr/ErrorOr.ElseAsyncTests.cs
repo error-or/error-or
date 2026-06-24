@@ -1,4 +1,5 @@
 using ErrorOr;
+
 using FluentAssertions;
 
 namespace Tests;
@@ -225,7 +226,7 @@ public class ElseAsyncTests
     }
 
     [Fact]
-    public async Task CallingElseAsyncWithErrorFunc_WhenIsError_ShouldReturnElseErrors()
+    public async Task CallingElseAsyncWithErrorsFunc_WhenIsError_ShouldReturnElseErrors()
     {
         // Arrange
         ErrorOr<string> errorOrString = Error.NotFound();
@@ -234,7 +235,7 @@ public class ElseAsyncTests
         ErrorOr<string> result = await errorOrString
             .ThenAsync(Convert.ToIntAsync)
             .ThenAsync(Convert.ToStringAsync)
-            .ElseAsync(errors => Task.FromResult(new List<Error> { Error.Unexpected() }));
+            .ElseAsync(errors => Task.FromResult(new ReadOnlyCollection<Error>([Error.Unexpected()])));
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -242,7 +243,7 @@ public class ElseAsyncTests
     }
 
     [Fact]
-    public async Task CallingElseAsyncWithErrorFunc_WhenIsSuccess_ShouldNotReturnElseErrors()
+    public async Task CallingElseAsyncWithErrorsFunc_WhenIsSuccess_ShouldNotReturnElseErrors()
     {
         // Arrange
         ErrorOr<string> errorOrString = "5";
@@ -251,10 +252,69 @@ public class ElseAsyncTests
         ErrorOr<string> result = await errorOrString
             .ThenAsync(Convert.ToIntAsync)
             .ThenAsync(Convert.ToStringAsync)
-            .ElseAsync(errors => Task.FromResult(new List<Error> { Error.Unexpected() }));
+            .ElseAsync(errors => Task.FromResult(new ReadOnlyCollection<Error>([Error.Unexpected()])));
 
         // Assert
         result.IsError.Should().BeFalse();
         result.Value.Should().Be(errorOrString.Value);
+    }
+
+    [Fact]
+    public async Task CallingElseAsyncWithErrorsFuncReturningList_WhenIsError_ShouldReturnElseErrors()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        static Task ProcessErrorsAsync(ReadOnlyCollection<Error> errors)
+        {
+            // Simulate some asynchronous work with the errors
+            return Task.FromResult(errors);
+        }
+
+        // Act
+        ErrorOr<string> result = await errorOrString
+            .ElseAsync(async errors =>
+            {
+                List<Error> errorList = [Error.Unexpected()];
+                await ProcessErrorsAsync(errors);
+                foreach (var error in errors)
+                {
+                    errorList.Add(error);
+                }
+
+                return errorList;
+            });
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
+        result.Errors.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task CallingElseAsyncWithErrorsFuncReturningArray_WhenIsError_ShouldReturnElseErrors()
+    {
+        // Arrange
+        ErrorOr<string> errorOrString = Error.NotFound();
+
+        static Task ProcessErrorsAsync(ReadOnlyCollection<Error> errors)
+        {
+            // Simulate some asynchronous work with the errors
+            return Task.FromResult(errors);
+        }
+
+        // Act
+        ErrorOr<string> result = await errorOrString
+            .ElseAsync(async errors =>
+            {
+                Error[] errorArray = [Error.Unexpected(), .. errors];
+                await ProcessErrorsAsync(errors);
+                return errorArray;
+            });
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.FirstError.Type.Should().Be(ErrorType.Unexpected);
+        result.Errors.Should().HaveCount(2);
     }
 }

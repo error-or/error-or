@@ -14,9 +14,14 @@ internal static class KnownErrors
         code: "ErrorOr.EmptyInitialErrors",
         description: "Error list cannot be null or empty when initializing ErrorOr.");
 
-    public static List<Error> CachedNoErrorsList { get; } = new (1) { NoErrors };
+    public static ReadOnlyCollection<Error> CachedNoErrorsList { get; } = Array.AsReadOnly([NoErrors]);
 
-    public static List<Error> CachedInvalidInitialErrorsList { get; } = new(1) { EmptyInitialErrors };
+    public static ReadOnlyCollection<Error> CachedInvalidInitialErrorsList { get; } = Array.AsReadOnly([EmptyInitialErrors]);
 
-    public static List<Error> CachedEmptyErrorsList { get; } = new (0);
+#if NETSTANDARD
+    public static ReadOnlyCollection<Error> CachedEmptyErrorsList { get; } = Array.AsReadOnly<Error>([]);
+#else
+    public static ReadOnlyCollection<Error> CachedEmptyErrorsList { get; } = ReadOnlyCollection<Error>.Empty;
+#endif
+
 }

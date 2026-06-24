@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -18,10 +18,15 @@
     <RepositoryUrl>https://github.com/error-or/error-or</RepositoryUrl>
     <PackageOutputPath>../artifacts/</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Include="System.Collections.ObjectModel" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="../assets/icon-square.png" Pack="true" Visible="false" PackagePath="" />
     <None Include="../README.md" Pack="true" PackagePath="" />
+    <None Include="../CHANGELOG.md" Pack="true" PackagePath="" />
     <None Include="Stylecop.json" />
     <AdditionalFiles Include="Stylecop.json" />
   </ItemGroup>

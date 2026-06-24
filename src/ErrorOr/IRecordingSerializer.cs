@@ -1,4 +1,4 @@
-﻿namespace ErrorOr;
+namespace ErrorOr;
 
 /// <summary>
 /// Defines a serialization strategy for recording the state of an <see cref="ErrorOr{TValue}"/> instance
@@ -25,5 +25,5 @@ public interface IRecordingSerializer<TOutput>
     /// </summary>
     /// <param name="errors">The list of errors to serialize.</param>
     /// <returns>A <typeparamref name="TOutput"/> representation of <paramref name="errors"/>.</returns>
-    TOutput SerializeErrors(List<Error> errors);
+    TOutput SerializeErrors(ReadOnlyCollection<Error> errors);
 }

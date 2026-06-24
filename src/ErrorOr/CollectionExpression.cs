@@ -12,10 +12,7 @@ public static class CollectionExpression
     /// <param name="errors">Read-only span of errors.</param>
     /// <returns>Error or vale.</returns>
     /// <remarks>Enables support for collection expressions.</remarks>
-    public static ErrorOr<TValue> CreateErrorOr<TValue>(ReadOnlySpan<Error> errors)
-    {
-        return errors.ToArray();
-    }
+    public static ErrorOr<TValue> CreateErrorOr<TValue>(ReadOnlySpan<Error> errors) => errors;
 
     /// <summary>
     /// Creates <see cref="IErrorOr{TValue}"/> from read-only span of errors.
@@ -24,10 +21,7 @@ public static class CollectionExpression
     /// <param name="errors">Read-only span of errors.</param>
     /// <returns>Error or vale.</returns>
     /// <remarks>Enables support for collection expressions.</remarks>
-    public static IErrorOr<TValue> CreateIErrorOrValue<TValue>(ReadOnlySpan<Error> errors)
-    {
-        return CreateErrorOr<TValue>(errors);
-    }
+    public static IErrorOr<TValue> CreateIErrorOrValue<TValue>(ReadOnlySpan<Error> errors) => CreateErrorOr<TValue>(errors);
 
     /// <summary>
     /// Creates <see cref="IErrorOr"/> from read-only span of errors.
@@ -35,8 +29,5 @@ public static class CollectionExpression
     /// <param name="errors">Read-only span of errors.</param>
     /// <returns>Error or vale.</returns>
     /// <remarks>Enables support for collection expressions.</remarks>
-    public static IErrorOr CreateIErrorOr(ReadOnlySpan<Error> errors)
-    {
-        return CreateErrorOr<object>(errors);
-    }
+    public static IErrorOr CreateIErrorOr(ReadOnlySpan<Error> errors) => CreateErrorOr<object>(errors);
 }
