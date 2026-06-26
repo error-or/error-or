@@ -631,7 +631,7 @@ ErrorOr<string> userNameOrError = _userRepository
 ```
 
 ```cs
-async Task<ErrorOr<Success>> CacheUserAsync(User user) => await _cache.SetAsync(user);
+Task<ErrorOr<Success>> CacheUserAsync(User user) => _cache.SetAsync(user);
 
 ErrorOr<User> userOrError = await _userRepository
     .GetByIdAsync(userId)
