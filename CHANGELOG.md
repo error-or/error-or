@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- [#209](https://github.com/error-or/error-or/pull/209) Added `ThenGuard` and `ThenGuardAsync` methods.
+
+    They are similar to `ThenEnsure` and `ThenEnsureAsync`, but the guard function can return an `ErrorOr` with a different value type.
+    If no errors are returned, the original value is preserved and the guard function's success value is ignored.
+
 ### Fixed
 
 - [#XXX](https://github.com/error-or/error-or/pull/XXX) Fixed `NullReferenceException` thrown by `ErrorOr<TValue>.GetHashCode()` when the instance is in a success state with a `null` value (including `default(ErrorOr<TValue>)` for reference types). The hash code is now computed via `EqualityComparer<TValue>.Default`, consistent with how `Equals` already handles `null`.
