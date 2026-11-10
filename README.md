@@ -53,6 +53,7 @@
         - [`ThenAsync`](#thenasync)
         - [`ThenDo` and `ThenDoAsync`](#thendo-and-thendoasync)
         - [`ThenEnsure` and `ThenEnsureAsync`](#thenensure-and-thenensureasync)
+        - [`ThenGuard` and `ThenGuardAsync`](#thenguard-and-thenguardasync)
         - [Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`](#mixing-then-thendo-thenasync-thendoasync)
     - [`FailIf`](#failif)
     - [`Else`](#else)
@@ -602,6 +603,51 @@ ErrorOr<User> userOrError = await _userRepository
 
 // Success: userOrError is the original user from GetByIdAsync.
 // Failure: userOrError contains cache errors from CacheUserAsync.
+```
+
+### `ThenGuard` and `ThenGuardAsync`
+
+`ThenGuard` and `ThenGuardAsync` are similar to `ThenEnsure` and `ThenEnsureAsync`, but the guard function can return an `ErrorOr` with a different value type.
+If no errors are returned, the guard function's success value is ignored and the original value is preserved.
+
+```cs
+ErrorOr<Success> CacheUser(User user) => _cache.Set(user);
+
+ErrorOr<User> userOrError = _userRepository
+    .GetById(userId)
+    .ThenGuard(CacheUser);
+
+// Success: userOrError is the original user from GetById.
+// Failure: userOrError contains cache errors from CacheUser.
+```
+
+`ThenGuard` can be included in a chain, and later methods continue receiving the original value.
+
+```cs
+ErrorOr<string> userNameOrError = _userRepository
+    .GetById(userId)
+    .ThenGuard(CacheUser)
+    .Then(user => user.Name);
+```
+
+```cs
+Task<ErrorOr<Success>> CacheUserAsync(User user) => _cache.SetAsync(user);
+
+ErrorOr<User> userOrError = await _userRepository
+    .GetByIdAsync(userId)
+    .ThenGuardAsync(CacheUserAsync);
+
+// Success: userOrError is the original user from GetByIdAsync.
+// Failure: userOrError contains cache errors from CacheUserAsync.
+```
+
+`ThenGuardAsync` can also be included in an asynchronous chain.
+
+```cs
+ErrorOr<string> userNameOrError = await _userRepository
+    .GetByIdAsync(userId)
+    .ThenGuardAsync(CacheUserAsync)
+    .Then(user => user.Name);
 ```
 
 ### Mixing `Then`, `ThenDo`, `ThenAsync`, `ThenDoAsync`
