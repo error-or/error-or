@@ -120,6 +120,20 @@ public class ErrorOrUnionTests
     }
 
     [Fact]
+    public void SwitchExpression_WhenCreatedFromDefaultErrors_ShouldSafelyMatchErrorsArm()
+    {
+        ErrorOr<int> result = ErrorOr<int>.IUnionMembers.Create(default(Errors));
+
+        string description = result switch
+        {
+            int value => $"Value: {value}",
+            Errors errors => $"Errors: {errors.All.Count} | First: {errors.First.Code}",
+        };
+
+        description.Should().Be("Errors: 1 | First: ErrorOr.EmptyInitialErrors");
+    }
+
+    [Fact]
     public void SwitchExpression_WhenMatchingAFluentResult_ShouldHandleValueErrorsAndNull()
     {
         ErrorOr<string?> value = " Ada ";
