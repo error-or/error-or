@@ -10,7 +10,7 @@ public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMe
     /// Represents a discriminated union of a value of type <typeparamref name="TValue"/> or a list of errors.
     /// </summary>
     /// <remarks>
-    /// https://learn.microsoft.com/en-nz/dotnet/csharp/language-reference/builtin-types/union#union-member-providers
+    /// https://learn.microsoft.com/en-nz/dotnet/csharp/language-reference/builtin-types/union#union-member-providers.
     /// </remarks>
     public interface IUnionMembers
     {
