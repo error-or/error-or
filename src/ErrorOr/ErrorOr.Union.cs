@@ -6,9 +6,6 @@ using System.Runtime.CompilerServices;
 [Union]
 public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMembers
 {
-    /// <summary>
-    /// Adapts ErrorOr's typed value property and private construction to the compiler's custom-union pattern.
-    /// </summary>
     public interface IUnionMembers
     {
         object? Value { get; }
