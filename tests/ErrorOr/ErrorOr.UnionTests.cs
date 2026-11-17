@@ -49,6 +49,22 @@ public class ErrorOrUnionTests
     }
 
     [Fact]
+    public void SwitchExpression_WhenFallbackMatchesErrors_ShouldExposeTheFullAllPayload()
+    {
+        List<Error> expected = [Error.Validation(), Error.NotFound()];
+        ErrorOr<int> result = expected;
+
+        object response = result switch
+        {
+            int value => value,
+            Errors { First: { Type: ErrorType.NotFound } } => "Not found",
+            Errors errors => errors.All,
+        };
+
+        response.Should().BeOfType<List<Error>>().Which.Should().Equal(expected);
+    }
+
+    [Fact]
     public void SwitchExpression_WhenValueOrErrors_ShouldMatchTheContainedCase()
     {
         ErrorOr<int> value = 42;
