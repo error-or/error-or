@@ -17,18 +17,7 @@ public readonly struct Errors
     /// <summary>
     /// Gets all errors.
     /// </summary>
-    public IReadOnlyList<Error> All
-    {
-        get
-        {
-            if (_errors is not null)
-            {
-                return _errors;
-            }
-
-            return Array.Empty<Error>();
-        }
-    }
+    public IReadOnlyList<Error> All => _errors ?? [];
 
     internal List<Error>? ErrorList => _errors;
 
