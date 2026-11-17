@@ -31,6 +31,8 @@
     - [Using The `ErrorOrFactory`](#using-the-errororfactory)
     - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
 - [C# 15 union pattern matching](#c-15-union-pattern-matching)
+    - [Union cases](#union-cases)
+    - [Real-world example: a user endpoint](#real-world-example-a-user-endpoint)
 - [Properties](#properties)
     - [`IsError`](#iserror)
     - [`IsSuccess`](#issuccess)
@@ -358,7 +360,9 @@ ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
 
 # C# 15 union pattern matching
 
-The `net11.0` package target supports compiler-recognized union pattern matching with stable C# 15. Other package targets retain their existing behavior but do not expose union metadata. Use the .NET 11 SDK and target `net11.0`; C# 15 is the default for that target, so no preview language-version setting is needed.
+The `net11.0` package target exposes `ErrorOr<TValue>` as a C# 15 union. The compiler can check that a switch handles both the success value and the error list. This adds another way to inspect an `ErrorOr`; it does not replace `Match`, `Switch`, or the fluent methods, which remain available on every target.
+
+Use the .NET 11 SDK and target `net11.0`. C# 15 is the default for that target, so no preview language-version setting is needed. Other package targets do not expose union metadata.
 
 ```xml
 <PropertyGroup>
@@ -366,7 +370,14 @@ The `net11.0` package target supports compiler-recognized union pattern matching
 </PropertyGroup>
 ```
 
-The union cases are the success value (`TValue`) and the error list (`List<Error>`); converting a single `Error` or an `Error[]` still produces the error-list case.
+## Union cases
+
+`ErrorOr<TValue>` has two cases:
+
+- `TValue` when the operation succeeds.
+- `List<Error>` when it fails.
+
+A single `Error` or an `Error[]` still converts to the error-list case. For example, a switch can describe either outcome:
 
 ```cs
 static string Describe(ErrorOr<int> result) =>
@@ -377,7 +388,28 @@ static string Describe(ErrorOr<int> result) =>
     };
 ```
 
-When `TValue` can be null, include a `null` arm to handle null values, including the default value of `ErrorOr<TValue>`.
+If a success value can also be a `List<Error>` (for example, when `TValue` is `List<Error>` or `object`), type patterns alone cannot distinguish success from error. Use `IsError` or `IsSuccess` when that distinction matters.
+
+Add a `null` arm when `TValue` can be null. A default `ErrorOr<TValue>` with a reference-type `TValue` also contains null, so handle that case if default instances can reach the switch.
+
+## Real-world example: a user endpoint
+
+At an HTTP endpoint, pattern matching can map a repository result to the success response or the application's existing error response:
+
+```cs
+public async Task<IActionResult> GetUser(int id)
+{
+    ErrorOr<User> result = await _userRepository.GetByIdAsync(id);
+
+    return result switch
+    {
+        User user => Ok(user),
+        List<Error> errors => errors.ToActionResult(),
+    };
+}
+```
+
+`ToActionResult()` represents the application's mapping from errors to HTTP responses; ErrorOr does not prescribe that mapping. Use a switch when you want to branch directly on the cases. `Match` and the fluent methods remain useful when they better fit the flow.
 
 # Properties
 
