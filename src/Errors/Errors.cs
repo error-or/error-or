@@ -31,4 +31,37 @@ public readonly struct Errors
     }
 
     internal List<Error>? ErrorList => _errors;
+
+    /// <summary>
+    /// Creates an <see cref="Errors"/> value from a single error.
+    /// </summary>
+    public static implicit operator Errors(Error error) => new([error]);
+
+    /// <summary>
+    /// Creates an <see cref="Errors"/> value from a list of errors.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="errors"/> is null.</exception>
+    public static implicit operator Errors(List<Error> errors)
+    {
+        if (errors is null)
+        {
+            throw new ArgumentNullException(nameof(errors));
+        }
+
+        return new(errors);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="Errors"/> value from an array of errors.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="errors"/> is null.</exception>
+    public static implicit operator Errors(Error[] errors)
+    {
+        if (errors is null)
+        {
+            throw new ArgumentNullException(nameof(errors));
+        }
+
+        return new([.. errors]);
+    }
 }

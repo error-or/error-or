@@ -377,7 +377,15 @@ Use the .NET 11 SDK and target `net11.0`. C# 15 is the default for that target, 
 - `TValue` when the operation succeeds.
 - `Errors` when it fails.
 
-A single `Error`, a `List<Error>`, or an `Error[]` still converts to the errors case. Use `Errors.First` when you only need the first error, or `Errors.All` when you need the full read-only list. For a nullable string value, a switch can handle success, errors, and null:
+A single `Error`, a `List<Error>`, or an `Error[]` still converts to the errors case. You can also create an `Errors` value from any of those types:
+
+```cs
+Errors oneError = Error.NotFound();
+Errors manyErrors = new List<Error> { Error.NotFound(), Error.Validation() };
+Errors errorsFromArray = new[] { Error.NotFound(), Error.Validation() };
+```
+
+An empty list or array produces an empty `Errors` value. A null list or array throws `ArgumentNullException`. Use `Errors.First` when you only need the first error, or `Errors.All` when you need the full read-only list. For a nullable string value, a switch can handle success, errors, and null:
 
 ```cs
 ErrorOr<string?> result = " Ada ";
