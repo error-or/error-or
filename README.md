@@ -360,7 +360,7 @@ ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
 
 # C# 15 union pattern matching
 
-The `net11.0` package target exposes `ErrorOr<TValue>` as a C# 15 union. The compiler can check that a switch handles both the success value and the error list. This adds another way to inspect an `ErrorOr`; it does not replace `Match`, `Switch`, or the fluent methods, which remain available on every target.
+The `net11.0` package target exposes `ErrorOr<TValue>` as a C# 15 union. The compiler can check that a switch handles both the success value and the errors. This adds another way to inspect an `ErrorOr`; it does not replace `Match`, `Switch`, or the fluent methods, which remain available on every target.
 
 Use the .NET 11 SDK and target `net11.0`. C# 15 is the default for that target, so no preview language-version setting is needed. Other package targets do not expose union metadata.
 
@@ -375,9 +375,9 @@ Use the .NET 11 SDK and target `net11.0`. C# 15 is the default for that target, 
 `ErrorOr<TValue>` has two cases:
 
 - `TValue` when the operation succeeds.
-- `List<Error>` when it fails.
+- `Errors` when it fails.
 
-A single `Error` or an `Error[]` still converts to the error-list case. For a nullable string value, a switch can handle success, errors, and null:
+A single `Error`, a `List<Error>`, or an `Error[]` still converts to the errors case. Use `Errors.First` when you only need the first error, or `Errors.All` when you need the full read-only list. For a nullable string value, a switch can handle success, errors, and null:
 
 ```cs
 ErrorOr<string?> result = " Ada ";
@@ -386,35 +386,45 @@ var normalized = result.Then(name => name?.Trim());
 string description = normalized switch
 {
     string value => $"Success: {value}",
-    List<Error> errors => $"Errors: {errors.Count}",
+    Errors errors => $"First error: {errors.First.Description}; total errors: {errors.All.Count}",
     null => "No value",
 };
 ```
 
-The switch handles the value returned by the fluent chain, a list of errors, or a null value.
+The error arm gives you an `Errors` wrapper. `All` has the type `IReadOnlyList<Error>`, so you can enumerate the full list or pass it to an API that accepts a read-only list.
 
-If a success value can also be a `List<Error>` (for example, when `TValue` is `List<Error>` or `object`), type patterns alone cannot distinguish success from error. Use `IsError` or `IsSuccess` when that distinction matters.
+If `TValue` can itself contain an `Errors` value (for example, when `TValue` is `object`), type patterns alone cannot distinguish success from error. Use `IsError` or `IsSuccess` when that distinction matters.
 
 Add a `null` arm when `TValue` can be null. A default `ErrorOr<TValue>` with a reference-type `TValue` also contains null, so handle that case if default instances can reach the switch.
 
+`Errors` is available on every package target. The C# union case is available on `net11.0`. A default `Errors` value has no errors: `All` is empty, and `First` returns the same no-first-error sentinel used by `ErrorOr<TValue>.FirstError`.
+
 ## Real-world example: a user endpoint
 
-At an HTTP endpoint, pattern matching can map a repository result to the success response or the application's existing error response:
+At an HTTP endpoint, return a response based on the result. If any error should produce a bad request containing only the first error:
 
 ```cs
-public async Task<IActionResult> GetUser(int id)
-{
-    ErrorOr<User> result = await _userRepository.GetByIdAsync(id);
+ErrorOr<User> result = await _userRepository.GetByIdAsync(id);
 
-    return result switch
-    {
-        User user => Ok(user),
-        List<Error> errors => errors.ToActionResult(),
-    };
-}
+IResult response = result switch
+{
+    User user => Results.Ok(user),
+    Errors errors => Results.BadRequest(errors.First),
+};
 ```
 
-`ToActionResult()` represents the application's mapping from errors to HTTP responses; ErrorOr does not prescribe that mapping. Use a switch when you want to branch directly on the cases. `Match` and the fluent methods remain useful when they better fit the flow.
+To map a not-found error to a 404 and include all other errors in the bad-request response, match the first error's type before the general error arm:
+
+```cs
+IResult response = result switch
+{
+    User user => Results.Ok(user),
+    Errors { First: { Type: ErrorType.NotFound } } => Results.NotFound(),
+    Errors errors => Results.BadRequest(errors.All),
+};
+```
+
+`Errors.First` selects the primary error, while `Errors.All` gives access to the full read-only list. `Match` and the fluent methods remain useful when they better fit the flow.
 
 # Properties
 

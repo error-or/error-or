@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMembers
 {
     /// <summary>
-    /// Represents a discriminated union of a value of type <typeparamref name="TValue"/> or a list of errors.
+    /// Represents a discriminated union of a value of type <typeparamref name="TValue"/> or <see cref="Errors"/>.
     /// </summary>
     /// <remarks>
     /// https://learn.microsoft.com/en-nz/dotnet/csharp/language-reference/builtin-types/union#union-member-providers.
@@ -20,14 +20,14 @@ public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMe
 
         static ErrorOr<TValue> Create(TValue? value) => value!;
 
-        static ErrorOr<TValue> Create(List<Error> errors) => errors;
+        static ErrorOr<TValue> Create(Errors errors) => new(errors);
 
         bool TryGetValue(out TValue value);
 
-        bool TryGetValue(out List<Error> value);
+        bool TryGetValue(out Errors value);
     }
 
-    object? IUnionMembers.Value => IsError ? _errors : _value;
+    object? IUnionMembers.Value => IsError ? new Errors(_errors!) : _value;
 
     bool IUnionMembers.HasValue => IsError || _value is not null;
 
@@ -49,17 +49,17 @@ public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMe
         return false;
     }
 
-    bool IUnionMembers.TryGetValue(out List<Error> value)
+    bool IUnionMembers.TryGetValue(out Errors value)
     {
         if (IsError)
         {
-            value = _errors;
+            value = new Errors(_errors!);
             return true;
         }
 
-        if (_value is List<Error> errorList)
+        if (_value is Errors errorCase)
         {
-            value = errorList;
+            value = errorCase;
             return true;
         }
 

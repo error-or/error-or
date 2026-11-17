@@ -19,6 +19,11 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 
     private ErrorOr(List<Error> errors) => _errors = errors?.Count == 0 ? null : errors;
 
+    private ErrorOr(Errors errors) =>
+        _errors = errors.ErrorList is { Count: > 0 } errorList
+            ? errorList
+            : KnownErrors.CachedInvalidInitialErrorsList;
+
     /// <summary>
     /// Gets a value indicating whether the state is error.
     /// </summary>
