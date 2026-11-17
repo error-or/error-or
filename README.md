@@ -377,16 +377,21 @@ Use the .NET 11 SDK and target `net11.0`. C# 15 is the default for that target, 
 - `TValue` when the operation succeeds.
 - `List<Error>` when it fails.
 
-A single `Error` or an `Error[]` still converts to the error-list case. For example, a switch can describe either outcome:
+A single `Error` or an `Error[]` still converts to the error-list case. For a nullable string value, a switch can handle success, errors, and null:
 
 ```cs
-static string Describe(ErrorOr<int> result) =>
-    result switch
-    {
-        int value => $"Success: {value}",
-        List<Error> errors => $"Errors: {errors.Count}",
-    };
+ErrorOr<string?> result = " Ada ";
+var normalized = result.Then(name => name?.Trim());
+
+string description = normalized switch
+{
+    string value => $"Success: {value}",
+    List<Error> errors => $"Errors: {errors.Count}",
+    null => "No value",
+};
 ```
+
+The switch handles the value returned by the fluent chain, a list of errors, or a null value.
 
 If a success value can also be a `List<Error>` (for example, when `TValue` is `List<Error>` or `object`), type patterns alone cannot distinguish success from error. Use `IsError` or `IsSuccess` when that distinction matters.
 

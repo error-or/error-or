@@ -22,6 +22,26 @@ public class ErrorOrUnionTests
     }
 
     [Fact]
+    public void SwitchExpression_WhenMatchingAFluentResult_ShouldHandleValueErrorsAndNull()
+    {
+        ErrorOr<string?> value = " Ada ";
+        ErrorOr<string?> error = Error.Unexpected();
+        ErrorOr<string?> nullValue = (string?)null;
+
+        value.Then(n => n?.Trim()).ThenDo(n => Console.WriteLine(n)) switch
+        {
+            string trimmed => Console.WriteLine($"Trimmed value: {trimmed}"),
+            List<Error> errors => Console.WriteLine($"Errors: {errors.Count}"),
+            null => Console.WriteLine("No value"),
+        
+        };
+
+        MatchNullable(value.Then(name => name?.Trim())).Should().Be("Value: Ada");
+        MatchNullable(error.Then(name => name?.Trim())).Should().Be("Errors: 1");
+        MatchNullable(nullValue.Then(name => name?.Trim())).Should().Be("No value");
+    }
+
+    [Fact]
     public void SwitchExpression_WhenValueOrDefaultIsNull_ShouldMatchNullCase()
     {
         ErrorOr<string?> value = (string?)null;
