@@ -6,6 +6,12 @@ using System.Runtime.CompilerServices;
 [Union]
 public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMembers
 {
+    /// <summary>
+    /// Represents a discriminated union of a value of type <typeparamref name="TValue"/> or a list of errors.
+    /// </summary>
+    /// <remarks>
+    /// https://learn.microsoft.com/en-nz/dotnet/csharp/language-reference/builtin-types/union#union-member-providers
+    /// </remarks>
     public interface IUnionMembers
     {
         object? Value { get; }
