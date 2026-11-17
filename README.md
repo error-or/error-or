@@ -358,12 +358,11 @@ ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
 
 # C# 15 union pattern matching
 
-The `net11.0` package target supports compiler-recognized union pattern matching with C# 15 preview enabled. Other package targets retain their existing behavior but do not expose union metadata. Configure a consumer project with:
+The `net11.0` package target supports compiler-recognized union pattern matching with stable C# 15. Other package targets retain their existing behavior but do not expose union metadata. Use the .NET 11 SDK and target `net11.0`; C# 15 is the default for that target, so no preview language-version setting is needed.
 
 ```xml
 <PropertyGroup>
     <TargetFramework>net11.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
 </PropertyGroup>
 ```
 
