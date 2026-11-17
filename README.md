@@ -30,6 +30,7 @@
     - [Using implicit conversion](#using-implicit-conversion)
     - [Using The `ErrorOrFactory`](#using-the-errororfactory)
     - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
+- [C# 15 union pattern matching](#c-15-union-pattern-matching)
 - [Properties](#properties)
     - [`IsError`](#iserror)
     - [`IsSuccess`](#issuccess)
@@ -354,6 +355,30 @@ List<Error> errors = [Error.Unauthorized(), Error.Validation()];
 Task<List<Error>> errorsTask = Task.FromResult(errors);
 ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
 ```
+
+# C# 15 union pattern matching
+
+The `net11.0` package target supports compiler-recognized union pattern matching with C# 15 preview enabled. Other package targets retain their existing behavior but do not expose union metadata. Configure a consumer project with:
+
+```xml
+<PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+</PropertyGroup>
+```
+
+The union cases are the success value (`TValue`) and the error list (`List<Error>`); converting a single `Error` or an `Error[]` still produces the error-list case.
+
+```cs
+static string Describe(ErrorOr<int> result) =>
+    result switch
+    {
+        int value => $"Success: {value}",
+        List<Error> errors => $"Errors: {errors.Count}",
+    };
+```
+
+When `TValue` can be null, include a `null` arm to handle null values, including the default value of `ErrorOr<TValue>`.
 
 # Properties
 
