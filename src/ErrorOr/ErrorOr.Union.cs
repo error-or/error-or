@@ -39,12 +39,6 @@ public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMe
             return true;
         }
 
-        if (_errors is TValue errorValue)
-        {
-            value = errorValue;
-            return true;
-        }
-
         value = default!;
         return false;
     }

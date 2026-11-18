@@ -172,14 +172,15 @@ public class ErrorOrUnionTests
     }
 
     [Fact]
-    public void SwitchExpression_WhenValueTypeIsListOfErrors_ShouldMatchTheListCase()
+    public void SwitchExpression_WhenValueTypeIsListOfErrors_ShouldKeepSuccessAndErrorDistinct()
     {
-        List<Error> errors = [Error.Unexpected()];
-        ErrorOr<List<Error>> value = ErrorOrFactory.From<List<Error>>(value: errors);
-        ErrorOr<List<Error>> error = ErrorOrFactory.From<List<Error>>(errors: errors);
+        List<Error> listValue = [Error.Unexpected(code: "value")];
+        List<Error> errorList = [Error.Unexpected(code: "error")];
+        ErrorOr<List<Error>> value = ErrorOrFactory.From<List<Error>>(value: listValue);
+        ErrorOr<List<Error>> error = ErrorOrFactory.From<List<Error>>(errors: errorList);
 
         MatchList(value).Should().Be("List: 1");
-        MatchList(error).Should().Be("List: 1");
+        MatchList(error).Should().Be("Errors: 1");
     }
 
     private static string Match(ErrorOr<int> errorOr) =>

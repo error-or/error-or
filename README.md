@@ -401,6 +401,8 @@ string description = normalized switch
 
 The error arm gives you an `Errors` wrapper. `All` has the type `IReadOnlyList<Error>`, so you can enumerate the full list or pass it to an API that accepts a read-only list.
 
+If `TValue` is `List<Error>`, successful values still match the `List<Error>` arm, while failures match the `Errors` arm.
+
 If `TValue` can itself contain an `Errors` value (for example, when `TValue` is `object`), type patterns alone cannot distinguish success from error. Use `IsError` or `IsSuccess` when that distinction matters.
 
 Add a `null` arm when `TValue` can be null. A default `ErrorOr<TValue>` with a reference-type `TValue` also contains null, so handle that case if default instances can reach the switch.
