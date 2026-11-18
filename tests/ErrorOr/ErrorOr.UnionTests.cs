@@ -7,6 +7,75 @@ using FluentAssertions;
 
 public class ErrorOrUnionTests
 {
+    public static readonly TheoryData<ErrorOr<string?>, string> SwitchCases = new()
+    {
+        { "Ada", "Value: Ada" },
+        {
+            ErrorOrFactory.From<string?>(errors: new List<Error>
+            {
+                Error.Validation(code: "first"),
+                Error.Conflict(code: "second"),
+            }),
+            "Errors: 2 | First: first"
+        },
+        {
+            ErrorOr<string?>.IUnionMembers.Create((Errors)Error.NotFound(code: "wrapped")),
+            "Not found: wrapped"
+        },
+        {
+            ErrorOrFactory.From<string?>(errors: new List<Error>
+            {
+                Error.NotFound(code: "missing"),
+                Error.Validation(code: "invalid"),
+            }),
+            "Not found: missing"
+        },
+        {
+            ErrorOrFactory.From<string?>(errors: new List<Error>
+            {
+                Error.Validation(code: "first"),
+                Error.NotFound(code: "second"),
+            }),
+            "Errors: 2 | First: first"
+        },
+        {
+            ErrorOrFactory.From<string?>(errors: new List<Error>
+            {
+                Error.Validation(code: "first"),
+                Error.Validation(code: "second"),
+            }),
+            "Validation errors: 2"
+        },
+        {
+            ErrorOrFactory.From<string?>(errors: new List<Error>
+            {
+                Error.Conflict(code: "first"),
+                Error.Conflict(code: "second"),
+            }),
+            "Conflict errors: 2"
+        },
+        { ErrorOrFactory.From<string?>(value: null), "No value" },
+    };
+
+    [Theory]
+    [MemberData(nameof(SwitchCases))]
+    public void SwitchExpression_WhenMatchingSuccessErrorsOrNull_ShouldReturnExpectedString(
+        ErrorOr<string?> result,
+        string expected)
+    {
+        string description = result switch
+        {
+            string value => $"Value: {value}",
+            Errors { First: { Type: ErrorType.NotFound } } errors => $"Not found: {errors.First.Code}",
+            Errors errors when errors.All.All(error => error.Type == errors.First.Type) =>
+                $"{errors.First.Type} errors: {errors.All.Count}",
+            Errors errors => $"Errors: {errors.All.Count} | First: {errors.First.Code}",
+            null => "No value",
+        };
+
+        description.Should().Be(expected);
+    }
+
     [Fact]
     public void SwitchExpression_WhenSingleError_ShouldExposeErrorsWrapper()
     {
