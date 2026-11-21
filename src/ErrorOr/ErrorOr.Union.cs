@@ -4,7 +4,7 @@ namespace ErrorOr;
 using System.Runtime.CompilerServices;
 
 [Union]
-public readonly partial record struct ErrorOr<TValue> : ErrorOr<TValue>.IUnionMembers
+public readonly partial record struct ErrorOr<TValue>
 {
     /// <summary>
     /// Represents a discriminated union of a value of type <typeparamref name="TValue"/> or <see cref="Errors"/>.

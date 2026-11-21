@@ -8,7 +8,11 @@ namespace ErrorOr;
 /// </summary>
 /// <typeparam name="TValue">The type of the underlying <see cref="Value"/>.</typeparam>
 [CollectionBuilder(typeof(CollectionExpression), nameof(CollectionExpression.CreateErrorOr))]
+#if NET11_0_OR_GREATER
+public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>, ErrorOr<TValue>.IUnionMembers
+#else
 public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
+#endif
 {
     private readonly TValue? _value = default;
     private readonly List<Error>? _errors = null;
@@ -19,10 +23,12 @@ public readonly partial record struct ErrorOr<TValue> : IErrorOr<TValue>
 
     private ErrorOr(List<Error> errors) => _errors = errors.Count == 0 ? null : errors;
 
+#if NET11_0_OR_GREATER
     private ErrorOr(Errors errors) =>
         _errors = errors.ErrorList is { Count: > 0 } errorList
             ? errorList
             : KnownErrors.CachedInvalidInitialErrorsList;
+#endif
 
     /// <summary>
     /// Gets a value indicating whether the state is error.
