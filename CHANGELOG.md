@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- [#237](https://github.com/error-or/error-or/issues/237) Added C# 15 union pattern matching support for the `net11.0` target.
+
 ### Fixed
 
 - [#XXX](https://github.com/error-or/error-or/pull/XXX) Fixed `NullReferenceException` thrown by `ErrorOr<TValue>.GetHashCode()` when the instance is in a success state with a `null` value (including `default(ErrorOr<TValue>)` for reference types). The hash code is now computed via `EqualityComparer<TValue>.Default`, consistent with how `Equals` already handles `null`.

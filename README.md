@@ -30,6 +30,9 @@
     - [Using implicit conversion](#using-implicit-conversion)
     - [Using The `ErrorOrFactory`](#using-the-errororfactory)
     - [Using The `ToErrorOr` Extension Method](#using-the-toerroror-extension-method)
+- [C# 15 union pattern matching](#c-15-union-pattern-matching)
+    - [Union cases](#union-cases)
+    - [Real-world example: a user endpoint](#real-world-example-a-user-endpoint)
 - [Properties](#properties)
     - [`IsError`](#iserror)
     - [`IsSuccess`](#issuccess)
@@ -354,6 +357,84 @@ List<Error> errors = [Error.Unauthorized(), Error.Validation()];
 Task<List<Error>> errorsTask = Task.FromResult(errors);
 ErrorOr<int> result = await errorsTask.ToErrorOrAsync<int>();
 ```
+
+# C# 15 union pattern matching
+
+The `net11.0` package target exposes `ErrorOr<TValue>` as a C# 15 union. The compiler can check that a switch handles both the success value and the errors. This adds another way to inspect an `ErrorOr`; it does not replace `Match`, `Switch`, or the fluent methods, which remain available on every target.
+
+Use the .NET 11 SDK and target `net11.0`. C# 15 is the default for that target, so no preview language-version setting is needed. Other package targets do not expose union metadata.
+
+```xml
+<PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+</PropertyGroup>
+```
+
+## Union cases
+
+`ErrorOr<TValue>` has two cases:
+
+- `TValue` when the operation succeeds.
+- `Errors` when it fails.
+
+A single `Error`, a `List<Error>`, or an `Error[]` still converts to the errors case. You can also create an `Errors` value from any of those types:
+
+```cs
+Errors oneError = Error.NotFound();
+Errors manyErrors = new List<Error> { Error.NotFound(), Error.Validation() };
+Errors errorsFromArray = new[] { Error.NotFound(), Error.Validation() };
+```
+
+An empty list or array produces an empty `Errors` value. A null list or array throws `ArgumentNullException`. Use `Errors.First` when you only need the first error, or `Errors.All` when you need the full read-only list. For a nullable string value, a switch can handle success, errors, and null:
+
+```cs
+ErrorOr<string?> result = " Ada ";
+var normalized = result.Then(name => name?.Trim());
+
+string description = normalized switch
+{
+    string value => $"Success: {value}",
+    Errors errors => $"First error: {errors.First.Description}; total errors: {errors.All.Count}",
+    null => "No value",
+};
+```
+
+The error arm gives you an `Errors` wrapper. `All` has the type `IReadOnlyList<Error>`, so you can enumerate the full list or pass it to an API that accepts a read-only list.
+
+If `TValue` is `List<Error>`, successful values still match the `List<Error>` arm, while failures match the `Errors` arm.
+
+If `TValue` can itself contain an `Errors` value (for example, when `TValue` is `object`), type patterns alone cannot distinguish success from error. Use `IsError` or `IsSuccess` when that distinction matters.
+
+Add a `null` arm when `TValue` can be null. A default `ErrorOr<TValue>` with a reference-type `TValue` also contains null, so handle that case if default instances can reach the switch.
+
+`Errors` is available on every package target. The C# union case is available on `net11.0`. A default `Errors` value has no errors: `All` is empty, and `First` returns the same no-first-error sentinel used by `ErrorOr<TValue>.FirstError`.
+
+## Real-world example: a user endpoint
+
+At an HTTP endpoint, return a response based on the result. If any error should produce a bad request containing only the first error:
+
+```cs
+ErrorOr<User> result = await _userRepository.GetByIdAsync(id);
+
+IResult response = result switch
+{
+    User user => Results.Ok(user),
+    Errors errors => Results.BadRequest(errors.First),
+};
+```
+
+To map a not-found error to a 404 and include all other errors in the bad-request response, match the first error's type before the general error arm:
+
+```cs
+IResult response = result switch
+{
+    User user => Results.Ok(user),
+    Errors { First: { Type: ErrorType.NotFound } } => Results.NotFound(),
+    Errors errors => Results.BadRequest(errors.All),
+};
+```
+
+`Errors.First` selects the primary error, while `Errors.All` gives access to the full read-only list. `Match` and the fluent methods remain useful when they better fit the flow.
 
 # Properties
 
