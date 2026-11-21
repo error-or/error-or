@@ -219,6 +219,53 @@ public class ErrorOrUnionTests
     }
 
     [Fact]
+    public void UnionMembers_CreateValue_ShouldCreateASuccessValue()
+    {
+        ErrorOr<int> created = ErrorOr<int>.IUnionMembers.Create(42);
+
+        created.IsError.Should().BeFalse();
+        created.Value.Should().Be(42);
+    }
+
+    [Fact]
+    public void UnionMembers_Value_ShouldReturnValueForSuccessAndErrorsWrapperForFailure()
+    {
+        ErrorOr<int>.IUnionMembers successMembers = ErrorOrFactory.From<int>(123);
+        ErrorOr<int>.IUnionMembers errorMembers = ErrorOrFactory.From<int>(Error.Validation());
+
+        successMembers.Value.Should().Be(123);
+        errorMembers.Value.Should().BeOfType<Errors>();
+    }
+
+    [Fact]
+    public void UnionMembers_TryGetErrors_ShouldReturnSuccessValueWhenTValueIsErrors()
+    {
+        Errors payload = new[] { Error.Unexpected(), Error.Validation() };
+        ErrorOr<Errors> result = payload;
+        ErrorOr<Errors>.IUnionMembers members = result;
+
+        bool success = members.TryGetValue(out Errors extracted);
+
+        success.Should().BeTrue();
+        extracted.First.Should().Be(payload.First);
+        extracted.All.Should().Equal(payload.All);
+    }
+
+    [Fact]
+    public void GetEnumerator_WhenError_ShouldEnumerateAllErrors()
+    {
+        ErrorOr<int> result = new[] { Error.Validation(), Error.NotFound() };
+        List<Error> collected = [];
+
+        foreach (Error error in result)
+        {
+            collected.Add(error);
+        }
+
+        collected.Should().Equal(result.Errors);
+    }
+
+    [Fact]
     public void SwitchExpression_WhenMatchingAFluentResult_ShouldHandleValueErrorsAndNull()
     {
         ErrorOr<string?> value = " Ada ";
